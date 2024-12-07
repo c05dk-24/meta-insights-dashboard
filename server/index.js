@@ -16,18 +16,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy for secure cookies in production
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Apply CORS before other middleware
 app.use(cors(corsOptions));
+
+// Pre-flight requests
 app.options('*', cors(corsOptions));
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Security and logging middleware
 app.use(securityMiddleware);
 app.use(requestLogger);
 
-// Routes
+// Health check route (before security middleware)
 app.use('/health', healthRoutes);
+
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/meta', metaRoutes);
 
@@ -40,7 +51,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Error handling
+// Error handling must be last
 app.use(errorHandler);
 
 // Initialize database and start server
