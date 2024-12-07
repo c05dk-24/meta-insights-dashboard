@@ -10,8 +10,11 @@ export const loginUser = async (email: string, password: string) => {
       `${API_URL}/auth/login`,
       { email, password },
       {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        withCredentials: true
       }
     );
 
@@ -25,6 +28,7 @@ export const loginUser = async (email: string, password: string) => {
     
     return { user, token };
   } catch (error: any) {
+    console.error('Login error:', error.response?.data || error.message);
     throw new Error(error.response?.data?.error || 'Login failed');
   }
 };

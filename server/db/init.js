@@ -3,7 +3,6 @@ const { Pool } = pkg;
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import bcrypt from 'bcryptjs';
 import dbLogger from '../utils/db-logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -17,28 +16,44 @@ const initDatabase = async () => {
   });
 
   try {
-    dbLogger.log('Reading schema file...');
+    dbLogger.log('Starting database initialization...');
+    
+    // Read and execute schema SQL
     const schemaSQL = await fs.readFile(
       path.join(__dirname, 'schema.sql'),
       'utf-8'
     );
 
-    dbLogger.log('Executing schema...');
-    await pool.query(schemaSQL);
-    dbLogger.log('Schema created successfully');
+    await pool.query('BEGIN');
 
-    // Create test user
-    const hashedPassword = await bcrypt.hash('password123', 10);
-    await pool.query(`
-      INSERT INTO users (email, password, name)
-      VALUES ($1, $2, $3)
-      ON CONFLICT (email) DO NOTHING
-      RETURNING id
-    `, ['test@example.com', hashedPassword, 'Test User']);
+    try {
+      // Execute schema in parts to handle potential dependencies
+      const statements = schemaSQL.split(';').filter(stmt => stmt.trim());
+      
+      for (const statement of statements) {
+        if (statement.trim()) {
+          await pool.query(statement);
+        }
+      }
 
-    dbLogger.log('Test user created successfully');
+      await pool.query('COMMIT');
+      dbLogger.log('Schema created successfully');
+      
+      // Insert sample data
+      const sampleDataSQL = await fs.readFile(
+        path.join(__dirname, 'sample-data.sql'),
+        'utf-8'
+      );
+      
+      await pool.query(sampleDataSQL);
+      dbLogger.log('Sample data inserted successfully');
+
+    } catch (error) {
+      await pool.query('ROLLBACK');
+      throw error;
+    }
+
     await pool.end();
-    
     dbLogger.log('Database initialization completed successfully');
     process.exit(0);
   } catch (error) {
