@@ -6,7 +6,7 @@ dotenv.config();
 
 const getDbConfig = () => {
   const config = {
-    dialect: 'mysql',
+    dialect: 'postgres',
     pool: {
       max: 5,
       min: 0,
@@ -20,9 +20,8 @@ const getDbConfig = () => {
     return {
       ...config,
       dialectOptions: {
-        socketPath: '/cloudsql/vici-appp:europe-west2:vicimedia12',
-        connectTimeout: 60000,
         ssl: {
+          require: true,
           rejectUnauthorized: false
         }
       }
@@ -32,17 +31,12 @@ const getDbConfig = () => {
   return {
     ...config,
     host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '3306', 10),
-    dialectOptions: {
-      connectTimeout: 60000
-    }
+    port: parseInt(process.env.DB_PORT || '5432', 10)
   };
 };
 
 const sequelize = new Sequelize(
-  'NewVici',
-  'dal',
-  'samson01',
+  process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/meta_insights',
   getDbConfig()
 );
 
@@ -55,20 +49,23 @@ export const initDatabase = async () => {
     try {
       await sequelize.authenticate();
       dbLogger.log('Database connection established successfully.');
-      dbLogger.log(`Connected to database: NewVici`);
       dbLogger.log(`Environment: ${process.env.NODE_ENV}`);
-      if (process.env.NODE_ENV === 'production') {
-        dbLogger.log(`Using socket path: /cloudsql/vici-appp:europe-west2:vicimedia12`);
-      } else {
-        dbLogger.log(`Using host: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
-      }
+      
+      const config = sequelize.config;
+      dbLogger.log('Connection config:', {
+        host: config.host,
+        port: config.port,
+        database: config.database,
+        dialect: config.dialect
+      });
+      
       return true;
     } catch (error) {
       retries++;
       dbLogger.error(`Connection attempt ${retries} failed:`, error.message);
       
       if (retries === maxRetries) {
-        throw new Error(`Failed to connect after ${maxRetries} attempts`);
+        throw new Error(`Failed to connect after ${maxRetries} attempts: ${error.message}`);
       }
       
       dbLogger.log(`Retrying in ${retryDelay/1000} seconds...`);
