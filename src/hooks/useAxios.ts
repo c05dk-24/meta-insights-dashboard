@@ -1,12 +1,10 @@
 import axios from 'axios';
 import { useAuth } from './useAuth';
-
-const API_URL = import.meta.env.PROD 
-  ? (import.meta.env.VITE_API_URL || '/api')
-  : 'http://localhost:3001/api';
+import { getApiUrl } from '../utils/config';
 
 export const useAxios = () => {
   const { token, logout } = useAuth();
+  const API_URL = getApiUrl();
 
   const instance = axios.create({
     baseURL: API_URL,
