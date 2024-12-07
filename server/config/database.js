@@ -20,7 +20,7 @@ const getDbConfig = () => {
     return {
       ...config,
       dialectOptions: {
-        socketPath: process.env.INSTANCE_UNIX_SOCKET,
+        socketPath: '/cloudsql/vici-appp:europe-west2:vicimedia12',
         connectTimeout: 60000,
         ssl: {
           rejectUnauthorized: false
@@ -40,9 +40,9 @@ const getDbConfig = () => {
 };
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  'NewVici',
+  'dal',
+  'samson01',
   getDbConfig()
 );
 
@@ -55,10 +55,10 @@ export const initDatabase = async () => {
     try {
       await sequelize.authenticate();
       dbLogger.log('Database connection established successfully.');
-      dbLogger.log(`Connected to database: ${process.env.DB_NAME}`);
+      dbLogger.log(`Connected to database: NewVici`);
       dbLogger.log(`Environment: ${process.env.NODE_ENV}`);
       if (process.env.NODE_ENV === 'production') {
-        dbLogger.log(`Using socket path: ${process.env.INSTANCE_UNIX_SOCKET}`);
+        dbLogger.log(`Using socket path: /cloudsql/vici-appp:europe-west2:vicimedia12`);
       } else {
         dbLogger.log(`Using host: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
       }
