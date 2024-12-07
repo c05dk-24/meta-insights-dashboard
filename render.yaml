@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: meta-insights-api
+    env: node
+    buildCommand: npm install
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: META_ACCESS_TOKEN
+        sync: false
+      - key: FRONTEND_URL
+        value: https://tourmaline-pie-2188b7.netlify.app
+    healthCheckPath: /health
+    autoDeploy: true
