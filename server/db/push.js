@@ -1,40 +1,44 @@
-import { initDatabase } from '../config/database.js';
-import sequelize from '../config/database.js';
-import dbLogger from '../utils/db-logger.js';
+import pkg from 'pg';
+const { Pool } = pkg;
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dbLogger from '../utils/db-logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const pushSchema = async () => {
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? {
+      rejectUnauthorized: false
+    } : false
+  });
+
   try {
-    // Initialize database connection
-    await initDatabase();
-    
-    // Read setup SQL file
-    const setupSQL = await fs.readFile(
-      path.join(__dirname, 'setup.sql'),
+    // Read schema file
+    const schemaSQL = await fs.readFile(
+      path.join(__dirname, 'schema.sql'),
       'utf-8'
     );
 
-    // Execute the entire SQL file as one transaction
-    await sequelize.transaction(async (t) => {
-      try {
-        await sequelize.query(setupSQL, { 
-          transaction: t,
-          raw: true
-        });
-        dbLogger.log('Database schema and initial data created successfully');
-      } catch (error) {
-        dbLogger.error('Failed to execute SQL:', error.message);
-        throw error;
-      }
-    });
+    // Execute schema in a transaction
+    await pool.query('BEGIN');
+    
+    try {
+      await pool.query(schemaSQL);
+      await pool.query('COMMIT');
+      dbLogger.log('Schema pushed successfully');
+    } catch (error) {
+      await pool.query('ROLLBACK');
+      throw error;
+    }
 
+    await pool.end();
     process.exit(0);
   } catch (error) {
-    dbLogger.error('Failed to initialize database:', error);
+    dbLogger.error('Failed to push schema:', error);
+    await pool.end();
     process.exit(1);
   }
 };
