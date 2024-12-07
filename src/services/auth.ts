@@ -28,8 +28,8 @@ export const loginUser = async (email: string, password: string) => {
     
     return { user, token };
   } catch (error: any) {
-    console.error('Login error:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.error || 'Login failed');
+    const errorMessage = error.response?.data?.error || 'Login failed. Please check your credentials and try again.';
+    throw new Error(errorMessage);
   }
 };
 

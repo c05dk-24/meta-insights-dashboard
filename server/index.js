@@ -2,8 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initDatabase } from './config/database.js';
+import { corsOptions } from './config/cors.js';
+import { securityMiddleware } from './middleware/security.js';
+import { requestLogger } from './middleware/logging.js';
+import { errorHandler } from './middleware/error.js';
 import metaRoutes from './routes/meta/index.js';
 import authRoutes from './routes/auth.js';
+import healthRoutes from './routes/health.js';
 import dbLogger from './utils/db-logger.js';
 
 dotenv.config();
@@ -11,67 +16,20 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// CORS configuration
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'https://tourmaline-pie-2188b7.netlify.app',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-
-const corsOptions = {
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Length', 'X-Requested-With'],
-  maxAge: 86400,
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-};
-
 // Apply CORS before other middleware
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Security middleware
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  next();
-});
-
-// Request logging middleware
-app.use((req, res, next) => {
-  dbLogger.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
-  next();
-});
+app.use(securityMiddleware);
+app.use(requestLogger);
 
 // Routes
+app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/meta', metaRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    port: PORT
-  });
-});
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -82,19 +40,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  dbLogger.error('Server error:', err.message);
-  
-  if (err.message === 'Not allowed by CORS') {
-    return res.status(403).json({
-      error: 'CORS error',
-      message: 'Origin not allowed'
-    });
-  }
-  
-  res.status(500).json({ error: 'Internal server error' });
-});
+// Error handling
+app.use(errorHandler);
 
 // Initialize database and start server
 const startServer = async () => {
@@ -104,10 +51,8 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       dbLogger.log(`Server running on port ${PORT}`);
       dbLogger.log(`Environment: ${process.env.NODE_ENV}`);
-      dbLogger.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
     });
 
-    // Handle server shutdown
     const shutdown = () => {
       dbLogger.log('Shutting down server...');
       server.close(() => {
