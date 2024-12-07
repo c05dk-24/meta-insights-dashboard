@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'https://tourmaline-pie-2188b7.netlify.app', // Add your Netlify URL
+  'https://tourmaline-pie-2188b7.netlify.app',
   process.env.PRODUCTION_URL,
 ].filter(Boolean);
 

@@ -1,9 +1,6 @@
-// Custom database logger utility
 const dbLogger = {
   log: (...args) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Database]:', ...args);
-    }
+    console.log('[Database]:', ...args);
   },
   error: (...args) => {
     console.error('[Database Error]:', ...args);

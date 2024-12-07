@@ -3,9 +3,18 @@
   publish = "dist"
 
 [context.production.environment]
-  VITE_API_URL = "https://meta-insights-api.onrender.com/api"
+  VITE_API_URL = "https://meta-insights-dashboard-1.onrender.com/api"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self' https://meta-insights-dashboard-1.onrender.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';"
