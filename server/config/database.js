@@ -7,11 +7,13 @@ dotenv.config();
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'mysql',
   dialectOptions: {
-    ssl: {
-      rejectUnauthorized: true,
-      // For Google Cloud SQL, we don't need to specify the CA
-    },
+    ssl: process.env.NODE_ENV === 'production' ? {
+      require: true,
+      rejectUnauthorized: false
+    } : false,
     connectTimeout: 60000,
+    // Add these options for Google Cloud SQL
+    socketPath: process.env.NODE_ENV === 'production' ? process.env.INSTANCE_UNIX_SOCKET : undefined
   },
   pool: {
     max: 5,

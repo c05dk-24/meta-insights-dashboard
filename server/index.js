@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'https://tourmaline-pie-2188b7.netlify.app', // Add your Netlify URL
   process.env.PRODUCTION_URL,
 ].filter(Boolean);
 
@@ -30,7 +31,7 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Length', 'X-Requested-With'],
-  maxAge: 86400, // 24 hours
+  maxAge: 86400,
 };
 
 // Middleware
@@ -52,12 +53,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  dbLogger.error('Server error:', err.message);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/meta', metaRoutes);
@@ -67,8 +62,24 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
+    environment: process.env.NODE_ENV,
+    port: PORT
   });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Meta Insights API is running',
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  dbLogger.error('Server error:', err.message);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 // Initialize database and start server
@@ -76,11 +87,24 @@ const startServer = async () => {
   try {
     await initDatabase();
     
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       dbLogger.log(`Server running on port ${PORT}`);
       dbLogger.log(`Environment: ${process.env.NODE_ENV}`);
       dbLogger.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
     });
+
+    // Handle server shutdown
+    const shutdown = () => {
+      dbLogger.log('Shutting down server...');
+      server.close(() => {
+        dbLogger.log('Server closed');
+        process.exit(0);
+      });
+    };
+
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
+    
   } catch (error) {
     dbLogger.error('Failed to start server:', error);
     process.exit(1);
