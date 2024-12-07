@@ -2,61 +2,98 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
 import dbLogger from '../utils/db-logger.js';
 
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res, next) => {
   try {
     const { email, password } = req.body;
     
+    if (!email || !password) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Email and password are required'
+      });
+    }
+    
     dbLogger.log(`Login attempt for email: ${email}`);
     
-    // Find user
     const user = await User.findOne({ 
       where: { email },
-      raw: true // Get plain object instead of Sequelize instance
+      attributes: ['id', 'email', 'password', 'name'],
+      raw: true
     });
 
     if (!user) {
       dbLogger.warn(`Login failed: User not found - ${email}`);
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({
+        error: 'INVALID_CREDENTIALS',
+        message: 'Invalid email or password'
+      });
     }
 
-    // Verify password
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       dbLogger.warn(`Login failed: Invalid password - ${email}`);
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({
+        error: 'INVALID_CREDENTIALS',
+        message: 'Invalid email or password'
+      });
     }
 
-    // Generate token
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user;
+
     dbLogger.log(`User logged in successfully: ${email}`);
 
-    // Return user data and token
     res.json({
       token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      }
+      user: userWithoutPassword
     });
   } catch (error) {
-    dbLogger.error('Login error:', error.message);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
-// Test endpoint to verify server is running
-router.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+router.get('/verify', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({
+      error: 'NO_TOKEN',
+      message: 'No token provided'
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.userId, {
+      attributes: ['id', 'email', 'name'],
+      raw: true
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        error: 'INVALID_TOKEN',
+        message: 'Invalid token'
+      });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    res.status(401).json({
+      error: 'INVALID_TOKEN',
+      message: 'Invalid token'
+    });
+  }
 });
 
 export default router;
