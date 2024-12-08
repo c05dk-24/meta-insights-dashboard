@@ -1,10 +1,8 @@
 import express from 'express';
-import campaignRoutes from './campaigns.js';
-import adRoutes from './ads.js';
+import insightsRoutes from './insights.js';
 
 const router = express.Router();
 
-router.use('/campaigns', campaignRoutes);
-router.use('/ads', adRoutes);
+router.use('/insights', insightsRoutes);
 
 export default router;

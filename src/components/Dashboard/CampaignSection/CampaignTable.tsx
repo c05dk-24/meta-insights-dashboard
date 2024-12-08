@@ -1,6 +1,7 @@
 import React from 'react';
 import { useMeta } from '../../../hooks/useMeta';
 import { formatCurrency, formatNumber } from '../../../utils/metrics';
+import { Badge } from '../../ui/Badge';
 
 interface Props {
   dateRange: { from: Date; to: Date };
@@ -28,6 +29,7 @@ export const CampaignTable: React.FC<Props> = ({ dateRange, onSelectCampaign }) 
         <thead>
           <tr className="border-b">
             <th className="text-left py-3 px-4">Campaign Name</th>
+            <th className="text-center py-3 px-4">Status</th>
             <th className="text-right py-3 px-4">Impressions</th>
             <th className="text-right py-3 px-4">Reach</th>
             <th className="text-right py-3 px-4">Leads</th>
@@ -43,6 +45,13 @@ export const CampaignTable: React.FC<Props> = ({ dateRange, onSelectCampaign }) 
               className="border-b hover:bg-gray-50 cursor-pointer"
             >
               <td className="py-3 px-4">{campaign.name}</td>
+              <td className="py-3 px-4 text-center">
+                <Badge 
+                  variant={campaign.status === 'ACTIVE' ? 'success' : 'neutral'}
+                >
+                  {campaign.status}
+                </Badge>
+              </td>
               <td className="text-right py-3 px-4">{formatNumber(campaign.impressions)}</td>
               <td className="text-right py-3 px-4">{formatNumber(campaign.reach)}</td>
               <td className="text-right py-3 px-4">{formatNumber(campaign.leads)}</td>
@@ -53,6 +62,7 @@ export const CampaignTable: React.FC<Props> = ({ dateRange, onSelectCampaign }) 
           {campaigns && campaigns.length > 0 && (
             <tr className="font-semibold bg-gray-50">
               <td className="py-3 px-4">Total</td>
+              <td></td>
               <td className="text-right py-3 px-4">
                 {formatNumber(campaigns.reduce((sum, c) => sum + c.impressions, 0))}
               </td>
