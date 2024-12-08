@@ -2,8 +2,8 @@ export interface MetaInsight {
   id: string;
   date: string;
   impressions: number;
-  results: number;
-  costPerResult: number;
+  leads: number;
+  costPerLead: number;
   amountSpent: number;
 }
 
@@ -16,8 +16,12 @@ export interface MetricCard {
 
 export interface ChartData {
   name: string;
-  impressions: number;
-  results: number;
-  costPerResult: number;
+  leads: number;
+  amountSpent: number;
+}
+
+export interface YearlyData {
+  month: string;
+  leads: number;
   amountSpent: number;
 }

@@ -7,14 +7,22 @@ export const useMeta = () => {
   const { user } = useAuth();
 
   const fetchInsights = async (range: string) => {
-    console.log('Fetching insights with:', {
+    console.log('Fetching insights:', {
       range,
-      userId: user?.id
+      userId: user?.id,
+      metaPageId: user?.meta_page_id
     });
+
+    if (!user?.meta_page_id) {
+      throw new Error('No Meta ad account connected. Please add your Meta page ID in settings.');
+    }
 
     try {
       const { data } = await axios.get('/meta/ads/insights', {
-        params: { range }
+        params: { 
+          range,
+          accountId: user.meta_page_id
+        }
       });
       
       console.log('Insights response:', data);
@@ -28,40 +36,13 @@ export const useMeta = () => {
     }
   };
 
-  const fetchCampaigns = async (startDate: string, endDate: string) => {
-    console.log('Fetching campaigns:', { startDate, endDate });
-
-    try {
-      const { data } = await axios.get('/meta/campaigns', {
-        params: { start_date: startDate, end_date: endDate }
-      });
-      
-      console.log('Campaigns response:', data);
-      return data;
-    } catch (error: any) {
-      console.error('Error fetching campaigns:', {
-        error: error.response?.data || error.message,
-        status: error.response?.status
-      });
-      throw error;
-    }
-  };
-
   return {
     useInsights: (range: string) => 
       useQuery({
         queryKey: ['insights', range],
         queryFn: () => fetchInsights(range),
-        enabled: !!user?.id,
+        enabled: !!user?.id && !!user?.meta_page_id,
         retry: 1
-      }),
-    
-    useCampaigns: (startDate: string, endDate: string) =>
-      useQuery({
-        queryKey: ['campaigns', startDate, endDate],
-        queryFn: () => fetchCampaigns(startDate, endDate),
-        enabled: !!user?.id,
-        retry: 1
-      }),
+      })
   };
 };
