@@ -4,9 +4,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dbLogger from '../utils/db-logger.js';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,12 +32,7 @@ const initDatabase = async () => {
 
       // Create new schema
       dbLogger.log('Creating new schema...');
-      const schemaStatements = schemaSQL.split(';').filter(stmt => stmt.trim());
-      for (const statement of schemaStatements) {
-        if (statement.trim()) {
-          await pool.query(statement);
-        }
-      }
+      await pool.query(schemaSQL);
 
       // Insert seed data
       dbLogger.log('Inserting seed data...');
@@ -62,7 +54,4 @@ const initDatabase = async () => {
   }
 };
 
-initDatabase().catch(error => {
-  dbLogger.error('Database initialization failed:', error);
-  process.exit(1);
-});
+initDatabase();
