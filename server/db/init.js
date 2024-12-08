@@ -1,10 +1,12 @@
-```javascript
 import pkg from 'pg';
 const { Pool } = pkg;
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dbLogger from '../utils/db-logger.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -66,4 +68,3 @@ const initDatabase = async () => {
 };
 
 initDatabase();
-```
