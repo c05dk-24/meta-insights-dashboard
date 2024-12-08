@@ -6,9 +6,7 @@ import { corsOptions } from './config/cors.js';
 import { securityMiddleware } from './middleware/security.js';
 import { requestLogger } from './middleware/logging.js';
 import { errorHandler } from './middleware/error.js';
-import metaRoutes from './routes/meta/index.js';
-import authRoutes from './routes/auth.js';
-import healthRoutes from './routes/health.js';
+import routes from './routes/index.js';
 import dbLogger from './utils/db-logger.js';
 
 dotenv.config();
@@ -35,9 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 // Routes
-app.use('/health', healthRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/meta', metaRoutes);
+app.use('/api', routes);
 
 // Error handling
 app.use(errorHandler);
