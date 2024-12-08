@@ -1,7 +1,6 @@
 import express from 'express';
 import { authenticate } from '../middleware/auth.js';
 import { Board, List, Card, Label, Comment, User } from '../models/index.js';
-import { getBoardsForCompany, createBoard } from '../services/boardService.js';
 import dbLogger from '../utils/db-logger.js';
 
 const router = express.Router();
@@ -9,53 +8,93 @@ const router = express.Router();
 // Get all boards for user's company
 router.get('/', authenticate, async (req, res) => {
   try {
-    const boards = await getBoardsForCompany(req.user.company_id);
+    dbLogger.log(`Fetching boards for user: ${req.user.id}`);
+    
+    const boards = await Board.findAll({
+      where: { company_id: req.user.company_id },
+      include: [{
+        model: List,
+        include: [{
+          model: Card,
+          include: [
+            {
+              model: User,
+              as: 'assignee',
+              attributes: ['id', 'name', 'email']
+            },
+            {
+              model: Label,
+              through: { attributes: [] }
+            },
+            {
+              model: Comment,
+              include: [{
+                model: User,
+                attributes: ['id', 'name']
+              }]
+            }
+          ]
+        }]
+      }],
+      order: [
+        ['created_at', 'DESC'],
+        [List, 'position', 'ASC'],
+        [List, Card, 'position', 'ASC']
+      ]
+    });
+
     res.json(boards);
   } catch (error) {
     dbLogger.error('Error fetching boards:', error);
-    res.status(500).json({ 
-      error: 'FETCH_ERROR',
-      message: 'Failed to fetch boards' 
-    });
+    res.status(500).json({ error: 'Failed to fetch boards' });
   }
 });
 
 // Create new board
 router.post('/', authenticate, async (req, res) => {
-  const { title } = req.body;
-
-  if (!title?.trim()) {
-    return res.status(400).json({
-      error: 'VALIDATION_ERROR',
-      message: 'Board title is required'
-    });
-  }
-
   try {
-    const board = await createBoard(title, req.user.id, req.user.company_id);
-    res.status(201).json(board);
+    const { title } = req.body;
+    
+    if (!title?.trim()) {
+      return res.status(400).json({ error: 'Board title is required' });
+    }
+
+    const board = await Board.create({
+      title: title.trim(),
+      user_id: req.user.id,
+      company_id: req.user.company_id
+    });
+
+    // Create default lists
+    await List.bulkCreate([
+      { title: 'To Do', board_id: board.id, position: 0 },
+      { title: 'In Progress', board_id: board.id, position: 1 },
+      { title: 'Done', board_id: board.id, position: 2 }
+    ]);
+
+    // Return the created board with its lists
+    const createdBoard = await Board.findByPk(board.id, {
+      include: [{ model: List }],
+      order: [[List, 'position', 'ASC']]
+    });
+
+    res.status(201).json(createdBoard);
   } catch (error) {
     dbLogger.error('Error creating board:', error);
-    res.status(500).json({ 
-      error: 'CREATE_ERROR',
-      message: 'Failed to create board' 
-    });
+    res.status(500).json({ error: 'Failed to create board' });
   }
 });
 
 // Create new list
 router.post('/:boardId/lists', authenticate, async (req, res) => {
-  const { boardId } = req.params;
-  const { title } = req.body;
-
-  if (!title?.trim()) {
-    return res.status(400).json({
-      error: 'VALIDATION_ERROR',
-      message: 'List title is required'
-    });
-  }
-
   try {
+    const { boardId } = req.params;
+    const { title } = req.body;
+
+    if (!title?.trim()) {
+      return res.status(400).json({ error: 'List title is required' });
+    }
+
     // Verify board belongs to user's company
     const board = await Board.findOne({
       where: { 
@@ -65,10 +104,7 @@ router.post('/:boardId/lists', authenticate, async (req, res) => {
     });
 
     if (!board) {
-      return res.status(404).json({
-        error: 'NOT_FOUND',
-        message: 'Board not found'
-      });
+      return res.status(404).json({ error: 'Board not found' });
     }
 
     // Get max position
@@ -76,7 +112,6 @@ router.post('/:boardId/lists', authenticate, async (req, res) => {
       where: { board_id: boardId }
     }) || -1;
 
-    // Create new list
     const list = await List.create({
       title: title.trim(),
       board_id: boardId,
@@ -86,10 +121,7 @@ router.post('/:boardId/lists', authenticate, async (req, res) => {
     res.status(201).json(list);
   } catch (error) {
     dbLogger.error('Error creating list:', error);
-    res.status(500).json({ 
-      error: 'CREATE_ERROR',
-      message: 'Failed to create list' 
-    });
+    res.status(500).json({ error: 'Failed to create list' });
   }
 });
 
