@@ -1,6 +1,6 @@
 export const getApiUrl = () => {
   if (import.meta.env.PROD) {
-    return import.meta.env.VITE_API_URL || 'https://meta-insights-dashboard-1.onrender.com/api';
+    return 'https://meta-insights-dashboard-1.onrender.com/api';
   }
   return 'http://localhost:3001/api';
 };
