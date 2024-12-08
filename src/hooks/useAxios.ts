@@ -4,15 +4,14 @@ import { getApiUrl } from '../utils/config';
 
 export const useAxios = () => {
   const { token, logout } = useAuth();
-  const API_URL = getApiUrl();
+  const baseURL = getApiUrl();
 
   const instance = axios.create({
-    baseURL: API_URL,
+    baseURL,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    withCredentials: true,
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    }
   });
 
   // Add response interceptor
