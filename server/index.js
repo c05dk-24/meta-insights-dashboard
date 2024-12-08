@@ -46,6 +46,7 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       dbLogger.log(`Server running on port ${PORT}`);
       dbLogger.log(`Environment: ${process.env.NODE_ENV}`);
+      dbLogger.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
     });
 
     const shutdown = () => {
