@@ -11,14 +11,19 @@ export const authenticate = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(decoded.userId);
+    
+    const user = await User.findOne({
+      where: { id: decoded.userId },
+      attributes: ['id', 'email', 'name', 'company_id', 'meta_page_id']
+    });
 
     if (!user) {
       dbLogger.warn('Authentication failed: User not found');
       return res.status(401).json({ error: 'User not found' });
     }
 
-    req.user = user;
+    // Attach user data to request
+    req.user = user.toJSON();
     next();
   } catch (error) {
     dbLogger.error('Authentication error:', error.message);

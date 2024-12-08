@@ -19,10 +19,10 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     dbLogger.log(`Login attempt for email: ${email}`);
     
-    // Find user with raw password for comparison
+    // Find user with company_id
     const user = await User.findOne({ 
       where: { email },
-      attributes: ['id', 'email', 'password', 'name', 'meta_page_id']
+      attributes: ['id', 'email', 'password', 'name', 'company_id', 'meta_page_id']
     });
 
     if (!user) {
@@ -55,6 +55,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
       id: user.id,
       email: user.email,
       name: user.name,
+      company_id: user.company_id,
       meta_page_id: user.meta_page_id
     };
 

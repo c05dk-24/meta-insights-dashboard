@@ -23,18 +23,26 @@ export interface BoardCard {
   assignee?: string;
   priority?: 'low' | 'medium' | 'high';
   comments: Comment[];
+  position: number;
+  listId: string;
 }
 
 export interface BoardList {
   id: string;
   title: string;
   cards: BoardCard[];
+  position: number;
+  boardId: string;
 }
 
 export interface Board {
   id: string;
   title: string;
   lists: BoardList[];
+  userId: string;
+  companyId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type LabelColor = 'blue' | 'green' | 'red' | 'yellow' | 'purple';

@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
-import { useBoardStore } from '../../store/boardStore';
+import { useBoards } from '../../hooks/useBoards';
 
-export const AddList = () => {
+interface Props {
+  boardId: string;
+}
+
+export const AddList: React.FC<Props> = ({ boardId }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState('');
-  const addList = useBoardStore(state => state.addList);
+  const { useCreateList } = useBoards();
+  const createList = useCreateList();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim()) {
-      addList(title.trim());
+    if (!title.trim()) return;
+
+    try {
+      await createList.mutateAsync({
+        boardId,
+        title: title.trim()
+      });
       setTitle('');
       setIsAdding(false);
+    } catch (error) {
+      console.error('Failed to create list:', error);
     }
   };
 
@@ -38,13 +50,15 @@ export const AddList = () => {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter list title..."
           className="w-full p-2 border rounded mb-2"
+          disabled={createList.isPending}
         />
         <div className="flex gap-2">
           <button
             type="submit"
-            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+            disabled={createList.isPending}
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:bg-blue-300"
           >
-            Add List
+            {createList.isPending ? 'Adding...' : 'Add List'}
           </button>
           <button
             type="button"

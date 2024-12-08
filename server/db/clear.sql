@@ -16,4 +16,8 @@ DROP TRIGGER IF EXISTS update_boards_updated_at ON "Boards";
 DROP TRIGGER IF EXISTS update_lists_updated_at ON "Lists";
 DROP TRIGGER IF EXISTS update_cards_updated_at ON "Cards";
 DROP TRIGGER IF EXISTS update_comments_updated_at ON "Comments";
+DROP TRIGGER IF EXISTS update_meta_insights_updated_at ON "MetaInsights";
 DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
+
+-- Drop extensions
+DROP EXTENSION IF EXISTS "uuid-ossp";

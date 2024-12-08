@@ -33,11 +33,17 @@ List.hasMany(Card, { foreignKey: 'list_id' });
 Card.belongsTo(List, { foreignKey: 'list_id' });
 Card.belongsTo(User, { as: 'assignee', foreignKey: 'assignee_id' });
 Card.hasMany(Comment, { foreignKey: 'card_id' });
-Card.belongsToMany(Label, { through: 'CardLabels' });
+Card.belongsToMany(Label, { 
+  through: 'CardLabels',
+  timestamps: false // CardLabels junction table has no timestamps
+});
 
 // Label relationships
 Label.belongsTo(Board, { foreignKey: 'board_id' });
-Label.belongsToMany(Card, { through: 'CardLabels' });
+Label.belongsToMany(Card, { 
+  through: 'CardLabels',
+  timestamps: false // CardLabels junction table has no timestamps
+});
 
 // Comment relationships
 Comment.belongsTo(Card, { foreignKey: 'card_id' });
