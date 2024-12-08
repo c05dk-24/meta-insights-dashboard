@@ -6,16 +6,16 @@ INSERT INTO "Companies" (id, name) VALUES
 
 -- Insert test users with bcrypt hashed passwords
 INSERT INTO "Users" (id, email, password, name, company_id) VALUES
-    -- Password: admin@example.com
+    -- Password: admin123
     ('11111111-1111-1111-1111-111111111111',
      'admin@example.com',
-     '$2b$10$zPiXsZ4MMqmGqp7.9lJ6B.xP.JHIzqWQv3Y5XNwZcqy2JXEn8zKlq',
+     '$2b$10$rPFvFdpXfkgYg9w5F9FSR.YHMmYi2Rr2fy0JhVFJNK9GXS4.qPjnG',
      'Admin User',
      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
-    -- Password: test@example.com  
+    -- Password: test123  
     ('22222222-2222-2222-2222-222222222222',
      'test@example.com',
-     '$2b$10$zPiXsZ4MMqmGqp7.9lJ6B.xP.JHIzqWQv3Y5XNwZcqy2JXEn8zKlq',
+     '$2b$10$6KvSM8.ON/H4KqxWoHdO2.NpRBXIXFLFEuCYXQKqpuEZBkqKPSHKu',
      'Test User',
      'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb');
 

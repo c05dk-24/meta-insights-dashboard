@@ -25,7 +25,26 @@ Board.belongsTo(Company, { foreignKey: 'company_id' });
 Board.hasMany(List, { foreignKey: 'board_id' });
 Board.hasMany(Label, { foreignKey: 'board_id' });
 
-[Rest of the relationships remain the same...]
+// List relationships
+List.belongsTo(Board, { foreignKey: 'board_id' });
+List.hasMany(Card, { foreignKey: 'list_id' });
+
+// Card relationships
+Card.belongsTo(List, { foreignKey: 'list_id' });
+Card.belongsTo(User, { as: 'assignee', foreignKey: 'assignee_id' });
+Card.hasMany(Comment, { foreignKey: 'card_id' });
+Card.belongsToMany(Label, { through: 'CardLabels' });
+
+// Label relationships
+Label.belongsTo(Board, { foreignKey: 'board_id' });
+Label.belongsToMany(Card, { through: 'CardLabels' });
+
+// Comment relationships
+Comment.belongsTo(Card, { foreignKey: 'card_id' });
+Comment.belongsTo(User, { foreignKey: 'user_id' });
+
+// MetaInsight relationships
+MetaInsight.belongsTo(User, { foreignKey: 'user_id' });
 
 export {
   sequelize,
@@ -36,5 +55,5 @@ export {
   List,
   Card,
   Label,
-  Comment,
+  Comment
 };
