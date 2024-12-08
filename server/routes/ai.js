@@ -17,7 +17,6 @@ router.post('/generate', authenticate, async (req, res) => {
     }
 
     const content = await generateContent(prompt, preferences);
-    
     res.json({ content });
   } catch (error) {
     dbLogger.error('AI generation error:', error);

@@ -3,7 +3,7 @@ import { UserPreferences } from '../types/ai';
 
 export const generateContent = async (prompt: string, preferences: UserPreferences) => {
   const axios = useAxios();
-  const { data } = await axios.post('/api/ai/generate', {
+  const { data } = await axios.post('/ai/generate', {
     prompt,
     preferences
   });
