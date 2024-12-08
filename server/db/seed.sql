@@ -1,3 +1,4 @@
+```sql
 -- Insert sample companies
 INSERT INTO "Companies" (id, name) VALUES
     ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Acme Corp'),
@@ -57,3 +58,4 @@ INSERT INTO "Comments" (id, text, card_id, user_id) VALUES
      'Welcome to your new board! Feel free to customize it.',
      '88888888-8888-8888-8888-888888888888',
      '11111111-1111-1111-1111-111111111111');
+```

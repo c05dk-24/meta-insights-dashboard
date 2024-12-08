@@ -11,10 +11,8 @@ export const loginUser = async (email: string, password: string) => {
       { email, password },
       {
         headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        withCredentials: true
+          'Content-Type': 'application/json'
+        }
       }
     );
 
@@ -28,13 +26,14 @@ export const loginUser = async (email: string, password: string) => {
     
     return { user, token };
   } catch (error: any) {
-    const errorMessage = error.response?.data?.error || 'Login failed. Please check your credentials and try again.';
+    const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials and try again.';
     throw new Error(errorMessage);
   }
 };
 
 export const logoutUser = () => {
   localStorage.removeItem('auth_token');
+  localStorage.removeItem('auth_user');
   delete axios.defaults.headers.common['Authorization'];
 };
 

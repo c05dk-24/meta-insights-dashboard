@@ -16,8 +16,8 @@ export const useBoards = () => {
     return data;
   };
 
-  const createList = async ({ boardId, title }: { boardId: string; title: string }): Promise<List> => {
-    const { data } = await axios.post(`/boards/${boardId}/lists`, { title });
+  const createList = async (params: { boardId: string; title: string }): Promise<List> => {
+    const { data } = await axios.post(`/boards/${params.boardId}/lists`, { title: params.title });
     return data;
   };
 
