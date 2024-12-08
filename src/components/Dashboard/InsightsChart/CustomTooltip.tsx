@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const CustomTooltip: React.FC<Props> = ({ active, payload, label }) => {
-  if (!active || !payload) return null;
+  if (!active || !payload?.length) return null;
 
   return (
     <div className="bg-white p-3 border rounded shadow-lg">
@@ -16,9 +16,9 @@ export const CustomTooltip: React.FC<Props> = ({ active, payload, label }) => {
       {payload.map((entry) => (
         <p key={entry.name} className="text-sm">
           <span style={{ color: entry.color }}>
-            {entry.name === 'Spend' ? 'Spend: ' : 'Results: '}
+            {entry.dataKey === 'amountSpent' ? 'Spend: ' : 'Results: '}
           </span>
-          {entry.name === 'Spend' 
+          {entry.dataKey === 'amountSpent' 
             ? formatCurrency(entry.value)
             : formatNumber(entry.value)}
         </p>

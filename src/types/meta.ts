@@ -16,3 +16,9 @@ export interface YearlyData {
 export interface ChartData extends YearlyData {
   name: string;
 }
+
+export interface ApiError {
+  message: string;
+  status?: number;
+  code?: string;
+}

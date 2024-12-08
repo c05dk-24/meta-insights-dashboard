@@ -18,6 +18,19 @@ interface Props {
 }
 
 export const ChartContainer: React.FC<Props> = ({ data }) => {
+  if (!data?.length) {
+    return (
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">
+          {new Date().getFullYear()} Performance
+        </h2>
+        <div className="h-full flex items-center justify-center text-gray-500">
+          No data available for this period
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
       <h2 className="text-lg sm:text-xl font-semibold mb-4">

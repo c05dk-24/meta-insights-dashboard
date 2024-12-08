@@ -6,7 +6,9 @@ import { ErrorState } from './ErrorState';
 
 export const InsightsChart = () => {
   const { useYearlyData } = useMeta();
-  const { data: yearlyData, isLoading, error } = useYearlyData();
+  const { data, isLoading, error } = useYearlyData();
+
+  console.log('Chart data:', { data, isLoading, error });
 
   if (isLoading) {
     return <LoadingState />;
@@ -16,7 +18,7 @@ export const InsightsChart = () => {
     return <ErrorState error={error} />;
   }
 
-  if (!yearlyData?.length) {
+  if (!data || data.length === 0) {
     return (
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
         <h2 className="text-lg sm:text-xl font-semibold mb-4">
@@ -29,5 +31,5 @@ export const InsightsChart = () => {
     );
   }
 
-  return <ChartContainer data={yearlyData} />;
+  return <ChartContainer data={data} />;
 };
