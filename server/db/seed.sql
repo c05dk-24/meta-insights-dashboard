@@ -1,3 +1,12 @@
+-- Insert test users with bcrypt hashed passwords
+INSERT INTO "Users" (email, password, name) VALUES
+    -- Password: admin@example.com
+    ('admin@example.com', '$2b$10$zPiXsZ4MMqmGqp7.9lJ6B.xP.JHIzqWQv3Y5XNwZcqy2JXEn8zKlq', 'Admin User'),
+    -- Password: test@example.com
+    ('test@example.com', '$2b$10$zPiXsZ4MMqmGqp7.9lJ6B.xP.JHIzqWQv3Y5XNwZcqy2JXEn8zKlq', 'Test User'),
+    -- Password: demo@example.com
+    ('demo@example.com', '$2b$10$zPiXsZ4MMqmGqp7.9lJ6B.xP.JHIzqWQv3Y5XNwZcqy2JXEn8zKlq', 'Demo User');
+
 -- Get user IDs for foreign key references
 DO $$ 
 DECLARE
