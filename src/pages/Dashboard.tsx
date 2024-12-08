@@ -15,14 +15,14 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">Meta Insights Dashboard</h1>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 lg:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold">Meta Insights Dashboard</h1>
         <DateRangeSelector range={dateRange} onChange={setDateRange} />
       </div>
       
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 lg:mb-8">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="bg-white p-6 rounded-lg shadow-lg animate-pulse">
               <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -31,7 +31,7 @@ export const Dashboard = () => {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 lg:mb-8">
           <InsightCard
             title="Total Reach"
             value={formatValue(insights?.reach || 0)}
@@ -59,7 +59,7 @@ export const Dashboard = () => {
         </div>
       )}
 
-      <div className="mb-8">
+      <div className="mb-6 lg:mb-8">
         <InsightsChart />
       </div>
     </div>
