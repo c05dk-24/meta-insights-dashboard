@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
 import { useAuth } from './useAuth';
-import { MetaInsight, YearlyData } from '../types/meta';
+import { MetaInsight } from '../types/meta';
 
 export const useMeta = () => {
   const axios = useAxios();
@@ -37,7 +37,7 @@ export const useMeta = () => {
     }
   };
 
-  const fetchYearlyData = async (): Promise<YearlyData[]> => {
+  const fetchYearlyData = async () => {
     if (!user?.meta_page_id) {
       throw new Error('No Meta ad account connected');
     }
@@ -62,7 +62,7 @@ export const useMeta = () => {
       useQuery({
         queryKey: ['insights', range],
         queryFn: () => fetchInsights(range),
-        enabled: !!user?.id && !!user?.meta_page_id,
+        enabled: Boolean(user?.id && user?.meta_page_id),
         retry: 1
       }),
 
@@ -70,7 +70,7 @@ export const useMeta = () => {
       useQuery({
         queryKey: ['yearlyData'],
         queryFn: fetchYearlyData,
-        enabled: !!user?.id && !!user?.meta_page_id,
+        enabled: Boolean(user?.id && user?.meta_page_id),
         staleTime: 1000 * 60 * 60 // 1 hour
       })
   };

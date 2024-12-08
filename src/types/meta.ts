@@ -1,21 +1,18 @@
 export interface MetaInsight {
   impressions: number;
-  reach: number;
   results: number;
-  amountSpent: number;
   costPerResult: number;
+  amountSpent: number;
 }
 
 export interface YearlyData {
   month: string;
-  results: number;
-  amountSpent: number;
   impressions: number;
-  reach: number;
+  results: number;
+  costPerResult: number;
+  amountSpent: number;
 }
 
-export interface ChartData {
+export interface ChartData extends YearlyData {
   name: string;
-  results: number;
-  amountSpent: number;
 }
