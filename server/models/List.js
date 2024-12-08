@@ -5,20 +5,30 @@ const List = sequelize.define('List', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
+    primaryKey: true
   },
   title: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
-  boardId: {
+  board_id: {
     type: DataTypes.UUID,
     allowNull: false,
+    references: {
+      model: 'Boards',
+      key: 'id'
+    }
   },
   position: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-  },
+    allowNull: false
+  }
+}, {
+  tableName: 'Lists',
+  timestamps: true,
+  underscored: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 export default List;

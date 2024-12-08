@@ -5,16 +5,26 @@ const Board = sequelize.define('Board', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
+    primaryKey: true
   },
   title: {
-    type: DataTypes.STRING(255),
-    allowNull: false,
+    type: DataTypes.STRING,
+    allowNull: false
   },
-  userId: {
+  user_id: {
     type: DataTypes.UUID,
     allowNull: false,
-  },
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
+  }
+}, {
+  tableName: 'Boards',
+  timestamps: true,
+  underscored: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 export default Board;
