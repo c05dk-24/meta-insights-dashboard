@@ -44,7 +44,9 @@ const User = sequelize.define('User', {
 // Instance method to compare passwords
 User.prototype.comparePassword = async function(candidatePassword) {
   try {
-    return await bcrypt.compare(candidatePassword, this.password);
+    const isMatch = await bcrypt.compare(candidatePassword, this.password);
+    dbLogger.log(`Password comparison result for ${this.email}: ${isMatch}`);
+    return isMatch;
   } catch (error) {
     dbLogger.error('Password comparison error:', error);
     return false;
@@ -52,11 +54,12 @@ User.prototype.comparePassword = async function(candidatePassword) {
 };
 
 // Hash password before save
-User.beforeSave(async (user) => {
+User.beforeCreate(async (user) => {
   if (user.changed('password')) {
     try {
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(user.password, salt);
+      dbLogger.log(`Password hashed for user ${user.email}`);
     } catch (error) {
       dbLogger.error('Password hashing error:', error);
       throw new Error('Error hashing password');

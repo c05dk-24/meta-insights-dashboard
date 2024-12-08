@@ -19,9 +19,10 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     dbLogger.log(`Login attempt for email: ${email}`);
     
-    // Find user
+    // Find user with raw password for comparison
     const user = await User.findOne({ 
-      where: { email }
+      where: { email },
+      attributes: ['id', 'email', 'password', 'name', 'meta_page_id']
     });
 
     if (!user) {
@@ -32,7 +33,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
       });
     }
 
-    // Use the instance method to compare passwords
+    // Compare passwords
     const isValid = await user.comparePassword(password);
     if (!isValid) {
       dbLogger.warn(`Login failed: Invalid password - ${email}`);
@@ -42,58 +43,30 @@ router.post('/login', authLimiter, async (req, res, next) => {
       });
     }
 
+    // Generate token
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
-    // Convert to plain object and remove sensitive data
-    const userJson = user.toJSON();
-    delete userJson.password;
-    delete userJson.meta_access_token;
+    // Remove sensitive data
+    const userResponse = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      meta_page_id: user.meta_page_id
+    };
 
     dbLogger.log(`User logged in successfully: ${email}`);
 
     res.json({
       token,
-      user: userJson
+      user: userResponse
     });
   } catch (error) {
     dbLogger.error('Login error:', error);
     next(error);
-  }
-});
-
-router.get('/verify', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  
-  if (!token) {
-    return res.status(401).json({
-      error: 'NO_TOKEN',
-      message: 'No token provided'
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(decoded.userId, {
-      attributes: { exclude: ['password', 'meta_access_token'] }
-    });
-
-    if (!user) {
-      return res.status(401).json({
-        error: 'INVALID_TOKEN',
-        message: 'Invalid token'
-      });
-    }
-
-    res.json({ user: user.toJSON() });
-  } catch (error) {
-    res.status(401).json({
-      error: 'INVALID_TOKEN',
-      message: 'Invalid token'
-    });
   }
 });
 
