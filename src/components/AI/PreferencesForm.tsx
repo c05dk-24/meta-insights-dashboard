@@ -17,7 +17,7 @@ export const PreferencesForm = () => {
     e.preventDefault();
     setPreferences({
       id: crypto.randomUUID(),
-      userId: 'current-user', // TODO: Replace with actual user ID
+      userId: 'current-user',
       ...formData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -25,13 +25,13 @@ export const PreferencesForm = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Settings className="w-6 h-6 text-blue-500" />
-        <h2 className="text-xl font-semibold">Content Preferences</h2>
+    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+        <h2 className="text-lg sm:text-xl font-semibold">Content Preferences</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Industry
@@ -39,7 +39,7 @@ export const PreferencesForm = () => {
           <select
             value={formData.industry}
             onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 sm:p-3 border rounded text-sm sm:text-base"
             required
           >
             <option value="">Select an industry</option>
@@ -55,12 +55,12 @@ export const PreferencesForm = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Content Tone
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {TONES.map(({ value, label }) => (
               <label
                 key={value}
                 className={`
-                  flex items-center justify-center p-3 rounded-lg border cursor-pointer
+                  flex items-center justify-center p-2 sm:p-3 rounded-lg border cursor-pointer text-sm sm:text-base
                   ${formData.tone === value
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
                     : 'border-gray-200 hover:border-gray-300'
@@ -88,7 +88,7 @@ export const PreferencesForm = () => {
           <select
             value={formData.ageRange}
             onChange={(e) => setFormData({ ...formData, ageRange: e.target.value })}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 sm:p-3 border rounded text-sm sm:text-base"
             required
           >
             <option value="">Select age range</option>
@@ -109,14 +109,14 @@ export const PreferencesForm = () => {
             value={formData.location}
             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
             placeholder="e.g., Global, United States, Europe"
-            className="w-full p-2 border rounded"
+            className="w-full p-2 sm:p-3 border rounded text-sm sm:text-base"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+          className="w-full bg-blue-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
         >
           Save Preferences
         </button>
