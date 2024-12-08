@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, X } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useAIStore } from '../../store/aiStore';
 import { IndustrySelect } from './PreferencesForm/IndustrySelect';
 import { ToneSelector } from './PreferencesForm/ToneSelector';
@@ -8,21 +8,22 @@ import { LocationInput } from './PreferencesForm/LocationInput';
 import { toast } from 'react-hot-toast';
 
 export const PreferencesForm = () => {
-  const { preferences, setPreferences } = useAIStore();
   const [formData, setFormData] = useState({
-    industry: preferences?.industry || '',
-    tone: preferences?.tone || 'professional',
-    ageRange: preferences?.ageRange || '',
-    location: preferences?.location || '',
+    industry: '',
+    tone: 'professional',
+    ageRange: '',
+    location: '',
   });
+
+  const setPreferences = useAIStore((state) => state.setPreferences);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setPreferences({
-      id: preferences?.id || crypto.randomUUID(),
+      id: crypto.randomUUID(),
       userId: 'current-user',
       ...formData,
-      createdAt: preferences?.createdAt || new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
     toast.success('Preferences saved successfully!');
@@ -30,11 +31,9 @@ export const PreferencesForm = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-      <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-6">
-        <div className="flex items-center gap-2">
-          <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
-          <h2 className="text-lg sm:text-xl font-semibold">Content Preferences</h2>
-        </div>
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+        <h2 className="text-lg sm:text-xl font-semibold">Content Preferences</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
@@ -62,7 +61,7 @@ export const PreferencesForm = () => {
           type="submit"
           className="w-full bg-blue-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
         >
-          {preferences ? 'Update Preferences' : 'Save Preferences'}
+          Save Preferences
         </button>
       </form>
     </div>
