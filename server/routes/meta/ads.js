@@ -2,26 +2,28 @@ import express from 'express';
 import axios from 'axios';
 import { authenticate } from '../../middleware/auth.js';
 import { getDateRange } from '../../utils/meta.js';
+import { User } from '../../models/index.js';
 import dbLogger from '../../utils/db-logger.js';
 
 const router = express.Router();
 
-// Fetch ad insights
 router.get('/insights', authenticate, async (req, res) => {
-  const { range, pageId } = req.query;
+  const { range } = req.query;
 
   try {
+    const user = await User.findByPk(req.user.id);
+    
     dbLogger.log('Fetching Meta insights:', {
       range,
-      pageId,
-      userId: req.user.id
+      userId: req.user.id,
+      metaPageId: user?.meta_page_id
     });
 
-    if (!pageId) {
-      dbLogger.error('No Meta page ID provided');
+    if (!user?.meta_page_id) {
+      dbLogger.error('No Meta page ID found for user:', req.user.id);
       return res.status(400).json({ 
         error: 'META_PAGE_ID_MISSING',
-        message: 'Meta page ID is required' 
+        message: 'Meta page ID not found for user' 
       });
     }
 
@@ -36,30 +38,35 @@ router.get('/insights', authenticate, async (req, res) => {
     }
 
     const params = {
-      fields: "spend,impressions,reach,actions",
+      fields: "impressions,actions,action_values,spend",
       time_range: JSON.stringify({ since: startDate, until: endDate }),
       access_token: process.env.META_ACCESS_TOKEN,
     };
 
+    const accountId = user.meta_page_id.replace(/^act_/, '');
+    const endpoint = `https://graph.facebook.com/v18.0/act_${accountId}/insights`;
+
     dbLogger.log('Making Meta API request:', {
-      endpoint: `https://graph.facebook.com/v18.0/act_${pageId}/insights`,
+      endpoint,
       params
     });
 
-    const response = await axios.get(
-      `https://graph.facebook.com/v18.0/act_${pageId}/insights`,
-      { params }
-    );
+    const response = await axios.get(endpoint, { params });
 
     dbLogger.log('Meta API response:', response.data);
 
     // Transform the data
-    const insights = response.data.data.reduce((acc, day) => ({
-      impressions: (acc.impressions || 0) + parseInt(day.impressions || 0),
-      reach: (acc.reach || 0) + parseInt(day.reach || 0),
-      engagement: (acc.engagement || 0) + parseInt(day.actions?.[0]?.value || 0),
-      clicks: (acc.clicks || 0) + parseInt(day.actions?.[1]?.value || 0),
-    }), {});
+    const insights = response.data.data.reduce((acc, day) => {
+      const results = parseInt(day.actions?.[0]?.value || 0);
+      const amountSpent = parseFloat(day.spend || 0);
+      
+      return {
+        impressions: (acc.impressions || 0) + parseInt(day.impressions || 0),
+        results: (acc.results || 0) + results,
+        amountSpent: (acc.amountSpent || 0) + amountSpent,
+        costPerResult: results ? amountSpent / results : 0
+      };
+    }, {});
 
     dbLogger.log('Transformed insights:', insights);
     res.status(200).json(insights);

@@ -9,16 +9,12 @@ export const useMeta = () => {
   const fetchInsights = async (range: string) => {
     console.log('Fetching insights with:', {
       range,
-      metaPageId: user?.meta_page_id,
       userId: user?.id
     });
 
     try {
       const { data } = await axios.get('/meta/ads/insights', {
-        params: { 
-          range,
-          pageId: user?.meta_page_id 
-        }
+        params: { range }
       });
       
       console.log('Insights response:', data);
@@ -37,11 +33,7 @@ export const useMeta = () => {
 
     try {
       const { data } = await axios.get('/meta/campaigns', {
-        params: { 
-          start_date: startDate, 
-          end_date: endDate,
-          pageId: user?.meta_page_id
-        }
+        params: { start_date: startDate, end_date: endDate }
       });
       
       console.log('Campaigns response:', data);
@@ -58,17 +50,17 @@ export const useMeta = () => {
   return {
     useInsights: (range: string) => 
       useQuery({
-        queryKey: ['insights', range, user?.meta_page_id],
+        queryKey: ['insights', range],
         queryFn: () => fetchInsights(range),
-        enabled: !!user?.meta_page_id,
+        enabled: !!user?.id,
         retry: 1
       }),
     
     useCampaigns: (startDate: string, endDate: string) =>
       useQuery({
-        queryKey: ['campaigns', startDate, endDate, user?.meta_page_id],
+        queryKey: ['campaigns', startDate, endDate],
         queryFn: () => fetchCampaigns(startDate, endDate),
-        enabled: !!user?.meta_page_id,
+        enabled: !!user?.id,
         retry: 1
       }),
   };
