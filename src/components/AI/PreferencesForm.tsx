@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Settings } from 'lucide-react';
-import { INDUSTRIES, TONES, AGE_RANGES } from '../../types/ai';
 import { useAIStore } from '../../store/aiStore';
+import { IndustrySelect } from './PreferencesForm/IndustrySelect';
+import { ToneSelector } from './PreferencesForm/ToneSelector';
+import { AgeRangeSelect } from './PreferencesForm/AgeRangeSelect';
+import { LocationInput } from './PreferencesForm/LocationInput';
+import { toast } from 'react-hot-toast';
 
 export const PreferencesForm = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +26,7 @@ export const PreferencesForm = () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
+    toast.success('Preferences saved successfully!');
   };
 
   return (
@@ -32,87 +37,25 @@ export const PreferencesForm = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Industry
-          </label>
-          <select
-            value={formData.industry}
-            onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-            className="w-full p-2 sm:p-3 border rounded text-sm sm:text-base"
-            required
-          >
-            <option value="">Select an industry</option>
-            {INDUSTRIES.map((industry) => (
-              <option key={industry} value={industry}>
-                {industry}
-              </option>
-            ))}
-          </select>
-        </div>
+        <IndustrySelect
+          value={formData.industry}
+          onChange={(value) => setFormData({ ...formData, industry: value })}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Content Tone
-          </label>
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            {TONES.map(({ value, label }) => (
-              <label
-                key={value}
-                className={`
-                  flex items-center justify-center p-2 sm:p-3 rounded-lg border cursor-pointer text-sm sm:text-base
-                  ${formData.tone === value
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 hover:border-gray-300'
-                  }
-                `}
-              >
-                <input
-                  type="radio"
-                  name="tone"
-                  value={value}
-                  checked={formData.tone === value}
-                  onChange={(e) => setFormData({ ...formData, tone: e.target.value as any })}
-                  className="sr-only"
-                />
-                {label}
-              </label>
-            ))}
-          </div>
-        </div>
+        <ToneSelector
+          value={formData.tone}
+          onChange={(value) => setFormData({ ...formData, tone: value as any })}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Target Age Range
-          </label>
-          <select
-            value={formData.ageRange}
-            onChange={(e) => setFormData({ ...formData, ageRange: e.target.value })}
-            className="w-full p-2 sm:p-3 border rounded text-sm sm:text-base"
-            required
-          >
-            <option value="">Select age range</option>
-            {AGE_RANGES.map((range) => (
-              <option key={range} value={range}>
-                {range}
-              </option>
-            ))}
-          </select>
-        </div>
+        <AgeRangeSelect
+          value={formData.ageRange}
+          onChange={(value) => setFormData({ ...formData, ageRange: value })}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Target Location
-          </label>
-          <input
-            type="text"
-            value={formData.location}
-            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-            placeholder="e.g., Global, United States, Europe"
-            className="w-full p-2 sm:p-3 border rounded text-sm sm:text-base"
-            required
-          />
-        </div>
+        <LocationInput
+          value={formData.location}
+          onChange={(value) => setFormData({ ...formData, location: value })}
+        />
 
         <button
           type="submit"

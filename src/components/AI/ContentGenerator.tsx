@@ -1,40 +1,37 @@
 import React, { useState } from 'react';
 import { Wand2 } from 'lucide-react';
 import { useAIStore } from '../../store/aiStore';
-import { generateContent } from '../../services/ai';
+import { useAIContent } from '../../hooks/useAIContent';
+import { PromptInput } from './ContentGenerator/PromptInput';
+import { toast } from 'react-hot-toast';
 
 export const ContentGenerator = () => {
   const [prompt, setPrompt] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState('');
   const { preferences, addToHistory } = useAIStore();
+  const { mutate: generateContent, isPending } = useAIContent();
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!prompt.trim() || !preferences) return;
 
-    setIsGenerating(true);
-    setError('');
+    generateContent(
+      { prompt: prompt.trim(), preferences },
+      {
+        onSuccess: (content) => {
+          const generatedContent = {
+            id: crypto.randomUUID(),
+            userId: 'current-user',
+            prompt: prompt.trim(),
+            content,
+            preferences,
+            createdAt: new Date().toISOString(),
+          };
 
-    try {
-      const content = await generateContent(prompt.trim(), preferences);
-
-      const generatedContent = {
-        id: crypto.randomUUID(),
-        userId: 'current-user',
-        prompt,
-        content,
-        preferences,
-        createdAt: new Date().toISOString(),
-      };
-
-      addToHistory(generatedContent);
-      setPrompt('');
-    } catch (err) {
-      setError('Failed to generate content. Please try again.');
-      console.error('Generation error:', err);
-    } finally {
-      setIsGenerating(false);
-    }
+          addToHistory(generatedContent);
+          setPrompt('');
+          toast.success('Content generated successfully!');
+        },
+      }
+    );
   };
 
   return (
@@ -45,37 +42,25 @@ export const ContentGenerator = () => {
       </div>
 
       <div className="space-y-4">
-        {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Describe your content
-          </label>
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g., Announce our new summer collection with a focus on sustainable materials..."
-            className="w-full p-2 sm:p-3 border rounded-lg h-24 sm:h-32 text-sm sm:text-base"
-            disabled={isGenerating}
-          />
-        </div>
+        <PromptInput
+          value={prompt}
+          onChange={setPrompt}
+          isGenerating={isPending}
+        />
 
         <button
           onClick={handleGenerate}
-          disabled={isGenerating || !prompt.trim()}
+          disabled={isPending || !prompt.trim()}
           className={`
             w-full py-2 sm:py-3 px-4 rounded-lg text-white font-medium text-sm sm:text-base
-            ${isGenerating
+            transition-colors duration-200
+            ${isPending || !prompt.trim()
               ? 'bg-purple-300 cursor-not-allowed'
               : 'bg-purple-500 hover:bg-purple-600'
             }
           `}
         >
-          {isGenerating ? 'Generating...' : 'Generate Instagram Post'}
+          {isPending ? 'Generating...' : 'Generate Instagram Post'}
         </button>
       </div>
     </div>
