@@ -33,13 +33,17 @@ router.get('/', authenticate, async (req, res) => {
                   include: [{
                     model: User,
                     attributes: ['id', 'name']
-                  }]
+                  }],
+                  order: [['created_at', 'DESC']]
                 }
               ]
             }
           ]
         },
-        { model: Label }
+        { 
+          model: Label,
+          attributes: ['id', 'name', 'color', 'board_id', 'created_at']
+        }
       ],
       order: [
         ['created_at', 'DESC'],
@@ -62,9 +66,16 @@ router.get('/', authenticate, async (req, res) => {
 router.post('/', authenticate, async (req, res) => {
   const { title } = req.body;
 
+  if (!title?.trim()) {
+    return res.status(400).json({
+      error: 'VALIDATION_ERROR',
+      message: 'Board title is required'
+    });
+  }
+
   try {
     const board = await Board.create({
-      title,
+      title: title.trim(),
       user_id: req.user.id,
       company_id: req.user.company_id
     });
@@ -78,8 +89,14 @@ router.post('/', authenticate, async (req, res) => {
 
     const newBoard = await Board.findByPk(board.id, {
       include: [
-        { model: List, include: [Card] },
-        { model: Label }
+        { 
+          model: List,
+          include: [Card]
+        },
+        { 
+          model: Label,
+          attributes: ['id', 'name', 'color', 'board_id', 'created_at']
+        }
       ]
     });
 
