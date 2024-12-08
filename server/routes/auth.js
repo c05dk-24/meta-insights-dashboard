@@ -6,7 +6,7 @@ import dbLogger from '../utils/db-logger.js';
 
 const router = express.Router();
 
-router.post('/login', authLimiter, async (req, res, next) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     
@@ -19,7 +19,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     dbLogger.log(`Login attempt for email: ${email}`);
     
-    // Find user with company_id
+    // Find user
     const user = await User.findOne({ 
       where: { email },
       attributes: ['id', 'email', 'password', 'name', 'company_id', 'meta_page_id']
@@ -33,7 +33,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
       });
     }
 
-    // Compare passwords
+    // Verify password
     const isValid = await user.comparePassword(password);
     if (!isValid) {
       dbLogger.warn(`Login failed: Invalid password - ${email}`);
@@ -50,7 +50,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
-    // Remove sensitive data
+    // Remove password from response
     const userResponse = {
       id: user.id,
       email: user.email,
@@ -67,7 +67,10 @@ router.post('/login', authLimiter, async (req, res, next) => {
     });
   } catch (error) {
     dbLogger.error('Login error:', error);
-    next(error);
+    res.status(500).json({ 
+      error: 'SERVER_ERROR',
+      message: 'An unexpected error occurred'
+    });
   }
 });
 

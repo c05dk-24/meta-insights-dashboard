@@ -10,21 +10,19 @@ const ALLOWED_ORIGINS = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-dbLogger.log('Configured CORS origins:', ALLOWED_ORIGINS);
-
 export const corsOptions = {
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or curl requests)
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
       dbLogger.log('Request with no origin - allowing access');
       return callback(null, true);
     }
-
+    
     if (ALLOWED_ORIGINS.includes(origin)) {
       dbLogger.log(`Origin ${origin} is allowed`);
       callback(null, true);
     } else {
-      dbLogger.warn(`Origin ${origin} is not allowed`);
+      dbLogger.warn(`Origin ${origin} is not allowed by CORS: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -32,7 +30,5 @@ export const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Length', 'X-Requested-With'],
-  maxAge: 86400,
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+  maxAge: 86400
 };
