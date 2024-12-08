@@ -15,7 +15,7 @@ export const BoardList: React.FC<Props> = ({ list, index }) => {
   const { updateListTitle, deleteList } = useBoardStore();
 
   return (
-    <div className="bg-gray-100 rounded-lg p-4 w-80 flex-shrink-0 max-h-full flex flex-col">
+    <div className="bg-gray-100 rounded-lg p-3 sm:p-4 w-full sm:w-80 flex-shrink-0 max-h-full flex flex-col">
       <ListHeader
         title={list.title}
         onTitleChange={(newTitle) => updateListTitle(list.id, newTitle)}

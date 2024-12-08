@@ -29,7 +29,7 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
       const comment: Comment = {
         id: crypto.randomUUID(),
         text: newComment.trim(),
-        author: 'Current User', // TODO: Replace with actual user
+        author: 'Current User',
         createdAt: new Date().toISOString(),
       };
       onUpdate({
@@ -40,16 +40,16 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Edit Card</h2>
+        <div className="sticky top-0 bg-white border-b p-3 sm:p-4 flex justify-between items-center">
+          <h2 className="text-lg sm:text-xl font-semibold">Edit Card</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X size={20} />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -75,7 +75,7 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
               />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   <Calendar className="inline-block w-4 h-4 mr-1" />
@@ -124,7 +124,7 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
             <div className="pt-4 border-t">
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 Save Changes
               </button>
@@ -147,7 +147,7 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
               />
               <button
                 type="submit"
-                className="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded"
+                className="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded"
               >
                 Add Comment
               </button>
@@ -156,7 +156,7 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
             <div className="space-y-4">
               {card.comments.map((comment) => (
                 <div key={comment.id} className="bg-gray-50 p-3 rounded">
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-2">
                     <span className="font-medium">{comment.author}</span>
                     <span className="text-sm text-gray-500">
                       {format(new Date(comment.createdAt), 'MMM d, yyyy HH:mm')}

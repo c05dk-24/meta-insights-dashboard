@@ -27,20 +27,20 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Meta Insights</h1>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Meta Insights</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-2">Sign in to your account</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded-lg mb-6">
+          <div className="bg-red-50 text-red-500 p-3 rounded-lg mb-6 text-sm">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -51,7 +51,7 @@ export const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 placeholder="Enter your email"
                 required
                 disabled={isLoading}
@@ -69,7 +69,7 @@ export const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 placeholder="Enter your password"
                 required
                 disabled={isLoading}
@@ -81,7 +81,7 @@ export const Login = () => {
             type="submit"
             disabled={isLoading}
             className={`
-              w-full bg-blue-500 text-white py-3 px-4 rounded-lg
+              w-full bg-blue-500 text-white py-2 sm:py-3 px-4 rounded-lg text-sm sm:text-base
               hover:bg-blue-600 transition-colors
               disabled:bg-blue-300 disabled:cursor-not-allowed
             `}
