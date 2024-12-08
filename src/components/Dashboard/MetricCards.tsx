@@ -12,14 +12,14 @@ interface Props {
 export const MetricCards: React.FC<Props> = ({ insights, isLoading }) => {
   const metrics = [
     {
-      title: 'Total Conversions',
-      value: insights ? formatNumber(insights.leads) : '0',
+      title: 'Results',
+      value: insights ? formatNumber(insights.results) : '0',
       change: 0,
       icon: Target
     },
     {
-      title: 'Cost per Lead',
-      value: insights ? formatCurrency(insights.costPerLead) : '£0.00',
+      title: 'Cost per Result',
+      value: insights ? formatCurrency(insights.costPerResult) : '£0.00',
       change: 0,
       icon: PoundSterling
     },

@@ -3,6 +3,7 @@ export interface MetaInsight {
   results: number;
   costPerResult: number;
   amountSpent: number;
+  reach?: number;
 }
 
 export interface YearlyData {
@@ -11,10 +12,7 @@ export interface YearlyData {
   results: number;
   costPerResult: number;
   amountSpent: number;
-}
-
-export interface ChartData extends YearlyData {
-  name: string;
+  reach?: number;
 }
 
 export interface ApiError {

@@ -10,7 +10,6 @@ export const useMeta = () => {
   const fetchInsights = async (range: string): Promise<MetaInsight> => {
     console.log('Fetching insights:', {
       range,
-      userId: user?.id,
       metaPageId: user?.meta_page_id
     });
 
@@ -22,7 +21,7 @@ export const useMeta = () => {
       const { data } = await axios.get('/meta/insights', {
         params: { 
           range,
-          accountId: user.meta_page_id
+          accountId: user.meta_page_id.replace('act_', '')
         }
       });
       
@@ -45,7 +44,7 @@ export const useMeta = () => {
     try {
       const { data } = await axios.get('/meta/insights/yearly', {
         params: {
-          accountId: user.meta_page_id
+          accountId: user.meta_page_id.replace('act_', '')
         }
       });
 
@@ -62,7 +61,7 @@ export const useMeta = () => {
       useQuery({
         queryKey: ['insights', range],
         queryFn: () => fetchInsights(range),
-        enabled: Boolean(user?.id && user?.meta_page_id),
+        enabled: Boolean(user?.meta_page_id),
         retry: 1
       }),
 
@@ -70,7 +69,7 @@ export const useMeta = () => {
       useQuery({
         queryKey: ['yearlyData'],
         queryFn: fetchYearlyData,
-        enabled: Boolean(user?.id && user?.meta_page_id),
+        enabled: Boolean(user?.meta_page_id),
         staleTime: 1000 * 60 * 60 // 1 hour
       })
   };
