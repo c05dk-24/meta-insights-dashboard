@@ -8,7 +8,7 @@ export const useBoards = () => {
 
   const fetchBoards = async (): Promise<Board[]> => {
     const { data } = await axios.get('/boards');
-    return data;
+    return data || [];
   };
 
   const createBoard = async (title: string): Promise<Board> => {
@@ -20,7 +20,8 @@ export const useBoards = () => {
     useBoards: () => useQuery({
       queryKey: ['boards'],
       queryFn: fetchBoards,
-      retry: 1
+      retry: 1,
+      initialData: []
     }),
 
     useCreateBoard: () => useMutation({
