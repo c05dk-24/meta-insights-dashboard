@@ -1,17 +1,6 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Drop existing tables if they exist
-DROP TABLE IF EXISTS "CardLabels" CASCADE;
-DROP TABLE IF EXISTS "Comments" CASCADE;
-DROP TABLE IF EXISTS "Labels" CASCADE;
-DROP TABLE IF EXISTS "Cards" CASCADE;
-DROP TABLE IF EXISTS "Lists" CASCADE;
-DROP TABLE IF EXISTS "Boards" CASCADE;
-DROP TABLE IF EXISTS "MetaInsights" CASCADE;
-DROP TABLE IF EXISTS "Users" CASCADE;
-DROP TABLE IF EXISTS "Companies" CASCADE;
-
 -- Create Companies table
 CREATE TABLE "Companies" (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
