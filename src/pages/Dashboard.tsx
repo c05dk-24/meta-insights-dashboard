@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MetricCards } from '../components/Dashboard/MetricCards';
 import { InsightsChart } from '../components/Dashboard/InsightsChart';
 import { DateRangeSelector } from '../components/Dashboard/DateRangeSelector';
+import { CampaignSection } from '../components/Dashboard/CampaignSection';
 import { useMeta } from '../hooks/useMeta';
 
 export const Dashboard = () => {
@@ -19,6 +20,7 @@ export const Dashboard = () => {
       <div className="space-y-6 lg:space-y-8">
         <MetricCards insights={insights} isLoading={isLoading} />
         <InsightsChart />
+        <CampaignSection />
       </div>
     </div>
   );
