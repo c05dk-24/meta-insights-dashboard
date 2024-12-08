@@ -62,4 +62,7 @@ const initDatabase = async () => {
   }
 };
 
-initDatabase();
+initDatabase().catch(error => {
+  dbLogger.error('Database initialization failed:', error);
+  process.exit(1);
+});
