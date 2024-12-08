@@ -19,5 +19,5 @@ DROP TRIGGER IF EXISTS update_comments_updated_at ON "Comments";
 DROP TRIGGER IF EXISTS update_meta_insights_updated_at ON "MetaInsights";
 DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 
--- Drop extensions
-DROP EXTENSION IF EXISTS "uuid-ossp";
+-- Drop extensions if they exist
+DROP EXTENSION IF EXISTS "uuid-ossp" CASCADE;

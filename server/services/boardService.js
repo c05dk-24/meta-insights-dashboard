@@ -34,8 +34,7 @@ export const getBoardsForCompany = async (companyId) => {
       order: [
         ['created_at', 'DESC'],
         [List, 'position', 'ASC'],
-        [List, Card, 'position', 'ASC'],
-        [List, Card, Comment, 'created_at', 'DESC']
+        [List, Card, 'position', 'ASC']
       ]
     });
 
@@ -61,7 +60,8 @@ export const createBoard = async (title, userId, companyId) => {
       { title: 'Done', board_id: board.id, position: 2 }
     ]);
 
-    return getBoardById(board.id);
+    // Fetch the created board with all relationships
+    return await getBoardById(board.id);
   } catch (error) {
     dbLogger.error('Error creating board:', error);
     throw error;
@@ -75,12 +75,30 @@ export const getBoardById = async (boardId) => {
         model: List,
         include: [{
           model: Card,
-          include: ['assignee', 'labels', {
-            model: Comment,
-            include: ['user']
-          }]
+          include: [
+            {
+              model: User,
+              as: 'assignee',
+              attributes: ['id', 'name', 'email']
+            },
+            {
+              model: Label,
+              through: { attributes: [] }
+            },
+            {
+              model: Comment,
+              include: [{
+                model: User,
+                attributes: ['id', 'name']
+              }]
+            }
+          ]
         }]
-      }]
+      }],
+      order: [
+        [List, 'position', 'ASC'],
+        [List, Card, 'position', 'ASC']
+      ]
     });
   } catch (error) {
     dbLogger.error('Error fetching board:', error);
