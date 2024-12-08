@@ -11,13 +11,22 @@ const ALLOWED_ORIGINS = [
 
 export const corsOptions = {
   origin: function(origin, callback) {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    dbLogger.log('Request origin:', origin);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      dbLogger.log('Request with no origin - allowing access');
+      return callback(null, true);
+    }
+    
+    if (ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false
+  exposedHeaders: ['Content-Length', 'X-Requested-With']
 };

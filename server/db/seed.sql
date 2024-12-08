@@ -1,4 +1,3 @@
-```sql
 -- Insert sample companies
 INSERT INTO "Companies" (id, name) VALUES
     ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Acme Corp'),
@@ -7,13 +6,13 @@ INSERT INTO "Companies" (id, name) VALUES
 
 -- Insert test users with bcrypt hashed passwords
 INSERT INTO "Users" (id, email, password, name, company_id) VALUES
-    -- Password: admin123
+    -- Password: Admin123!
     ('11111111-1111-1111-1111-111111111111',
      'admin@example.com',
      '$2b$10$rPFvFdpXfkgYg9w5F9FSR.YHMmYi2Rr2fy0JhVFJNK9GXS4.qPjnG',
      'Admin User',
      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
-    -- Password: test123  
+    -- Password: Test123!  
     ('22222222-2222-2222-2222-222222222222',
      'test@example.com',
      '$2b$10$6KvSM8.ON/H4KqxWoHdO2.NpRBXIXFLFEuCYXQKqpuEZBkqKPSHKu',
@@ -58,4 +57,3 @@ INSERT INTO "Comments" (id, text, card_id, user_id) VALUES
      'Welcome to your new board! Feel free to customize it.',
      '88888888-8888-8888-8888-888888888888',
      '11111111-1111-1111-1111-111111111111');
-```
