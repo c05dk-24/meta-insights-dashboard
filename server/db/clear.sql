@@ -1,3 +1,4 @@
+```sql
 -- Drop all tables in the correct order to handle dependencies
 DROP TABLE IF EXISTS "CardLabels" CASCADE;
 DROP TABLE IF EXISTS "Comments" CASCADE;
@@ -18,3 +19,7 @@ DROP TRIGGER IF EXISTS update_cards_updated_at ON "Cards";
 DROP TRIGGER IF EXISTS update_comments_updated_at ON "Comments";
 DROP TRIGGER IF EXISTS update_meta_insights_updated_at ON "MetaInsights";
 DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
+
+-- Drop extensions
+DROP EXTENSION IF EXISTS "uuid-ossp";
+```

@@ -1,3 +1,4 @@
+```javascript
 import pkg from 'pg';
 const { Pool } = pkg;
 import fs from 'fs/promises';
@@ -65,3 +66,4 @@ const initDatabase = async () => {
 };
 
 initDatabase();
+```

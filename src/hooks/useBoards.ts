@@ -1,19 +1,40 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
-import { Board } from '../types/meta';
+import { Board, List } from '../types/meta';
 
 export const useBoards = () => {
   const axios = useAxios();
   const queryClient = useQueryClient();
 
   const fetchBoards = async (): Promise<Board[]> => {
-    const { data } = await axios.get('/boards');
+    const { data } = await axios.get('/api/boards');
     return data || [];
   };
 
   const createBoard = async (title: string): Promise<Board> => {
-    const { data } = await axios.post('/boards', { title });
+    const { data } = await axios.post('/api/boards', { title });
     return data;
+  };
+
+  const createList = async ({ boardId, title }: { boardId: string; title: string }): Promise<List> => {
+    const { data } = await axios.post(`/api/boards/${boardId}/lists`, { title });
+    return data;
+  };
+
+  const updateList = async ({ boardId, listId, updates }: { 
+    boardId: string;
+    listId: string;
+    updates: Partial<List>;
+  }): Promise<List> => {
+    const { data } = await axios.put(`/api/boards/${boardId}/lists/${listId}`, updates);
+    return data;
+  };
+
+  const deleteList = async ({ boardId, listId }: {
+    boardId: string;
+    listId: string;
+  }): Promise<void> => {
+    await axios.delete(`/api/boards/${boardId}/lists/${listId}`);
   };
 
   return {
@@ -21,11 +42,33 @@ export const useBoards = () => {
       queryKey: ['boards'],
       queryFn: fetchBoards,
       retry: 1,
-      initialData: []
+      staleTime: 30000,
+      refetchOnWindowFocus: true
     }),
 
     useCreateBoard: () => useMutation({
       mutationFn: createBoard,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['boards'] });
+      }
+    }),
+
+    useCreateList: () => useMutation({
+      mutationFn: createList,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['boards'] });
+      }
+    }),
+
+    useUpdateList: () => useMutation({
+      mutationFn: updateList,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['boards'] });
+      }
+    }),
+
+    useDeleteList: () => useMutation({
+      mutationFn: deleteList,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['boards'] });
       }
