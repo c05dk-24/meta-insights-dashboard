@@ -24,34 +24,22 @@ if (process.env.NODE_ENV === 'production') {
 // Apply CORS before other middleware
 app.use(cors(corsOptions));
 
-// Pre-flight requests
-app.options('*', cors(corsOptions));
+// Security middleware
+app.use(securityMiddleware);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Security and logging middleware
-app.use(securityMiddleware);
+// Request logging
 app.use(requestLogger);
 
-// Health check route (before security middleware)
+// Routes
 app.use('/health', healthRoutes);
-
-// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/meta', metaRoutes);
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Meta Insights API is running',
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Error handling must be last
+// Error handling
 app.use(errorHandler);
 
 // Initialize database and start server
@@ -80,17 +68,5 @@ const startServer = async () => {
     process.exit(1);
   }
 };
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-  dbLogger.error('Uncaught Exception:', error);
-  process.exit(1);
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  dbLogger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
 
 startServer();
