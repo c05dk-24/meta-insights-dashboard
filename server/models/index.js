@@ -1,3 +1,4 @@
+import sequelize from '../config/database.js';
 import User from './User.js';
 import MetaInsight from './MetaInsight.js';
 import Board from './Board.js';
@@ -39,6 +40,7 @@ Comment.belongsTo(Card, { foreignKey: 'card_id' });
 Comment.belongsTo(User, { foreignKey: 'user_id' });
 
 export {
+  sequelize,
   User,
   MetaInsight,
   Board,
