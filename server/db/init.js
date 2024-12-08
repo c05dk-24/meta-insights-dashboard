@@ -44,12 +44,7 @@ const initDatabase = async () => {
 
       // Insert seed data
       dbLogger.log('Inserting seed data...');
-      const seedStatements = seedSQL.split(';').filter(stmt => stmt.trim());
-      for (const statement of seedStatements) {
-        if (statement.trim()) {
-          await pool.query(statement);
-        }
-      }
+      await pool.query(seedSQL);
 
       await pool.query('COMMIT');
       dbLogger.log('Database initialized successfully');
@@ -67,4 +62,7 @@ const initDatabase = async () => {
   }
 };
 
-initDatabase();
+initDatabase().catch(error => {
+  dbLogger.error('Database initialization failed:', error);
+  process.exit(1);
+});
