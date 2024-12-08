@@ -8,11 +8,6 @@ export const useMeta = () => {
   const { user } = useAuth();
 
   const fetchInsights = async (range: string): Promise<MetaInsight> => {
-    console.log('Fetching insights:', {
-      range,
-      metaPageId: user?.meta_page_id
-    });
-
     if (!user?.meta_page_id) {
       throw new Error('No Meta ad account connected');
     }
@@ -24,14 +19,9 @@ export const useMeta = () => {
           accountId: user.meta_page_id
         }
       });
-      
-      console.log('Insights response:', data);
       return data;
     } catch (error: any) {
-      console.error('Error fetching insights:', {
-        error: error.response?.data || error.message,
-        status: error.response?.status
-      });
+      console.error('Error fetching insights:', error);
       throw error;
     }
   };
@@ -47,8 +37,6 @@ export const useMeta = () => {
           accountId: user.meta_page_id
         }
       });
-
-      console.log('Yearly data response:', data);
       return data;
     } catch (error) {
       console.error('Error fetching yearly data:', error);

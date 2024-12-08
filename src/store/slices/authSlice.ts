@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { AuthState } from '../../types/auth';
-import { loginUser, logoutUser } from '../../services/auth';
+import { loginUser, logoutUser, getStoredAuth } from '../../services/auth';
 
 export interface AuthSlice {
   auth: AuthState;
@@ -8,11 +8,13 @@ export interface AuthSlice {
   logout: () => void;
 }
 
+const storedAuth = getStoredAuth();
+
 export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   auth: {
-    user: null,
-    token: null,
-    isAuthenticated: false,
+    user: storedAuth.user,
+    token: storedAuth.token,
+    isAuthenticated: Boolean(storedAuth.token && storedAuth.user),
   },
   login: async (email: string, password: string) => {
     try {
