@@ -18,9 +18,11 @@ export const useMeta = () => {
     }
 
     try {
-      const accountId = user.meta_page_id.replace('act_', '');
-      const { data } = await axios.get('/meta/insights', {
-        params: { range, accountId }
+      const { data } = await axios.get('/api/meta/insights', {
+        params: { 
+          range,
+          accountId: user.meta_page_id
+        }
       });
       
       console.log('Insights response:', data);
@@ -40,9 +42,10 @@ export const useMeta = () => {
     }
 
     try {
-      const accountId = user.meta_page_id.replace('act_', '');
-      const { data } = await axios.get('/meta/insights/yearly', {
-        params: { accountId }
+      const { data } = await axios.get('/api/meta/insights/yearly', {
+        params: {
+          accountId: user.meta_page_id
+        }
       });
 
       console.log('Yearly data response:', data);
