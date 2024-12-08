@@ -24,7 +24,7 @@ const config = {
   define: {
     timestamps: true,
     underscored: true,
-    freezeTableName: true // Prevent Sequelize from pluralizing table names
+    freezeTableName: true
   }
 };
 
@@ -40,8 +40,8 @@ export const initDatabase = async () => {
       await sequelize.authenticate();
       dbLogger.log('Database connection established successfully');
       
-      // Sync models with { alter: true } to safely update schema
-      await sequelize.sync({ alter: true });
+      // Sync models
+      await sequelize.sync();
       dbLogger.log('Database models synchronized');
       
       return true;

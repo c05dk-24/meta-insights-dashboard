@@ -25,18 +25,16 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  metaAccessToken: {
+  meta_access_token: {
     type: DataTypes.TEXT,
-    allowNull: true,
-    field: 'meta_access_token'
+    allowNull: true
   },
-  metaPageId: {
+  meta_page_id: {
     type: DataTypes.STRING,
-    allowNull: true,
-    field: 'meta_page_id'
+    allowNull: true
   }
 }, {
-  tableName: 'Users', // Updated to match the correct table name
+  tableName: 'Users',
   timestamps: true,
   underscored: true,
   createdAt: 'created_at',

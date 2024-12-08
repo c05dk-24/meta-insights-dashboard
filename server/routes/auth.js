@@ -1,5 +1,4 @@
 import express from 'express';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
@@ -20,7 +19,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     dbLogger.log(`Login attempt for email: ${email}`);
     
-    // Find user - use findOne instead of findByPk for email lookup
+    // Find user
     const user = await User.findOne({ 
       where: { email }
     });
@@ -33,8 +32,8 @@ router.post('/login', authLimiter, async (req, res, next) => {
       });
     }
 
-    // Compare passwords using bcrypt
-    const isValid = await bcrypt.compare(password, user.password);
+    // Use the instance method to compare passwords
+    const isValid = await user.comparePassword(password);
     if (!isValid) {
       dbLogger.warn(`Login failed: Invalid password - ${email}`);
       return res.status(401).json({
@@ -49,9 +48,10 @@ router.post('/login', authLimiter, async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
-    // Convert to plain object and remove password
+    // Convert to plain object and remove sensitive data
     const userJson = user.toJSON();
     delete userJson.password;
+    delete userJson.meta_access_token;
 
     dbLogger.log(`User logged in successfully: ${email}`);
 
@@ -78,7 +78,7 @@ router.get('/verify', async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.userId, {
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ['password', 'meta_access_token'] }
     });
 
     if (!user) {
