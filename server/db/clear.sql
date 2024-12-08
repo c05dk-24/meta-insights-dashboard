@@ -1,4 +1,3 @@
-```sql
 -- Drop all tables in the correct order to handle dependencies
 DROP TABLE IF EXISTS "CardLabels" CASCADE;
 DROP TABLE IF EXISTS "Comments" CASCADE;
@@ -22,4 +21,3 @@ DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 
 -- Drop extensions
 DROP EXTENSION IF EXISTS "uuid-ossp";
-```
