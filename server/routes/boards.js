@@ -8,6 +8,8 @@ const router = express.Router();
 // Get all boards for user's company
 router.get('/', authenticate, async (req, res) => {
   try {
+    dbLogger.log('Fetching boards for company:', req.user.company_id);
+    
     const boards = await Board.findAll({
       where: { company_id: req.user.company_id },
       include: [{
