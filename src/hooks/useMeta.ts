@@ -18,11 +18,9 @@ export const useMeta = () => {
     }
 
     try {
+      const accountId = user.meta_page_id.replace('act_', '');
       const { data } = await axios.get('/meta/insights', {
-        params: { 
-          range,
-          accountId: user.meta_page_id.replace('act_', '')
-        }
+        params: { range, accountId }
       });
       
       console.log('Insights response:', data);
@@ -42,10 +40,9 @@ export const useMeta = () => {
     }
 
     try {
+      const accountId = user.meta_page_id.replace('act_', '');
       const { data } = await axios.get('/meta/insights/yearly', {
-        params: {
-          accountId: user.meta_page_id.replace('act_', '')
-        }
+        params: { accountId }
       });
 
       console.log('Yearly data response:', data);
@@ -62,7 +59,8 @@ export const useMeta = () => {
         queryKey: ['insights', range],
         queryFn: () => fetchInsights(range),
         enabled: Boolean(user?.meta_page_id),
-        retry: 1
+        retry: 1,
+        refetchOnWindowFocus: false
       }),
 
     useYearlyData: () =>
@@ -70,7 +68,8 @@ export const useMeta = () => {
         queryKey: ['yearlyData'],
         queryFn: fetchYearlyData,
         enabled: Boolean(user?.meta_page_id),
-        staleTime: 1000 * 60 * 60 // 1 hour
+        staleTime: 1000 * 60 * 60, // 1 hour
+        refetchOnWindowFocus: false
       })
   };
 };
