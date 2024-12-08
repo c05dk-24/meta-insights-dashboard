@@ -1,30 +1,37 @@
-import { subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from 'date-fns';
+import { User } from '../models/index.js';
+
+export const getFormattedMetaAdId = async (userId) => {
+  const user = await User.findByPk(userId);
+  if (!user || !user.meta_ad_id) {
+    throw new Error("Meta Ad ID not found for user.");
+  }
+  return `act_${user.meta_ad_id.trim()}`;
+};
 
 export const getDateRange = (range) => {
   const today = new Date();
   let startDate, endDate;
 
   switch (range) {
-    case 'today':
-      startDate = endDate = format(today, 'yyyy-MM-dd');
+    case "today":
+      startDate = endDate = today.toISOString().split("T")[0];
       break;
-      
-    case 'thisWeek':
-      startDate = format(startOfWeek(today), 'yyyy-MM-dd');
-      endDate = format(today, 'yyyy-MM-dd');
+    case "thisWeek":
+      const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+      startDate = weekStart.toISOString().split("T")[0];
+      endDate = new Date().toISOString().split("T")[0];
       break;
-      
-    case 'lastWeek':
-      const lastWeek = subDays(today, 7);
-      startDate = format(startOfWeek(lastWeek), 'yyyy-MM-dd');
-      endDate = format(endOfWeek(lastWeek), 'yyyy-MM-dd');
+    case "lastWeek":
+      const lastWeekEnd = new Date(today.setDate(today.getDate() - today.getDay() - 1));
+      const lastWeekStart = new Date(lastWeekEnd.setDate(lastWeekEnd.getDate() - 6));
+      startDate = lastWeekStart.toISOString().split("T")[0];
+      endDate = lastWeekEnd.toISOString().split("T")[0];
       break;
-      
-    case 'thisMonth':
-      startDate = format(startOfMonth(today), 'yyyy-MM-dd');
-      endDate = format(today, 'yyyy-MM-dd');
+    case "thisMonth":
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      startDate = monthStart.toISOString().split("T")[0];
+      endDate = today.toISOString().split("T")[0];
       break;
-      
     default:
       return {};
   }
@@ -32,7 +39,20 @@ export const getDateRange = (range) => {
   return { startDate, endDate };
 };
 
-export const calculateChange = (current, previous) => {
-  if (!previous || previous === 0) return 0;
-  return ((current - previous) / previous) * 100;
+export const aggregateInsights = (data) => {
+  const aggregated = data.reduce(
+    (acc, item) => {
+      acc.spend += parseFloat(item.spend || 0);
+      acc.impressions += parseInt(item.impressions || 0, 10);
+      acc.leads += parseInt(
+        item.actions?.find((a) => a.action_type === "lead")?.value || 0,
+        10
+      );
+      return acc;
+    },
+    { spend: 0, impressions: 0, leads: 0, costPerLead: 0 }
+  );
+
+  aggregated.costPerLead = aggregated.leads > 0 ? aggregated.spend / aggregated.leads : 0;
+  return aggregated;
 };

@@ -1,21 +1,8 @@
 import helmet from 'helmet';
-import dbLogger from '../utils/db-logger.js';
+import { corsOptions } from '../config/cors.js';
 
 export const securityMiddleware = [
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        connectSrc: ["'self'", process.env.FRONTEND_URL],
-        imgSrc: ["'self'", "data:", "https:"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        fontSrc: ["'self'", "data:", "https:"],
-        objectSrc: ["'none'"],
-        upgradeInsecureRequests: []
-      }
-    }
-  }),
+  helmet(),
   (req, res, next) => {
     // Additional security headers
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -25,7 +12,6 @@ export const securityMiddleware = [
     
     // Handle preflight
     if (req.method === 'OPTIONS') {
-      dbLogger.log('Handling preflight request');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.header('Access-Control-Max-Age', '86400');

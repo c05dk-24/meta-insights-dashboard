@@ -1,13 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
-import { MetaInsight } from '../types/meta';
 
 export const useMeta = () => {
   const axios = useAxios();
 
-  const fetchInsights = async (range: string): Promise<MetaInsight> => {
-    const { data } = await axios.get('/meta/insights', {
-      params: { range }
+  const fetchInsights = async (range: string) => {
+    const { data } = await axios.get('/meta/ads/insights', {
+      params: { range },
+    });
+    return data;
+  };
+
+  const fetchCampaigns = async (startDate: string, endDate: string) => {
+    const { data } = await axios.get('/meta/campaigns', {
+      params: { start_date: startDate, end_date: endDate },
     });
     return data;
   };
@@ -17,9 +23,12 @@ export const useMeta = () => {
       useQuery({
         queryKey: ['insights', range],
         queryFn: () => fetchInsights(range),
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        retry: 1,
-        refetchOnWindowFocus: false
-      })
+      }),
+    
+    useCampaigns: (startDate: string, endDate: string) =>
+      useQuery({
+        queryKey: ['campaigns', startDate, endDate],
+        queryFn: () => fetchCampaigns(startDate, endDate),
+      }),
   };
 };
