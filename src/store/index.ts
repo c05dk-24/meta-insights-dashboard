@@ -1,42 +1,19 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AuthState } from '../types/auth';
-import { loginUser, logoutUser } from '../services/auth';
+import { AuthSlice, createAuthSlice } from './slices/authSlice';
 
-interface Store {
-  auth: AuthState;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-export const useStore = create<Store>()(
+export const useStore = create<AuthSlice>()(
   persist(
-    (set) => ({
-      auth: {
-        user: null,
-        token: null,
-        isAuthenticated: false,
-      },
-      login: async (email: string, password: string) => {
-        try {
-          const { user, token } = await loginUser(email, password);
-          set({ auth: { user, token, isAuthenticated: true } });
-        } catch (error: any) {
-          throw new Error(error.message || 'Login failed');
-        }
-      },
-      logout: () => {
-        logoutUser();
-        set({ auth: { user: null, token: null, isAuthenticated: false } });
-      },
+    (...args) => ({
+      ...createAuthSlice(...args),
     }),
     {
-      name: 'auth-storage',
+      name: 'app-store',
       partialize: (state) => ({
         auth: {
           token: state.auth.token,
-          user: state.auth.user,
           isAuthenticated: state.auth.isAuthenticated,
+          user: state.auth.user,
         },
       }),
     }

@@ -16,12 +16,14 @@ export const Boards = () => {
 
   if (isLoading) {
     return (
-      <div className="animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-48 mb-8"></div>
-        <div className="flex flex-nowrap gap-6 overflow-x-auto pb-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="w-80 h-96 bg-gray-100 rounded-lg flex-shrink-0"></div>
-          ))}
+      <div className="p-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-48 mb-8"></div>
+          <div className="flex gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="w-80 h-96 bg-gray-100 rounded-lg"></div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -29,8 +31,10 @@ export const Boards = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 text-red-500 p-4 rounded-lg">
-        Failed to load boards. Please try again.
+      <div className="p-8">
+        <div className="bg-red-50 text-red-500 p-4 rounded-lg">
+          Failed to load boards. Please try again.
+        </div>
       </div>
     );
   }
@@ -39,26 +43,28 @@ export const Boards = () => {
 
   if (!activeBoard) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-16rem)]">
-        <h1 className="text-2xl font-bold mb-4">Welcome to your boards</h1>
-        <p className="text-gray-600 mb-8 text-center">Create your first board to get started</p>
-        <button 
-          onClick={handleCreateBoard}
-          className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          disabled={createBoard.isPending}
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          {createBoard.isPending ? 'Creating...' : 'Create Board'}
-        </button>
+      <div className="p-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Welcome to your boards</h1>
+          <p className="text-gray-600 mb-8">Create your first board to get started</p>
+          <button 
+            onClick={handleCreateBoard}
+            className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            disabled={createBoard.isPending}
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            {createBoard.isPending ? 'Creating...' : 'Create Board'}
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="p-8">
       <h1 className="text-2xl font-bold mb-8">{activeBoard.title}</h1>
       <DragDropContext onDragEnd={() => {}}>
-        <div className="flex flex-nowrap gap-6 overflow-x-auto pb-6">
+        <div className="flex gap-6 overflow-x-auto pb-4">
           {activeBoard.lists?.map((list, index) => (
             <BoardList key={list.id} list={list} index={index} />
           ))}

@@ -22,6 +22,7 @@ export const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
+    // Attach user data to request
     req.user = user.toJSON();
     next();
   } catch (error) {

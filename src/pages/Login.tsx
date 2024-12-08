@@ -20,7 +20,7 @@ export const Login = () => {
       await login(email, password);
       navigate('/');
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Failed to login');
     } finally {
       setIsLoading(false);
     }
