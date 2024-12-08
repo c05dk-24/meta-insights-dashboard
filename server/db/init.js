@@ -20,41 +20,31 @@ const initDatabase = async () => {
     
     // Read and execute schema SQL
     const schemaSQL = await fs.readFile(
-      path.join(__dirname, 'schema.sql'),
+      path.join(__dirname, 'init.sql'),
       'utf-8'
     );
 
     await pool.query('BEGIN');
 
     try {
-      // Execute schema in parts to handle potential dependencies
-      const statements = schemaSQL.split(';').filter(stmt => stmt.trim());
+      // Execute schema
+      await pool.query(schemaSQL);
       
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await pool.query(statement);
-        }
-      }
-
-      await pool.query('COMMIT');
-      dbLogger.log('Schema created successfully');
-      
-      // Insert sample data
-      const sampleDataSQL = await fs.readFile(
-        path.join(__dirname, 'sample-data.sql'),
+      // Read and execute seed data
+      const seedSQL = await fs.readFile(
+        path.join(__dirname, 'seed-users.sql'),
         'utf-8'
       );
-      
-      await pool.query(sampleDataSQL);
-      dbLogger.log('Sample data inserted successfully');
+      await pool.query(seedSQL);
 
+      await pool.query('COMMIT');
+      dbLogger.log('Database initialized successfully');
     } catch (error) {
       await pool.query('ROLLBACK');
       throw error;
     }
 
     await pool.end();
-    dbLogger.log('Database initialization completed successfully');
     process.exit(0);
   } catch (error) {
     dbLogger.error('Failed to initialize database:', error);
