@@ -18,23 +18,24 @@ const initDatabase = async () => {
   try {
     dbLogger.log('Starting database initialization...');
     
-    // Read and execute schema SQL
-    const schemaSQL = await fs.readFile(
-      path.join(__dirname, 'init.sql'),
-      'utf-8'
-    );
+    // Read SQL files
+    const clearSQL = await fs.readFile(path.join(__dirname, 'clear.sql'), 'utf-8');
+    const schemaSQL = await fs.readFile(path.join(__dirname, 'schema.sql'), 'utf-8');
+    const seedSQL = await fs.readFile(path.join(__dirname, 'seed.sql'), 'utf-8');
 
     await pool.query('BEGIN');
 
     try {
-      // Execute schema
+      // Clear existing tables
+      dbLogger.log('Clearing existing tables...');
+      await pool.query(clearSQL);
+
+      // Create new schema
+      dbLogger.log('Creating new schema...');
       await pool.query(schemaSQL);
-      
-      // Read and execute seed data
-      const seedSQL = await fs.readFile(
-        path.join(__dirname, 'seed-users.sql'),
-        'utf-8'
-      );
+
+      // Insert seed data
+      dbLogger.log('Inserting seed data...');
       await pool.query(seedSQL);
 
       await pool.query('COMMIT');

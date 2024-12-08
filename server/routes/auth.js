@@ -20,10 +20,9 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     dbLogger.log(`Login attempt for email: ${email}`);
     
+    // Find user - use findOne instead of findByPk for email lookup
     const user = await User.findOne({ 
-      where: { email },
-      attributes: ['id', 'email', 'password', 'name'],
-      raw: true
+      where: { email }
     });
 
     if (!user) {
@@ -34,6 +33,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
       });
     }
 
+    // Compare passwords using bcrypt
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       dbLogger.warn(`Login failed: Invalid password - ${email}`);
@@ -49,16 +49,18 @@ router.post('/login', authLimiter, async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
+    // Convert to plain object and remove password
+    const userJson = user.toJSON();
+    delete userJson.password;
 
     dbLogger.log(`User logged in successfully: ${email}`);
 
     res.json({
       token,
-      user: userWithoutPassword
+      user: userJson
     });
   } catch (error) {
+    dbLogger.error('Login error:', error);
     next(error);
   }
 });
@@ -76,8 +78,7 @@ router.get('/verify', async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.userId, {
-      attributes: ['id', 'email', 'name'],
-      raw: true
+      attributes: { exclude: ['password'] }
     });
 
     if (!user) {
@@ -87,7 +88,7 @@ router.get('/verify', async (req, res) => {
       });
     }
 
-    res.json({ user });
+    res.json({ user: user.toJSON() });
   } catch (error) {
     res.status(401).json({
       error: 'INVALID_TOKEN',

@@ -20,24 +20,42 @@ const config = {
     min: 0,
     acquire: 60000,
     idle: 10000
+  },
+  define: {
+    timestamps: true,
+    underscored: true,
+    freezeTableName: true // Prevent Sequelize from pluralizing table names
   }
 };
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, config);
 
 export const initDatabase = async () => {
-  try {
-    await sequelize.authenticate();
-    dbLogger.log('Database connection established successfully');
-    
-    // Sync models
-    await sequelize.sync({ alter: true });
-    dbLogger.log('Database models synchronized');
-    
-    return true;
-  } catch (error) {
-    dbLogger.error('Database initialization failed:', error);
-    throw error;
+  let retries = 0;
+  const maxRetries = 5;
+  const retryDelay = 5000;
+
+  while (retries < maxRetries) {
+    try {
+      await sequelize.authenticate();
+      dbLogger.log('Database connection established successfully');
+      
+      // Sync models with { alter: true } to safely update schema
+      await sequelize.sync({ alter: true });
+      dbLogger.log('Database models synchronized');
+      
+      return true;
+    } catch (error) {
+      retries++;
+      dbLogger.error(`Database connection attempt ${retries} failed:`, error);
+      
+      if (retries === maxRetries) {
+        throw new Error(`Failed to connect after ${maxRetries} attempts: ${error.message}`);
+      }
+      
+      dbLogger.log(`Retrying in ${retryDelay/1000} seconds...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
 };
 

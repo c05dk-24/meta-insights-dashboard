@@ -1,15 +1,9 @@
--- Drop existing tables if they exist
-DROP TABLE IF EXISTS comments CASCADE;
-DROP TABLE IF EXISTS labels CASCADE;
-DROP TABLE IF EXISTS cards CASCADE;
-DROP TABLE IF EXISTS lists CASCADE;
-DROP TABLE IF EXISTS boards CASCADE;
-DROP TABLE IF EXISTS meta_insights CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create Users table
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE "Users" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -19,10 +13,10 @@ CREATE TABLE users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create Meta Insights table
-CREATE TABLE meta_insights (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+-- Create MetaInsights table
+CREATE TABLE "MetaInsights" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES "Users"(id) ON DELETE CASCADE,
     date DATE NOT NULL,
     impressions INTEGER DEFAULT 0,
     reach INTEGER DEFAULT 0,
@@ -34,64 +28,64 @@ CREATE TABLE meta_insights (
 );
 
 -- Create Boards table
-CREATE TABLE boards (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE "Boards" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES "Users"(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create Lists table
-CREATE TABLE lists (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE "Lists" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
-    board_id UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+    board_id UUID NOT NULL REFERENCES "Boards"(id) ON DELETE CASCADE,
     position INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create Cards table
-CREATE TABLE cards (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE "Cards" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    list_id UUID NOT NULL REFERENCES lists(id) ON DELETE CASCADE,
+    list_id UUID NOT NULL REFERENCES "Lists"(id) ON DELETE CASCADE,
     position INTEGER NOT NULL,
     due_date DATE,
-    assignee_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    assignee_id UUID REFERENCES "Users"(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create Labels table
-CREATE TABLE labels (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE "Labels" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(50) NOT NULL,
     color VARCHAR(20) NOT NULL,
-    board_id UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+    board_id UUID NOT NULL REFERENCES "Boards"(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create Comments table
-CREATE TABLE comments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE "Comments" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     text TEXT NOT NULL,
-    card_id UUID NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    card_id UUID NOT NULL REFERENCES "Cards"(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES "Users"(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes for better query performance
-CREATE INDEX idx_meta_insights_date ON meta_insights(date);
-CREATE INDEX idx_meta_insights_user ON meta_insights(user_id);
-CREATE INDEX idx_lists_board ON lists(board_id);
-CREATE INDEX idx_cards_list ON cards(list_id);
-CREATE INDEX idx_comments_card ON comments(card_id);
+-- Create indexes
+CREATE INDEX idx_meta_insights_date ON "MetaInsights"(date);
+CREATE INDEX idx_meta_insights_user ON "MetaInsights"(user_id);
+CREATE INDEX idx_lists_board ON "Lists"(board_id);
+CREATE INDEX idx_cards_list ON "Cards"(list_id);
+CREATE INDEX idx_comments_card ON "Comments"(card_id);
 
--- Add updated_at trigger function
+-- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -102,26 +96,26 @@ $$ language 'plpgsql';
 
 -- Add triggers for updated_at
 CREATE TRIGGER update_users_updated_at
-    BEFORE UPDATE ON users
+    BEFORE UPDATE ON "Users"
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_boards_updated_at
-    BEFORE UPDATE ON boards
+    BEFORE UPDATE ON "Boards"
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_lists_updated_at
-    BEFORE UPDATE ON lists
+    BEFORE UPDATE ON "Lists"
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_cards_updated_at
-    BEFORE UPDATE ON cards
+    BEFORE UPDATE ON "Cards"
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_comments_updated_at
-    BEFORE UPDATE ON comments
+    BEFORE UPDATE ON "Comments"
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
