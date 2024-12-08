@@ -26,7 +26,8 @@ export const useBoards = () => {
       queryKey: ['boards'],
       queryFn: fetchBoards,
       staleTime: 30000,
-      refetchOnWindowFocus: true
+      refetchOnWindowFocus: true,
+      retry: 1
     }),
 
     useCreateBoard: () => useMutation({
