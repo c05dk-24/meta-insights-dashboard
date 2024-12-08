@@ -7,7 +7,7 @@ const API_URL = getApiUrl();
 export const loginUser = async (email: string, password: string) => {
   try {
     const response = await axios.post(
-      `${API_URL}/auth/login`,
+      `${API_URL}/api/auth/login`,
       { email, password },
       {
         headers: { 

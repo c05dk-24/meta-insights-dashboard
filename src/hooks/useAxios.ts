@@ -7,7 +7,7 @@ export const useAxios = () => {
   const API_URL = getApiUrl();
 
   const instance = axios.create({
-    baseURL: API_URL,
+    baseURL: `${API_URL}/api`,
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
