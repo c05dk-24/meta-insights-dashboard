@@ -32,11 +32,21 @@ const initDatabase = async () => {
 
       // Create new schema
       dbLogger.log('Creating new schema...');
-      await pool.query(schemaSQL);
+      const schemaStatements = schemaSQL.split(';').filter(stmt => stmt.trim());
+      for (const statement of schemaStatements) {
+        if (statement.trim()) {
+          await pool.query(statement);
+        }
+      }
 
       // Insert seed data
       dbLogger.log('Inserting seed data...');
-      await pool.query(seedSQL);
+      const seedStatements = seedSQL.split(';').filter(stmt => stmt.trim());
+      for (const statement of seedStatements) {
+        if (statement.trim()) {
+          await pool.query(statement);
+        }
+      }
 
       await pool.query('COMMIT');
       dbLogger.log('Database initialized successfully');

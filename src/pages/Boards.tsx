@@ -3,27 +3,11 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { BoardList } from '../components/Board/BoardList';
 import { AddList } from '../components/Board/AddList';
 import { useBoards } from '../hooks/useBoards';
+import { Plus } from 'lucide-react';
 
 export const Boards = () => {
-  const { useBoards: useBoardsQuery, useMoveCard } = useBoards();
-  const { data: boards, isLoading } = useBoardsQuery();
-  const moveCardMutation = useMoveCard();
-
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const sourceListId = boards[0].lists[parseInt(result.source.droppableId)].id;
-    const destinationListId = boards[0].lists[parseInt(result.destination.droppableId)].id;
-    const cardId = result.draggableId;
-
-    moveCardMutation.mutate({
-      boardId: boards[0].id,
-      cardId,
-      sourceListId,
-      destinationListId,
-      newPosition: result.destination.index
-    });
-  };
+  const { useBoards: useBoardsQuery } = useBoards();
+  const { data: boards, isLoading, error } = useBoardsQuery();
 
   if (isLoading) {
     return (
@@ -40,13 +24,32 @@ export const Boards = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 text-red-500 p-4 rounded-lg">
+          Failed to load boards. Please try again.
+        </div>
+      </div>
+    );
+  }
+
   const activeBoard = boards?.[0];
 
   if (!activeBoard) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-8">No boards found</h1>
-        <AddList />
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Welcome to your boards</h1>
+          <p className="text-gray-600 mb-8">Create your first board to get started</p>
+          <button 
+            onClick={() => {}} 
+            className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Create Board
+          </button>
+        </div>
       </div>
     );
   }
@@ -54,7 +57,7 @@ export const Boards = () => {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-8">{activeBoard.title}</h1>
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragEnd={() => {}}>
         <div className="flex gap-6 overflow-x-auto pb-4">
           {activeBoard.lists.map((list, index) => (
             <BoardList key={list.id} list={list} index={index} />
