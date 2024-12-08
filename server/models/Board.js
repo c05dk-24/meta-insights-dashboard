@@ -18,14 +18,6 @@ const Board = sequelize.define('Board', {
       model: 'Users',
       key: 'id'
     }
-  },
-  company_id: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: 'Companies',
-      key: 'id'
-    }
   }
 }, {
   tableName: 'Boards',
