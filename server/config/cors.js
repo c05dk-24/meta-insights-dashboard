@@ -25,7 +25,7 @@ export const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Length'],
+  exposedHeaders: ['Content-Length', 'Access-Control-Allow-Origin'],
   maxAge: 86400,
   preflightContinue: false,
   optionsSuccessStatus: 204
