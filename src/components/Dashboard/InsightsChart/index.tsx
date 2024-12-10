@@ -8,12 +8,13 @@ export const InsightsChart = () => {
   const { useYearlyData } = useMeta();
   const { data, isLoading, error } = useYearlyData();
 
+  console.log('Chart data:', { data, isLoading, error });
+
   if (isLoading) {
     return <LoadingState />;
   }
 
   if (error) {
-    console.error('Chart error:', error);
     return <ErrorState error={error} />;
   }
 

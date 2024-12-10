@@ -7,17 +7,17 @@ export const useBoards = () => {
   const queryClient = useQueryClient();
 
   const fetchBoards = async (): Promise<Board[]> => {
-    const { data } = await axios.get('/boards');
+    const { data } = await axios.get('/api/boards');
     return data || [];
   };
 
   const createBoard = async (title: string): Promise<Board> => {
-    const { data } = await axios.post('/boards', { title });
+    const { data } = await axios.post('/api/boards', { title });
     return data;
   };
 
   const createList = async ({ boardId, title }: { boardId: string; title: string }): Promise<List> => {
-    const { data } = await axios.post(`/boards/${boardId}/lists`, { title });
+    const { data } = await axios.post(`/api/boards/${boardId}/lists`, { title });
     return data;
   };
 
@@ -26,7 +26,7 @@ export const useBoards = () => {
     listId: string;
     updates: Partial<List>;
   }): Promise<List> => {
-    const { data } = await axios.put(`/boards/${boardId}/lists/${listId}`, updates);
+    const { data } = await axios.put(`/api/boards/${boardId}/lists/${listId}`, updates);
     return data;
   };
 
@@ -34,7 +34,7 @@ export const useBoards = () => {
     boardId: string;
     listId: string;
   }): Promise<void> => {
-    await axios.delete(`/boards/${boardId}/lists/${listId}`);
+    await axios.delete(`/api/boards/${boardId}/lists/${listId}`);
   };
 
   return {
