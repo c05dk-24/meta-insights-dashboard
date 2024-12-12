@@ -4,25 +4,23 @@ import { getApiUrl } from '../utils/config';
 
 export const useAxios = () => {
   const { token, logout } = useAuth();
-  const API_URL = getApiUrl();
+  const baseURL = getApiUrl();
 
   const instance = axios.create({
-    baseURL: API_URL,
+    baseURL,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    withCredentials: true,
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    }
   });
 
-  // Add request interceptor for logging
+  // Add request interceptor
   instance.interceptors.request.use(
     (config) => {
       console.log('API Request:', {
         method: config.method?.toUpperCase(),
         url: config.url,
         params: config.params,
-        headers: config.headers,
       });
       return config;
     },

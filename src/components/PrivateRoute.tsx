@@ -1,11 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-interface Props {
-  children: React.ReactNode;
-}
-
-export function PrivateRoute({ children }: Props) {
+export const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
@@ -13,4 +9,4 @@ export function PrivateRoute({ children }: Props) {
   }
 
   return <>{children}</>;
-}
+};

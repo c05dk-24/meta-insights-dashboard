@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { MetaApiClient } from './MetaApiClient';
 import { MetaDataTransformer } from './MetaDataTransformer';
-import { DateRange, MetaInsightsParams, InsightsResponse, Campaign, AdSet } from '../../types/meta';
+import { DateRange, MetaInsightsParams, InsightsResponse } from '../../types/meta';
 
 export class MetaService {
   private client: MetaApiClient;
@@ -11,33 +11,44 @@ export class MetaService {
   }
 
   async getInsights(params: MetaInsightsParams): Promise<InsightsResponse> {
-    console.log('MetaService.getInsights - Meta Page ID:', params.accountId);
-    
+    console.log('MetaService.getInsights - Params:', params);
+
     try {
-      const data = await this.client.getInsights(params);
-      console.log('MetaService.getInsights - Raw response:', data);
-      
-      const transformed = MetaDataTransformer.transformInsights(data);
-      console.log('MetaService.getInsights - Transformed data:', transformed);
-      
-      return transformed;
+      const response = await this.client.get('/api/meta/insights', {
+        params: {
+          page_id: params.accountId,
+          start_date: params.start_date,
+          end_date: params.end_date,
+          fields: 'impressions,reach,actions,spend'
+        }
+      });
+
+      console.log('MetaService.getInsights - Response:', response.data);
+      return MetaDataTransformer.transformInsights(response.data);
     } catch (error) {
       console.error('MetaService.getInsights - Error:', error);
       throw error;
     }
   }
 
-  async getAccountInfo(accountId: string): Promise<{ name: string }> {
-    console.log('MetaService.getAccountInfo - Meta Page ID:', accountId);
+  async getCampaigns(accountId: string, dateRange: DateRange) {
+    console.log('MetaService.getCampaigns - Params:', { accountId, dateRange });
+
     try {
-      const data = await this.client.getAccountInfo(accountId);
-      console.log('MetaService.getAccountInfo - Response:', data);
-      return { name: data.name };
+      const response = await this.client.get('/api/meta/campaigns', {
+        params: {
+          page_id: accountId,
+          start_date: dateRange.startDate,
+          end_date: dateRange.endDate,
+          fields: 'campaign_id,campaign_name,insights'
+        }
+      });
+
+      console.log('MetaService.getCampaigns - Response:', response.data);
+      return MetaDataTransformer.transformCampaigns(response.data.data || []);
     } catch (error) {
-      console.error('MetaService.getAccountInfo - Error:', error);
+      console.error('MetaService.getCampaigns - Error:', error);
       throw error;
     }
   }
-
-  // ... rest of the service methods
 }

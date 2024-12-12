@@ -1,50 +1,71 @@
-import { AxiosInstance } from 'axios';
-import { MetaInsightsParams } from '../../types/meta';
-import { handleApiError } from './utils/errorHandler';
-import { buildQueryParams } from './utils/queryBuilder';
-import { logMetaApiCall } from './utils/logging';
-import { validateMetaPageId } from '../../utils/validation';
-import { API_PATHS } from '../../utils/constants';
+import axios, { AxiosInstance } from 'axios';
+import { META_API_ENDPOINTS } from './config/endpoints';
+import { getApiUrl } from '../../utils/config';
 
 export class MetaApiClient {
-  constructor(private axios: AxiosInstance) {}
+  private client: AxiosInstance;
 
-  async getAccountInfo(accountId: string) {
-    try {
-      const pageId = validateMetaPageId(accountId);
-      logMetaApiCall('GET', 'account_info', { accountId: pageId });
+  constructor(accessToken: string) {
+    this.client = axios.create({
+      baseURL: getApiUrl(),
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-      const { data } = await this.axios.get(`${API_PATHS.META.ACCOUNT_INFO}/${pageId}`, {
-        params: {
-          fields: 'name,id'
+    // Add request interceptor for logging
+    this.client.interceptors.request.use(
+      config => {
+        console.log('Meta API Request:', {
+          method: config.method?.toUpperCase(),
+          url: config.url,
+          params: config.params
+        });
+        return config;
+      },
+      error => {
+        console.error('Meta API Request Error:', error);
+        return Promise.reject(error);
+      }
+    );
+
+    // Add response interceptor for error handling
+    this.client.interceptors.response.use(
+      response => {
+        console.log('Meta API Response:', response.data);
+        return response;
+      },
+      error => {
+        console.error('Meta API Error:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        });
+
+        if (error.response?.data?.error) {
+          const metaError = error.response.data.error;
+          throw new Error(`Meta API Error: ${metaError.message}`);
         }
-      });
-      
-      logMetaApiCall('GET', 'account_info', { accountId: pageId }, data);
-      return {
-        name: String(data.name),
-        id: String(data.id)
-      };
-    } catch (error) {
-      logMetaApiCall('GET', 'account_info', { accountId }, undefined, error);
-      throw handleApiError(error);
-    }
+        throw error;
+      }
+    );
   }
 
-  async getInsights(params: MetaInsightsParams) {
+  async get(endpoint: string, params: Record<string, any> = {}) {
     try {
-      const queryParams = buildQueryParams('insights', params);
-      const { data } = await this.axios.get(API_PATHS.META.INSIGHTS, { params: queryParams });
-      
-      return {
-        ...data,
-        impressions: Number(data.impressions || 0),
-        reach: Number(data.reach || 0),
-        leads: Number(data.leads || 0),
-        spend: Number(data.spend || 0)
-      };
+      const response = await this.client.get(
+        `${META_API_ENDPOINTS.BASE_URL}${endpoint}`,
+        { params }
+      );
+      return response.data;
     } catch (error) {
-      throw handleApiError(error);
+      console.error('Meta API request failed:', {
+        endpoint,
+        params,
+        error: error instanceof Error ? error.message : error
+      });
+      throw error;
     }
   }
 }
