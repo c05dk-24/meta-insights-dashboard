@@ -2,11 +2,12 @@ import React from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { BoardList } from '../components/Board/BoardList';
 import { AddList } from '../components/Board/AddList';
-import { useBoards, useCreateBoard } from '../hooks/board';
+import { useBoards } from '../hooks/useBoards';
 import { Plus } from 'lucide-react';
 
 export const Boards = () => {
-  const { data: boards = [], isLoading, error } = useBoards();
+  const { useBoards: useBoardsQuery, useCreateBoard } = useBoards();
+  const { data: boards = [], isLoading, error } = useBoardsQuery();
   const createBoard = useCreateBoard();
 
   const handleCreateBoard = () => {
