@@ -1,32 +1,37 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
 import { useAuth } from './useAuth';
-import { MetaInsight } from '../types/meta';
 
 export const useMeta = () => {
   const axios = useAxios();
   const { user } = useAuth();
 
-  const fetchInsights = async (range: string): Promise<MetaInsight> => {
+  const fetchInsights = async (range: string) => {
     console.log('Fetching insights:', {
       range,
+      userId: user?.id,
       metaPageId: user?.meta_page_id
     });
 
     if (!user?.meta_page_id) {
-      throw new Error('No Meta ad account connected');
+      throw new Error('No Meta ad account connected. Please add your Meta page ID in settings.');
     }
 
     try {
-      const { data } = await axios.get('/meta/insights', {
+      const { data } = await axios.get('/meta/ads/insights', {
         params: { 
           range,
-          accountId: user.meta_page_id.replace('act_', '')
+          accountId: user.meta_page_id
         }
       });
       
       console.log('Insights response:', data);
-      return data;
+      return {
+        impressions: data.impressions || 0,
+        leads: data.results || 0,
+        costPerLead: data.costPerResult || 0,
+        amountSpent: data.amountSpent || 0
+      };
     } catch (error: any) {
       console.error('Error fetching insights:', {
         error: error.response?.data || error.message,
@@ -36,22 +41,66 @@ export const useMeta = () => {
     }
   };
 
-  const fetchYearlyData = async () => {
+  const fetchCampaigns = async (dateRange: { from: Date; to: Date }) => {
     if (!user?.meta_page_id) {
       throw new Error('No Meta ad account connected');
     }
 
     try {
-      const { data } = await axios.get('/meta/insights/yearly', {
+      const { data } = await axios.get('/meta/campaigns', {
         params: {
-          accountId: user.meta_page_id.replace('act_', '')
+          accountId: user.meta_page_id,
+          start_date: dateRange.from.toISOString().split('T')[0],
+          end_date: dateRange.to.toISOString().split('T')[0]
         }
       });
 
-      console.log('Yearly data response:', data);
+      console.log('Campaigns response:', data);
       return data;
-    } catch (error) {
-      console.error('Error fetching yearly data:', error);
+    } catch (error: any) {
+      console.error('Error fetching campaigns:', error);
+      throw error;
+    }
+  };
+
+  const fetchAdSets = async (dateRange: { from: Date; to: Date }, campaignId: string | null) => {
+    if (!user?.meta_page_id || !campaignId) return null;
+
+    try {
+      const { data } = await axios.get('/meta/campaigns/adsets', {
+        params: {
+          accountId: user.meta_page_id,
+          campaignId,
+          start_date: dateRange.from.toISOString().split('T')[0],
+          end_date: dateRange.to.toISOString().split('T')[0]
+        }
+      });
+
+      console.log('Ad Sets response:', data);
+      return data;
+    } catch (error: any) {
+      console.error('Error fetching ad sets:', error);
+      throw error;
+    }
+  };
+
+  const fetchAds = async (dateRange: { from: Date; to: Date }, campaignId: string | null) => {
+    if (!user?.meta_page_id || !campaignId) return null;
+
+    try {
+      const { data } = await axios.get('/meta/campaigns/ads', {
+        params: {
+          accountId: user.meta_page_id,
+          campaignId,
+          start_date: dateRange.from.toISOString().split('T')[0],
+          end_date: dateRange.to.toISOString().split('T')[0]
+        }
+      });
+
+      console.log('Ads response:', data);
+      return data;
+    } catch (error: any) {
+      console.error('Error fetching ads:', error);
       throw error;
     }
   };
@@ -61,16 +110,29 @@ export const useMeta = () => {
       useQuery({
         queryKey: ['insights', range],
         queryFn: () => fetchInsights(range),
-        enabled: Boolean(user?.meta_page_id),
+        enabled: !!user?.id && !!user?.meta_page_id,
         retry: 1
       }),
 
-    useYearlyData: () =>
+    useCampaigns: (dateRange: { from: Date; to: Date }) =>
       useQuery({
-        queryKey: ['yearlyData'],
-        queryFn: fetchYearlyData,
-        enabled: Boolean(user?.meta_page_id),
-        staleTime: 1000 * 60 * 60 // 1 hour
+        queryKey: ['campaigns', dateRange.from, dateRange.to],
+        queryFn: () => fetchCampaigns(dateRange),
+        enabled: !!user?.id && !!user?.meta_page_id
+      }),
+
+    useAdSets: (dateRange: { from: Date; to: Date }, campaignId: string | null) =>
+      useQuery({
+        queryKey: ['adsets', dateRange.from, dateRange.to, campaignId],
+        queryFn: () => fetchAdSets(dateRange, campaignId),
+        enabled: !!user?.id && !!user?.meta_page_id && !!campaignId
+      }),
+
+    useAds: (dateRange: { from: Date; to: Date }, campaignId: string | null) =>
+      useQuery({
+        queryKey: ['ads', dateRange.from, dateRange.to, campaignId],
+        queryFn: () => fetchAds(dateRange, campaignId),
+        enabled: !!user?.id && !!user?.meta_page_id && !!campaignId
       })
   };
 };

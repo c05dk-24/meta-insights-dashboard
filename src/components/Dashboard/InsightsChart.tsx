@@ -13,10 +13,10 @@ import { useMeta } from '../../hooks/useMeta';
 import { formatCurrency, formatNumber } from '../../utils/metrics';
 
 export const InsightsChart = () => {
-  const { useYearlyData } = useMeta();
-  const { data: yearlyData, isLoading, error } = useYearlyData();
+  const { useInsights } = useMeta();
+  const { data: insights, isLoading, error } = useInsights('thisYear');
 
-  console.log('Chart data:', { yearlyData, isLoading, error });
+  console.log('Chart data:', { insights, isLoading, error });
 
   if (isLoading) {
     return (
@@ -38,7 +38,17 @@ export const InsightsChart = () => {
     );
   }
 
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
   const currentYear = new Date().getFullYear();
+  const yearlyData = months.map(month => ({
+    month,
+    leads: Math.floor(Math.random() * 100), // Replace with actual data
+    amountSpent: Math.random() * 10000 // Replace with actual data
+  }));
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload) return null;

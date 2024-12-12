@@ -1,8 +1,8 @@
 import React from 'react';
-import { Target, PoundSterling, Users, Eye } from 'lucide-react';
+import { Target, PoundSterling, Users, TrendingUp } from 'lucide-react';
 import { InsightCard } from './InsightCard';
 import { MetaInsight } from '../../types/meta';
-import { formatCurrency, formatNumber } from '../../utils/metrics';
+import { formatNumber, formatCurrency } from '../../utils/metrics';
 
 interface Props {
   insights: MetaInsight | null;
@@ -12,16 +12,16 @@ interface Props {
 export const MetricCards: React.FC<Props> = ({ insights, isLoading }) => {
   const metrics = [
     {
-      title: 'Results',
-      value: insights ? formatNumber(insights.results) : '0',
+      title: 'Total Leads',
+      value: insights ? formatNumber(insights.leads) : '0',
       change: 0,
-      icon: Target
+      icon: Users
     },
     {
-      title: 'Cost per Result',
-      value: insights ? formatCurrency(insights.costPerResult) : '£0.00',
+      title: 'Cost per Lead',
+      value: insights ? formatCurrency(insights.costPerLead) : '£0.00',
       change: 0,
-      icon: PoundSterling
+      icon: Target
     },
     {
       title: 'Amount Spent',
@@ -30,10 +30,12 @@ export const MetricCards: React.FC<Props> = ({ insights, isLoading }) => {
       icon: PoundSterling
     },
     {
-      title: 'Impressions',
-      value: insights ? formatNumber(insights.impressions) : '0',
+      title: 'Conversion Rate',
+      value: insights ? 
+        `${((insights.leads / insights.impressions) * 100).toFixed(2)}%` : 
+        '0%',
       change: 0,
-      icon: Eye
+      icon: TrendingUp
     }
   ];
 

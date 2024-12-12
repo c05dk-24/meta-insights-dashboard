@@ -1,19 +1,6 @@
 import { useStore } from '../store';
 
-interface AuthHook {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    meta_page_id?: string;
-  } | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-export const useAuth = (): AuthHook => {
+export const useAuth = () => {
   const store = useStore();
   
   return {

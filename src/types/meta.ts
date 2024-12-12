@@ -1,22 +1,27 @@
 export interface MetaInsight {
+  id: string;
+  date: string;
   impressions: number;
-  results: number;
-  costPerResult: number;
+  leads: number;
+  costPerLead: number;
   amountSpent: number;
-  reach?: number;
+}
+
+export interface MetricCard {
+  title: string;
+  value: string | number;
+  change: number;
+  icon: any;
+}
+
+export interface ChartData {
+  name: string;
+  leads: number;
+  amountSpent: number;
 }
 
 export interface YearlyData {
   month: string;
-  impressions: number;
-  results: number;
-  costPerResult: number;
+  leads: number;
   amountSpent: number;
-  reach?: number;
-}
-
-export interface ApiError {
-  message: string;
-  status?: number;
-  code?: string;
 }
