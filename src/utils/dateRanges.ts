@@ -43,10 +43,7 @@ export const getDateRange = (range: string): DateRange => {
     default:
       startDate = new Date(today.getFullYear(), today.getMonth(), 1);
       endDate = today;
-      break;
   }
-
-  console.log('getDateRange:', { range, startDate, endDate });
 
   return {
     startDate: startDate.toISOString().split('T')[0],

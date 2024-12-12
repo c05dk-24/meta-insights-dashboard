@@ -21,11 +21,11 @@ router.get('/', authenticate, async (req, res) => {
 
     // Call Meta Graph API
     const response = await axios.get(
-      `https://graph.facebook.com/v18.0/act_${user.meta_page_id}/campaigns`,
+      `https://graph.facebook.com/v18.0/${user.meta_page_id}/insights`,
       {
         params: {
           access_token: user.meta_access_token,
-          fields: 'campaign_id,campaign_name,objective,status,insights{impressions,reach,actions,spend}',
+          fields: 'impressions,reach,actions,spend',
           time_range: JSON.stringify({
             since: start_date,
             until: end_date
@@ -37,10 +37,10 @@ router.get('/', authenticate, async (req, res) => {
     dbLogger.log('Meta API response:', response.data);
     res.json(response.data);
   } catch (error) {
-    dbLogger.error('Meta campaigns error:', error.response?.data || error);
+    dbLogger.error('Meta insights error:', error.response?.data || error);
     res.status(error.response?.status || 500).json({
       error: 'FETCH_ERROR',
-      message: error.response?.data?.error?.message || 'Failed to fetch campaigns'
+      message: error.response?.data?.error?.message || 'Failed to fetch insights'
     });
   }
 });

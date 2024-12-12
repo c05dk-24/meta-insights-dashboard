@@ -3,8 +3,10 @@ export const extractLeads = (actions: any[] = []): number => {
   
   const leadAction = actions.find(action => 
     action.action_type === 'lead' || 
-    action.action_type === 'leadgen'
+    action.action_type === 'leadgen' ||
+    action.action_type === 'onsite_conversion.lead_grouped'
   );
+  
   return parseInt(leadAction?.value || '0', 10);
 };
 
