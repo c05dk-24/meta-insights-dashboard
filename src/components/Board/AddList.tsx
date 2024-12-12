@@ -1,8 +1,6 @@
-```typescript
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useCreateList } from '../../hooks/board';
-import { toast } from 'react-hot-toast';
 
 interface Props {
   boardId: string;
@@ -18,11 +16,14 @@ export const AddList: React.FC<Props> = ({ boardId }) => {
     if (!title.trim()) return;
 
     try {
-      await createList.mutateAsync({ boardId, title: title.trim() });
+      await createList.mutateAsync({
+        boardId,
+        title: title.trim()
+      });
       setTitle('');
       setIsAdding(false);
     } catch (error) {
-      toast.error('Failed to create list');
+      console.error('Failed to create list:', error);
     }
   };
 
@@ -70,4 +71,3 @@ export const AddList: React.FC<Props> = ({ boardId }) => {
     </div>
   );
 };
-```

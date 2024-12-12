@@ -1,13 +1,13 @@
 export const getApiUrl = () => {
-  // Use the production URL from .env.production or localhost for development
-  return import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  // In production, use the environment variable
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  return baseUrl.replace(/\/$/, ''); // Remove trailing slash if present
 };
 
 export const API_CONFIG = {
   ENDPOINTS: {
     AUTH: '/api/auth',
     BOARDS: '/api/boards',
-    LISTS: (boardId: string) => `/api/boards/${boardId}/lists`,
-    CARDS: (boardId: string, listId: string) => `/api/boards/${boardId}/lists/${listId}/cards`
+    HEALTH: '/api/health'
   }
 } as const;

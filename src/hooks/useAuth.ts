@@ -1,13 +1,12 @@
-```typescript
 import { useStore } from '../store';
-import { apiClient } from '../services/api/client';
+import { boardApi } from '../services/api/boardApi';
 
 export const useAuth = () => {
   const store = useStore();
   
-  // Set token in apiClient when auth state changes
+  // Set token in boardApi when auth state changes
   if (store.auth.token) {
-    apiClient.setAuthToken(store.auth.token);
+    boardApi.setToken(store.auth.token);
   }
   
   return {
@@ -17,8 +16,8 @@ export const useAuth = () => {
     login: store.login,
     logout: () => {
       store.logout();
-      apiClient.setAuthToken(null);
+      // Clear token from boardApi on logout
+      boardApi.setToken('');
     },
   };
 };
-```

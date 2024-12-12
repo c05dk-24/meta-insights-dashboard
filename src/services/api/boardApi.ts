@@ -1,35 +1,78 @@
-```typescript
-import { apiClient } from './client';
-import { API_CONFIG } from './config';
+import axios from 'axios';
 import { Board, List, Card } from '../../types/board';
+import { getApiUrl, API_CONFIG } from '../../utils/config';
 
-class BoardApi {
-  async getBoards() {
-    return apiClient.get<Board[]>(API_CONFIG.endpoints.boards);
+const api = axios.create({
+  baseURL: getApiUrl()
+});
+
+// Add request interceptor for logging
+api.interceptors.request.use(
+  (config) => {
+    console.log('Board API Request:', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      data: config.data
+    });
+    return config;
+  },
+  (error) => {
+    console.error('Board API Request Error:', error);
+    return Promise.reject(error);
   }
+);
 
-  async createBoard(title: string) {
-    return apiClient.post<Board>(API_CONFIG.endpoints.boards, { title });
+// Add response interceptor for error handling
+api.interceptors.response.use(
+  (response) => {
+    console.log('Board API Response:', {
+      status: response.status,
+      data: response.data
+    });
+    return response;
+  },
+  (error) => {
+    console.error('Board API Error:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
+    return Promise.reject(error.response?.data?.error || error.message);
   }
+);
 
-  async createList(boardId: string, title: string) {
-    return apiClient.post<List>(
-      API_CONFIG.endpoints.lists(boardId),
+export const boardApi = {
+  setToken: (token: string) => {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  },
+
+  getBoards: async (): Promise<Board[]> => {
+    const { data } = await api.get(API_CONFIG.ENDPOINTS.BOARDS);
+    return data;
+  },
+
+  createBoard: async (title: string): Promise<Board> => {
+    const { data } = await api.post(API_CONFIG.ENDPOINTS.BOARDS, { title });
+    return data;
+  },
+
+  createList: async (boardId: string, title: string): Promise<List> => {
+    const { data } = await api.post(
+      `${API_CONFIG.ENDPOINTS.BOARDS}/${boardId}/lists`,
       { title }
     );
-  }
+    return data;
+  },
 
-  async createCard(
-    boardId: string,
-    listId: string,
+  createCard: async (
+    boardId: string, 
+    listId: string, 
     { title, description }: { title: string; description?: string }
-  ) {
-    return apiClient.post<Card>(
-      API_CONFIG.endpoints.cards(boardId, listId),
+  ): Promise<Card> => {
+    const { data } = await api.post(
+      `${API_CONFIG.ENDPOINTS.BOARDS}/${boardId}/lists/${listId}/cards`,
       { title, description }
     );
+    return data;
   }
-}
-
-export const boardApi = new BoardApi();
-```
+};

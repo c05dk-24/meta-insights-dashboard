@@ -90,4 +90,40 @@ router.post('/:boardId/lists', authenticate, async (req, res) => {
   }
 });
 
+// Create new card
+router.post('/:boardId/lists/:listId/cards', authenticate, async (req, res) => {
+  try {
+    const { listId } = req.params;
+    const { title, description } = req.body;
+
+    const list = await List.findOne({
+      where: { id: listId },
+      include: [{ 
+        model: Board,
+        where: { user_id: req.user.id }
+      }]
+    });
+
+    if (!list) {
+      return res.status(404).json({ error: 'List not found' });
+    }
+
+    const maxPosition = await Card.max('position', {
+      where: { list_id: listId }
+    }) || -1;
+
+    const card = await Card.create({
+      title,
+      description,
+      list_id: listId,
+      position: maxPosition + 1
+    });
+
+    res.status(201).json(card);
+  } catch (error) {
+    logger.error('Error creating card:', error);
+    res.status(500).json({ error: 'Failed to create card' });
+  }
+});
+
 export default router;
