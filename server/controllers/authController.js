@@ -15,6 +15,7 @@ export const login = async (req, res) => {
 
     dbLogger.log(`Login attempt for email: ${email}`);
 
+    // Find user with company data
     const user = await User.findOne({
       where: { email },
       attributes: [
@@ -28,36 +29,26 @@ export const login = async (req, res) => {
       include: [
         {
           model: Company,
-          as: "company",
           attributes: ["name"],
+          required: true,
         },
       ],
     });
 
     if (!user) {
-      dbLogger.warn(`Login failed: User not found for email: ${email}`);
+      dbLogger.warn(`Login failed: User not found - ${email}`);
       return res.status(401).json({
         error: "INVALID_CREDENTIALS",
         message: "Invalid email or password",
       });
     }
-
-    dbLogger.log(`User found: ${JSON.stringify(user)}`);
 
     const isValid = await user.comparePassword(password);
     if (!isValid) {
-      dbLogger.warn(`Login failed: Invalid password for email: ${email}`);
+      dbLogger.warn(`Login failed: Invalid password - ${email}`);
       return res.status(401).json({
         error: "INVALID_CREDENTIALS",
         message: "Invalid email or password",
-      });
-    }
-
-    if (!process.env.JWT_SECRET) {
-      dbLogger.error("JWT_SECRET is not defined in environment variables.");
-      return res.status(500).json({
-        error: "SERVER_ERROR",
-        message: "Internal server configuration error",
       });
     }
 
@@ -65,14 +56,12 @@ export const login = async (req, res) => {
       expiresIn: process.env.JWT_EXPIRES_IN || "24h",
     });
 
-    dbLogger.log(`JWT generated for user ID: ${user.id}`);
-
     const userResponse = {
       id: user.id,
       email: user.email,
       name: user.name,
       company_id: user.company_id,
-      companyName: user.company?.name || "N/A",
+      companyName: user.Company.name,
       meta_page_id: user.meta_page_id,
     };
 
@@ -84,7 +73,6 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     dbLogger.error("Login error:", error);
-
     res.status(500).json({
       error: "SERVER_ERROR",
       message: "An unexpected error occurred",
