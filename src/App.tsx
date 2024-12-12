@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
+export default function App() {
   const { isAuthenticated } = useAuth();
 
   return (

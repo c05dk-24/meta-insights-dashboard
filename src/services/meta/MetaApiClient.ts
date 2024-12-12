@@ -1,24 +1,29 @@
 import { AxiosInstance } from 'axios';
-import { MetaInsightsParams, DateRange } from '../../types/meta';
+import { MetaInsightsParams } from '../../types/meta';
 import { handleApiError } from './utils/errorHandler';
 import { buildQueryParams } from './utils/queryBuilder';
-import { API_PATHS } from '../../utils/config';
+import { logMetaApiCall } from './utils/logging';
+import { validateMetaPageId } from '../../utils/validation';
+import { API_PATHS } from '../../utils/constants';
 
 export class MetaApiClient {
   constructor(private axios: AxiosInstance) {}
 
   async getAccountInfo(accountId: string) {
-    console.log('MetaApiClient.getAccountInfo - Account ID:', accountId);
+    const pageId = validateMetaPageId(accountId);
+    logMetaApiCall('GET', 'account_info', { accountId: pageId });
+
     try {
-      const { data } = await this.axios.get(`${API_PATHS.META.ACCOUNT_INFO}/${accountId}`, {
+      const { data } = await this.axios.get(`${API_PATHS.META.ACCOUNT_INFO}/${pageId}`, {
         params: {
           fields: 'name,id'
         }
       });
-      console.log('MetaApiClient.getAccountInfo - Response:', data);
+      
+      logMetaApiCall('GET', 'account_info', { accountId: pageId }, data);
       return data;
     } catch (error) {
-      console.error('MetaApiClient.getAccountInfo - Error:', error);
+      logMetaApiCall('GET', 'account_info', { accountId: pageId }, undefined, error);
       throw handleApiError(error);
     }
   }
