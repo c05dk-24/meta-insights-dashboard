@@ -1,7 +1,7 @@
 export const getApiUrl = () => {
-  // In production, use the environment variable
+  // Remove /api from VITE_API_URL if present since we add it in the endpoints
   const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-  return baseUrl.replace(/\/$/, ''); // Remove trailing slash if present
+  return baseUrl.replace(/\/api\/?$/, '');
 };
 
 export const API_CONFIG = {

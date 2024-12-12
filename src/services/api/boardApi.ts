@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { Board, List, Card } from '../../types/board';
-import { getApiUrl, API_CONFIG } from '../../utils/config';
+import { getApiUrl } from '../../utils/config';
 
 const api = axios.create({
   baseURL: getApiUrl()
 });
 
-// Add request interceptor for logging
+// Request interceptor for logging and token handling
 api.interceptors.request.use(
   (config) => {
+    // Log request details
     console.log('Board API Request:', {
       method: config.method?.toUpperCase(),
       url: config.url,
@@ -22,22 +23,19 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor for error handling
+// Response interceptor for error handling
 api.interceptors.response.use(
-  (response) => {
-    console.log('Board API Response:', {
-      status: response.status,
-      data: response.data
-    });
-    return response;
-  },
+  (response) => response,
   (error) => {
     console.error('Board API Error:', {
       status: error.response?.status,
       data: error.response?.data,
       message: error.message
     });
-    return Promise.reject(error.response?.data?.error || error.message);
+    
+    // Extract error message from response
+    const errorMessage = error.response?.data?.error || error.message;
+    return Promise.reject(new Error(errorMessage));
   }
 );
 
@@ -47,20 +45,17 @@ export const boardApi = {
   },
 
   getBoards: async (): Promise<Board[]> => {
-    const { data } = await api.get(API_CONFIG.ENDPOINTS.BOARDS);
+    const { data } = await api.get('/api/boards');
     return data;
   },
 
   createBoard: async (title: string): Promise<Board> => {
-    const { data } = await api.post(API_CONFIG.ENDPOINTS.BOARDS, { title });
+    const { data } = await api.post('/api/boards', { title });
     return data;
   },
 
   createList: async (boardId: string, title: string): Promise<List> => {
-    const { data } = await api.post(
-      `${API_CONFIG.ENDPOINTS.BOARDS}/${boardId}/lists`,
-      { title }
-    );
+    const { data } = await api.post(`/api/boards/${boardId}/lists`, { title });
     return data;
   },
 
@@ -70,7 +65,7 @@ export const boardApi = {
     { title, description }: { title: string; description?: string }
   ): Promise<Card> => {
     const { data } = await api.post(
-      `${API_CONFIG.ENDPOINTS.BOARDS}/${boardId}/lists/${listId}/cards`,
+      `/api/boards/${boardId}/lists/${listId}/cards`,
       { title, description }
     );
     return data;
