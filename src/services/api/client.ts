@@ -6,8 +6,9 @@ class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
+    // Remove /api from baseURL since it's included in the endpoints
     this.client = axios.create({
-      baseURL: `${API_CONFIG.baseURL}/api`, // Single /api prefix
+      baseURL: API_CONFIG.baseURL,
       timeout: API_CONFIG.timeout,
       headers: API_CONFIG.headers
     });
@@ -18,7 +19,7 @@ class ApiClient {
   private setupInterceptors() {
     this.client.interceptors.request.use(
       (config) => {
-        console.log('API Request:', {
+        console.log('Board API Request:', {
           method: config.method?.toUpperCase(),
           url: config.url,
           data: config.data
@@ -26,7 +27,7 @@ class ApiClient {
         return config;
       },
       (error) => {
-        console.error('API Error:', error);
+        console.error('Board API Error:', error);
         return Promise.reject(error);
       }
     );
@@ -34,7 +35,7 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
-        console.error('API Error:', {
+        console.error('Board API Error:', {
           status: error.response?.status,
           data: error.response?.data,
           message: error.message
