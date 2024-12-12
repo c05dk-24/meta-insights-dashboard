@@ -2,6 +2,7 @@ import { AxiosInstance } from 'axios';
 import { MetaInsightsParams, DateRange } from '../../types/meta';
 import { handleApiError } from './utils/errorHandler';
 import { buildQueryParams } from './utils/queryBuilder';
+import { API_PATHS } from '../../utils/config';
 
 export class MetaApiClient {
   constructor(private axios: AxiosInstance) {}
@@ -12,7 +13,7 @@ export class MetaApiClient {
       const queryParams = buildQueryParams('insights', params);
       console.log('MetaApiClient.getInsights - Query params:', queryParams);
 
-      const { data } = await this.axios.get('/meta/ads/insights', { params: queryParams });
+      const { data } = await this.axios.get(API_PATHS.META.INSIGHTS, { params: queryParams });
       console.log('MetaApiClient.getInsights - Response:', data);
       return data;
     } catch (error) {
@@ -31,7 +32,7 @@ export class MetaApiClient {
       });
       console.log('MetaApiClient.getCampaigns - Query params:', queryParams);
 
-      const { data } = await this.axios.get('/meta/ads/insights', { params: queryParams });
+      const { data } = await this.axios.get(API_PATHS.META.CAMPAIGNS, { params: queryParams });
       console.log('MetaApiClient.getCampaigns - Response:', data);
       return data;
     } catch (error) {
@@ -45,13 +46,13 @@ export class MetaApiClient {
     try {
       const queryParams = buildQueryParams('adsets', {
         accountId,
-        campaignId,
         ...dateRange,
         level: 'adset'
       });
       console.log('MetaApiClient.getAdSets - Query params:', queryParams);
 
-      const { data } = await this.axios.get('/meta/ads/insights', { params: queryParams });
+      const url = API_PATHS.META.ADSETS.replace(':campaignId', campaignId);
+      const { data } = await this.axios.get(url, { params: queryParams });
       console.log('MetaApiClient.getAdSets - Response:', data);
       return data;
     } catch (error) {

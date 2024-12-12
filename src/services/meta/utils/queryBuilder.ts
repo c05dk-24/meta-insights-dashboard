@@ -11,21 +11,28 @@ const ENDPOINT_FIELDS = {
 export const buildQueryParams = (endpoint: EndpointType, params: any) => {
   console.log('buildQueryParams - Input:', { endpoint, params });
 
-  const queryParams = {
+  const queryParams: Record<string, any> = {
     fields: ENDPOINT_FIELDS[endpoint],
-    page_id: params.accountId,
+    access_token: params.access_token,
     time_range: JSON.stringify({
       since: params.start_date || params.startDate,
       until: params.end_date || params.endDate
     })
   };
 
-  if (params.level) {
-    queryParams['level'] = params.level;
+  // Only add page_id if it exists
+  if (params.accountId) {
+    queryParams.page_id = params.accountId;
   }
 
+  // Add level for campaign/adset queries
+  if (params.level) {
+    queryParams.level = params.level;
+  }
+
+  // Add campaign_id for adset queries
   if (params.campaignId) {
-    queryParams['campaign_id'] = params.campaignId;
+    queryParams.campaign_id = params.campaignId;
   }
 
   console.log('buildQueryParams - Output:', queryParams);

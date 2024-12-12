@@ -7,8 +7,8 @@ export const getApiUrl = () => {
 
 export const API_PATHS = {
   META: {
-    INSIGHTS: '/meta/ads/insights',
-    CAMPAIGNS: '/meta/campaigns',
-    ADSETS: '/meta/campaigns/:campaignId/adsets'
+    INSIGHTS: '/api/meta/insights',
+    CAMPAIGNS: '/api/meta/campaigns',
+    ADSETS: '/api/meta/campaigns/:campaignId/adsets'
   }
 } as const;
