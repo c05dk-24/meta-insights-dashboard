@@ -11,12 +11,11 @@ import {
 } from 'recharts';
 import { useMeta } from '../../hooks/useMeta';
 import { formatCurrency, formatNumber } from '../../utils/metrics';
+import { getDateRange } from '../../utils/dateRanges';
 
 export const InsightsChart = () => {
   const { useInsights } = useMeta();
-  const { data: insights, isLoading, error } = useInsights('thisYear');
-
-  console.log('Chart data:', { insights, isLoading, error });
+  const { data: insights, isLoading, error } = useInsights('thisWeek');
 
   if (isLoading) {
     return (
@@ -28,27 +27,32 @@ export const InsightsChart = () => {
   }
 
   if (error) {
-    console.error('Chart error:', error);
     return (
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
-        <p className="text-red-500">
-          {error.response?.data?.message || 'Failed to load insights'}
-        </p>
+        <div className="text-red-500 p-4 rounded-lg bg-red-50">
+          <p className="font-medium">Failed to load insights</p>
+          <p className="text-sm mt-1">{error instanceof Error ? error.message : 'Unknown error occurred'}</p>
+        </div>
       </div>
     );
   }
 
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-
-  const currentYear = new Date().getFullYear();
-  const yearlyData = months.map(month => ({
-    month,
-    leads: Math.floor(Math.random() * 100), // Replace with actual data
-    amountSpent: Math.random() * 10000 // Replace with actual data
-  }));
+  // Generate daily data points for the current week
+  const { startDate, endDate } = getDateRange('thisWeek');
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  const dailyData = [];
+  let currentDate = new Date(start);
+  
+  while (currentDate <= end) {
+    dailyData.push({
+      name: currentDate.toLocaleDateString('en-GB', { weekday: 'short' }),
+      leads: Math.floor(Math.random() * 50), // Replace with actual daily data
+      amountSpent: Math.random() * 1000 // Replace with actual daily data
+    });
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload) return null;
@@ -73,18 +77,17 @@ export const InsightsChart = () => {
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
       <h2 className="text-lg sm:text-xl font-semibold mb-4">
-        {currentYear} Performance
+        This Week's Performance
       </h2>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={yearlyData}>
+        <LineChart data={dailyData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
-            dataKey="month" 
+            dataKey="name"
             tick={{ fontSize: 12 }}
           />
           <YAxis 
             yAxisId="left"
-            tick={{ fontSize: 12 }}
             tickFormatter={formatNumber}
             label={{ 
               value: 'Leads',
@@ -96,8 +99,7 @@ export const InsightsChart = () => {
           <YAxis
             yAxisId="right"
             orientation="right"
-            tick={{ fontSize: 12 }}
-            tickFormatter={(value) => `£${formatNumber(value)}`}
+            tickFormatter={(value) => formatCurrency(value)}
             label={{ 
               value: 'Spend',
               angle: 90,
@@ -114,6 +116,7 @@ export const InsightsChart = () => {
             stroke="#8884d8"
             name="Leads"
             strokeWidth={2}
+            dot={{ strokeWidth: 2 }}
           />
           <Line
             yAxisId="right"
@@ -122,6 +125,7 @@ export const InsightsChart = () => {
             stroke="#82ca9d"
             name="Spend"
             strokeWidth={2}
+            dot={{ strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>

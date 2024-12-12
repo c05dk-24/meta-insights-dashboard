@@ -6,75 +6,139 @@ export class MetaApiService {
 
   async fetchInsights(params: MetaInsightsParams): Promise<InsightsResponse> {
     try {
-      const { data } = await this.axios.get('/meta/ads/insights', { params });
-      return {
-        impressions: data.impressions || 0,
-        leads: data.results || 0,
-        costPerLead: data.costPerResult || 0,
-        amountSpent: data.amountSpent || 0
-      };
-    } catch (error) {
-      console.error('Error fetching insights:', error);
-      throw error;
+      const { data } = await this.axios.get('/api/meta/ads/insights', {
+        params: {
+          page_id: params.accountId,
+          start_date: params.start_date,
+          end_date: params.end_date,
+          fields: 'impressions,reach,actions,spend'
+        }
+      });
+
+      return this.transformInsightsData(data);
+    } catch (error: any) {
+      console.error('Error fetching insights:', error.response?.data || error.message);
+      throw this.handleError(error);
     }
   }
 
   async fetchCampaigns(accountId: string, dateRange: DateRange) {
     try {
-      const { data } = await this.axios.get('/meta/ads/insights', {
+      const { data } = await this.axios.get('/api/meta/campaigns', {
         params: {
-          accountId,
+          page_id: accountId,
           start_date: dateRange.startDate,
           end_date: dateRange.endDate,
-          level: 'campaign'
+          fields: 'campaign_id,campaign_name,insights'
         }
       });
-      return this.transformCampaignData(data);
-    } catch (error) {
-      console.error('Error fetching campaigns:', error);
-      throw error;
+
+      return this.transformCampaignData(data.data || []);
+    } catch (error: any) {
+      console.error('Error fetching campaigns:', error.response?.data || error.message);
+      throw this.handleError(error);
     }
   }
 
   async fetchAdSets(accountId: string, campaignId: string, dateRange: DateRange) {
     try {
-      const { data } = await this.axios.get('/meta/ads/insights', {
+      const { data } = await this.axios.get(`/api/meta/campaigns/${campaignId}/adsets`, {
         params: {
-          accountId,
-          campaignId,
+          page_id: accountId,
           start_date: dateRange.startDate,
           end_date: dateRange.endDate,
-          level: 'adset'
+          fields: 'adset_id,adset_name,insights'
         }
       });
-      return this.transformAdSetData(data);
-    } catch (error) {
-      console.error('Error fetching ad sets:', error);
-      throw error;
+
+      return this.transformAdSetData(data.data || []);
+    } catch (error: any) {
+      console.error('Error fetching ad sets:', error.response?.data || error.message);
+      throw this.handleError(error);
     }
   }
 
-  private transformCampaignData(data: any[]) {
-    return data.map(campaign => ({
+  private handleError(error: any): Error {
+    if (!error.response) {
+      return new Error('Network error occurred');
+    }
+
+    const { status, data } = error.response;
+    const message = data?.error?.message || data?.message || error.message;
+
+    switch (status) {
+      case 400:
+        return new Error(`Invalid request parameters: ${message}`);
+      case 401:
+        return new Error('Authentication failed. Please reconnect your Meta account');
+      case 403:
+        return new Error('Not authorized to access this data');
+      case 404:
+        return new Error('Requested resource not found');
+      default:
+        return new Error(`Failed to fetch data: ${message}`);
+    }
+  }
+
+  private transformInsightsData(data: any): InsightsResponse {
+    // Handle both single object and array responses
+    const insights = Array.isArray(data) ? data[0] : data;
+    
+    return {
+      impressions: parseInt(insights?.impressions || '0', 10),
+      leads: this.extractLeads(insights?.actions),
+      costPerLead: this.calculateCostPerLead(insights?.spend, insights?.actions),
+      amountSpent: parseFloat(insights?.spend || '0')
+    };
+  }
+
+  private extractLeads(actions: any[] = []): number {
+    if (!Array.isArray(actions)) return 0;
+    
+    const leadAction = actions.find(action => 
+      action.action_type === 'lead' || 
+      action.action_type === 'leadgen'
+    );
+    return parseInt(leadAction?.value || '0', 10);
+  }
+
+  private calculateCostPerLead(spend: string, actions: any[]): number {
+    const leads = this.extractLeads(actions);
+    const spendAmount = parseFloat(spend || '0');
+    return leads > 0 ? spendAmount / leads : 0;
+  }
+
+  private transformCampaignData(campaigns: any[]) {
+    if (!Array.isArray(campaigns)) return [];
+
+    return campaigns.map(campaign => ({
       id: campaign.campaign_id,
       name: campaign.campaign_name,
-      impressions: campaign.impressions || 0,
-      reach: campaign.reach || 0,
-      leads: campaign.results || 0,
-      costPerLead: campaign.cost_per_result || 0,
-      amountSpent: campaign.spend || 0
+      impressions: parseInt(campaign.insights?.impressions || '0', 10),
+      reach: parseInt(campaign.insights?.reach || '0', 10),
+      leads: this.extractLeads(campaign.insights?.actions),
+      costPerLead: this.calculateCostPerLead(
+        campaign.insights?.spend,
+        campaign.insights?.actions
+      ),
+      amountSpent: parseFloat(campaign.insights?.spend || '0')
     }));
   }
 
-  private transformAdSetData(data: any[]) {
-    return data.map(adset => ({
+  private transformAdSetData(adsets: any[]) {
+    if (!Array.isArray(adsets)) return [];
+
+    return adsets.map(adset => ({
       id: adset.adset_id,
       name: adset.adset_name,
-      impressions: adset.impressions || 0,
-      reach: adset.reach || 0,
-      leads: adset.results || 0,
-      costPerLead: adset.cost_per_result || 0,
-      amountSpent: adset.spend || 0
+      impressions: parseInt(adset.insights?.impressions || '0', 10),
+      reach: parseInt(adset.insights?.reach || '0', 10),
+      leads: this.extractLeads(adset.insights?.actions),
+      costPerLead: this.calculateCostPerLead(
+        adset.insights?.spend,
+        adset.insights?.actions
+      ),
+      amountSpent: parseFloat(adset.insights?.spend || '0')
     }));
   }
 }
