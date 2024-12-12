@@ -11,11 +11,12 @@ import {
 } from 'recharts';
 import { useMeta } from '../../hooks/useMeta';
 import { formatCurrency, formatNumber } from '../../utils/metrics';
-import { getDateRange } from '../../utils/dateRanges';
 
 export const InsightsChart = () => {
   const { useInsights } = useMeta();
-  const { data: insights, isLoading, error } = useInsights('thisWeek');
+  const { data: insights, isLoading, error } = useInsights('thisYear');
+
+  console.log('InsightsChart - Raw Data:', { insights, isLoading, error });
 
   if (isLoading) {
     return (
@@ -27,6 +28,7 @@ export const InsightsChart = () => {
   }
 
   if (error) {
+    console.error('InsightsChart - Error:', error);
     return (
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
         <div className="text-red-500 p-4 rounded-lg bg-red-50">
@@ -37,22 +39,30 @@ export const InsightsChart = () => {
     );
   }
 
-  // Generate daily data points for the current week
-  const { startDate, endDate } = getDateRange('thisWeek');
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  // Generate monthly data points for the current year
+  const currentYear = new Date().getFullYear();
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
   
-  const dailyData = [];
-  let currentDate = new Date(start);
-  
-  while (currentDate <= end) {
-    dailyData.push({
-      name: currentDate.toLocaleDateString('en-GB', { weekday: 'short' }),
-      leads: Math.floor(Math.random() * 50), // Replace with actual daily data
-      amountSpent: Math.random() * 1000 // Replace with actual daily data
-    });
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
+  const monthlyData = months.map((month, index) => {
+    // Get real data from insights if available, otherwise use placeholder
+    const monthData = insights?.monthly?.[index] || {
+      leads: Math.floor(Math.random() * 100),
+      amountSpent: Math.random() * 10000
+    };
+
+    console.log(`InsightsChart - Month Data (${month}):`, monthData);
+
+    return {
+      name: month,
+      leads: monthData.leads,
+      amountSpent: monthData.amountSpent
+    };
+  });
+
+  console.log('InsightsChart - Processed Monthly Data:', monthlyData);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload) return null;
@@ -77,10 +87,10 @@ export const InsightsChart = () => {
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
       <h2 className="text-lg sm:text-xl font-semibold mb-4">
-        This Week's Performance
+        {currentYear} Performance
       </h2>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={dailyData}>
+        <LineChart data={monthlyData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="name"

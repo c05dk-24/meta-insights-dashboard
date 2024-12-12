@@ -11,17 +11,53 @@ export class MetaService {
   }
 
   async getInsights(params: MetaInsightsParams): Promise<InsightsResponse> {
-    const data = await this.client.getInsights(params);
-    return MetaDataTransformer.transformInsights(data);
+    console.log('MetaService.getInsights - Input params:', params);
+    
+    try {
+      const data = await this.client.getInsights(params);
+      console.log('MetaService.getInsights - Raw response:', data);
+      
+      const transformed = MetaDataTransformer.transformInsights(data);
+      console.log('MetaService.getInsights - Transformed data:', transformed);
+      
+      return transformed;
+    } catch (error) {
+      console.error('MetaService.getInsights - Error:', error);
+      throw error;
+    }
   }
 
   async getCampaigns(accountId: string, dateRange: DateRange): Promise<Campaign[]> {
-    const data = await this.client.getCampaigns(accountId, dateRange);
-    return MetaDataTransformer.transformCampaigns(data.data || []);
+    console.log('MetaService.getCampaigns - Input:', { accountId, dateRange });
+    
+    try {
+      const data = await this.client.getCampaigns(accountId, dateRange);
+      console.log('MetaService.getCampaigns - Raw response:', data);
+      
+      const transformed = MetaDataTransformer.transformCampaigns(data.data || []);
+      console.log('MetaService.getCampaigns - Transformed data:', transformed);
+      
+      return transformed;
+    } catch (error) {
+      console.error('MetaService.getCampaigns - Error:', error);
+      throw error;
+    }
   }
 
   async getAdSets(accountId: string, campaignId: string, dateRange: DateRange): Promise<AdSet[]> {
-    const data = await this.client.getAdSets(accountId, campaignId, dateRange);
-    return MetaDataTransformer.transformAdSets(data.data || []);
+    console.log('MetaService.getAdSets - Input:', { accountId, campaignId, dateRange });
+    
+    try {
+      const data = await this.client.getAdSets(accountId, campaignId, dateRange);
+      console.log('MetaService.getAdSets - Raw response:', data);
+      
+      const transformed = MetaDataTransformer.transformAdSets(data.data || []);
+      console.log('MetaService.getAdSets - Transformed data:', transformed);
+      
+      return transformed;
+    } catch (error) {
+      console.error('MetaService.getAdSets - Error:', error);
+      throw error;
+    }
   }
 }
