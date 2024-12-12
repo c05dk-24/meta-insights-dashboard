@@ -7,7 +7,7 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: `${API_CONFIG.baseURL}/api`,
+      baseURL: `${API_CONFIG.baseURL}/api`, // Single /api prefix
       timeout: API_CONFIG.timeout,
       headers: API_CONFIG.headers
     });

@@ -1,16 +1,22 @@
+```typescript
 import React from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { BoardList } from '../components/Board/BoardList';
 import { AddList } from '../components/Board/AddList';
 import { useBoards, useCreateBoard } from '../hooks/board';
 import { Plus } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export const Boards = () => {
   const { data: boards = [], isLoading, error } = useBoards();
   const createBoard = useCreateBoard();
 
   const handleCreateBoard = () => {
-    createBoard.mutate('New Board');
+    createBoard.mutate('New Board', {
+      onSuccess: () => {
+        toast.success('Board created successfully');
+      }
+    });
   };
 
   if (isLoading) {
@@ -73,3 +79,4 @@ export const Boards = () => {
     </div>
   );
 };
+```
