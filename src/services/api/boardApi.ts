@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { Board, List, Card } from '../../types/board';
-import { getApiUrl } from '../../utils/config';
+import { getApiUrl, API_CONFIG } from '../../utils/config';
 
 const api = axios.create({
   baseURL: getApiUrl()
 });
 
-// Request interceptor for logging and token handling
+// Add request interceptor for logging
 api.interceptors.request.use(
   (config) => {
-    // Log request details
     console.log('Board API Request:', {
       method: config.method?.toUpperCase(),
       url: config.url,
@@ -23,7 +22,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Add response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -32,10 +31,7 @@ api.interceptors.response.use(
       data: error.response?.data,
       message: error.message
     });
-    
-    // Extract error message from response
-    const errorMessage = error.response?.data?.error || error.message;
-    return Promise.reject(new Error(errorMessage));
+    return Promise.reject(error.response?.data?.error || error.message);
   }
 );
 
@@ -45,17 +41,17 @@ export const boardApi = {
   },
 
   getBoards: async (): Promise<Board[]> => {
-    const { data } = await api.get('/api/boards');
+    const { data } = await api.get(API_CONFIG.ENDPOINTS.BOARDS);
     return data;
   },
 
   createBoard: async (title: string): Promise<Board> => {
-    const { data } = await api.post('/api/boards', { title });
+    const { data } = await api.post(API_CONFIG.ENDPOINTS.BOARDS, { title });
     return data;
   },
 
   createList: async (boardId: string, title: string): Promise<List> => {
-    const { data } = await api.post(`/api/boards/${boardId}/lists`, { title });
+    const { data } = await api.post(API_CONFIG.ENDPOINTS.LISTS(boardId), { title });
     return data;
   },
 
@@ -65,7 +61,7 @@ export const boardApi = {
     { title, description }: { title: string; description?: string }
   ): Promise<Card> => {
     const { data } = await api.post(
-      `/api/boards/${boardId}/lists/${listId}/cards`,
+      API_CONFIG.ENDPOINTS.CARDS(boardId, listId),
       { title, description }
     );
     return data;

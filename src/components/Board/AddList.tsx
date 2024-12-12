@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useCreateList } from '../../hooks/board';
+import { toast } from 'react-hot-toast';
 
 interface Props {
   boardId: string;
@@ -23,7 +24,7 @@ export const AddList: React.FC<Props> = ({ boardId }) => {
       setTitle('');
       setIsAdding(false);
     } catch (error) {
-      console.error('Failed to create list:', error);
+      toast.error('Failed to create list');
     }
   };
 
