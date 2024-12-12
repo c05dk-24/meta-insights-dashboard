@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { User, Company } from '../models/index.js';
+import { User } from '../models/index.js';
 import dbLogger from '../utils/db-logger.js';
 
 export const authenticate = async (req, res, next) => {
@@ -14,11 +14,7 @@ export const authenticate = async (req, res, next) => {
     
     const user = await User.findOne({
       where: { id: decoded.userId },
-      attributes: ['id', 'email', 'name', 'company_id', 'meta_page_id'],
-      include: [{
-        model: Company,
-        attributes: ['name'],
-      }]
+      attributes: ['id', 'email', 'name', 'company_id', 'meta_page_id']
     });
 
     if (!user) {
@@ -26,11 +22,8 @@ export const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    // Attach user data to request with company name
-    req.user = {
-      ...user.toJSON(),
-      companyName: user.Company?.name
-    };
+    // Attach user data to request
+    req.user = user.toJSON();
     next();
   } catch (error) {
     dbLogger.error('Authentication error:', error.message);

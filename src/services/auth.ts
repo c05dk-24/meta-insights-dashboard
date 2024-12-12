@@ -20,39 +20,30 @@ export const loginUser = async (email: string, password: string) => {
 
     const { token, user } = response.data;
     
-    // Store token and user data
+    // Store token
     localStorage.setItem('auth_token', token);
-    localStorage.setItem('auth_user', JSON.stringify(user));
     
     // Set axios default header
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     
-    // Log authentication details
-    console.log('Auth Service - Login Success:', {
-      userId: user.id,
-      email: user.email,
-      companyId: user.company_id,
-      companyName: user.companyName
-    });
-    
     return { user, token };
   } catch (error: any) {
-    console.error('Auth Service - Login Error:', error.response?.data || error.message);
     const errorMessage = error.response?.data?.error || 'Login failed. Please check your credentials and try again.';
     throw new Error(errorMessage);
   }
 };
 
 export const logoutUser = () => {
-  const user = JSON.parse(localStorage.getItem('auth_user') || '{}');
-  
-  // Log logout action
-  console.log('Auth Service - Logout:', {
-    userId: user.id,
-    companyName: user.companyName
-  });
-  
   localStorage.removeItem('auth_token');
-  localStorage.removeItem('auth_user');
   delete axios.defaults.headers.common['Authorization'];
+};
+
+export const getStoredAuth = (): { user: User | null; token: string | null } => {
+  const token = localStorage.getItem('auth_token');
+  const userStr = localStorage.getItem('auth_user');
+  
+  return {
+    token,
+    user: userStr ? JSON.parse(userStr) : null,
+  };
 };

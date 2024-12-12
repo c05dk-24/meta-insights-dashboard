@@ -3,7 +3,6 @@ export interface User {
   email: string;
   name: string;
   company_id: string;
-  companyName?: string;
   meta_page_id?: string;
 }
 
