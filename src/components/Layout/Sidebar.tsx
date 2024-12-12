@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Trello, X } from 'lucide-react';
+import { Trello, Wand2, X } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -8,8 +8,8 @@ interface Props {
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Boards', href: '/boards', icon: Trello },
+  { name: 'AI Generator', href: '/ai', icon: Wand2 },
 ];
 
 export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
@@ -31,7 +31,7 @@ export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="p-6 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>
+          <h1 className="text-xl font-bold text-gray-800">Project Manager</h1>
           <button 
             onClick={onClose}
             className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"

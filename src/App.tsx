@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Dashboard } from './pages/Dashboard';
 import { Boards } from './pages/Boards';
+import { AI } from './pages/AI';
 import { Login } from './pages/Login';
 import { PrivateRoute } from './components/PrivateRoute';
 import { MainLayout } from './components/Layout/MainLayout';
@@ -36,7 +36,7 @@ function App() {
           element={
             <PrivateRoute>
               <MainLayout>
-                <Dashboard />
+                <Boards />
               </MainLayout>
             </PrivateRoute>
           }
@@ -48,6 +48,17 @@ function App() {
             <PrivateRoute>
               <MainLayout>
                 <Boards />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
+        
+        <Route
+          path="/ai"
+          element={
+            <PrivateRoute>
+              <MainLayout>
+                <AI />
               </MainLayout>
             </PrivateRoute>
           }
