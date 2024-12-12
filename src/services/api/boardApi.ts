@@ -12,11 +12,6 @@ const api = axios.create({
 // Add request interceptor for logging
 api.interceptors.request.use(
   (config) => {
-    // Remove duplicate /api prefix if present
-    if (config.url?.startsWith('/api/api/')) {
-      config.url = config.url.replace('/api/api/', '/api/');
-    }
-    
     console.log('Board API Request:', {
       method: config.method?.toUpperCase(),
       url: config.url,
@@ -34,11 +29,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('Board API Error:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message
-    });
+    console.error('Board API Error:', error.response || error);
     return Promise.reject(error.response?.data?.error || error.message);
   }
 );
@@ -49,17 +40,17 @@ export const boardApi = {
   },
 
   getBoards: async (): Promise<Board[]> => {
-    const { data } = await api.get('api/boards');
+    const { data } = await api.get('/api/boards');
     return data;
   },
 
   createBoard: async (title: string): Promise<Board> => {
-    const { data } = await api.post('api/boards', { title });
+    const { data } = await api.post('/api/boards', { title });
     return data;
   },
 
   createList: async (boardId: string, title: string): Promise<List> => {
-    const { data } = await api.post(`api/boards/${boardId}/lists`, { title });
+    const { data } = await api.post(`/api/boards/${boardId}/lists`, { title });
     return data;
   },
 
@@ -69,7 +60,7 @@ export const boardApi = {
     { title, description }: { title: string; description?: string }
   ): Promise<Card> => {
     const { data } = await api.post(
-      `api/boards/${boardId}/lists/${listId}/cards`,
+      `/api/boards/${boardId}/lists/${listId}/cards`,
       { title, description }
     );
     return data;

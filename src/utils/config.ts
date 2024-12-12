@@ -5,9 +5,9 @@ export const getApiUrl = () => {
 
 export const API_CONFIG = {
   ENDPOINTS: {
-    AUTH: 'api/auth',
-    BOARDS: 'api/boards',
-    LISTS: (boardId: string) => `api/boards/${boardId}/lists`,
-    CARDS: (boardId: string, listId: string) => `api/boards/${boardId}/lists/${listId}/cards`
+    AUTH: '/api/auth',
+    BOARDS: '/api/boards',
+    LISTS: (boardId: string) => `/api/boards/${boardId}/lists`,
+    CARDS: (boardId: string, listId: string) => `/api/boards/${boardId}/lists/${listId}/cards`
   }
 } as const;
