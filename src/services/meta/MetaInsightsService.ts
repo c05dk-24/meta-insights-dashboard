@@ -1,24 +1,29 @@
-import { AxiosInstance } from 'axios';
+import { MetaApiClient } from './MetaApiClient';
+import { META_API_ENDPOINTS } from './config/endpoints';
+import { META_API_FIELDS } from './config/fields';
 import { InsightsResponse, DateRange } from '../../types/meta';
 import { transformInsightsData } from './transformers/insightsTransformer';
-import { buildQueryParams } from './utils/queryBuilder';
 
 export class MetaInsightsService {
-  constructor(private axios: AxiosInstance) {}
+  constructor(private client: MetaApiClient) {}
 
-  async getInsights(accountId: string, dateRange: DateRange): Promise<InsightsResponse> {
+  async getInsights(pageId: string, dateRange: DateRange): Promise<InsightsResponse> {
     try {
-      const { data } = await this.axios.get('/api/meta/insights', {
-        params: {
-          start_date: dateRange.startDate,
-          end_date: dateRange.endDate
+      const data = await this.client.get(
+        META_API_ENDPOINTS.INSIGHTS(pageId),
+        {
+          fields: META_API_FIELDS.INSIGHTS,
+          time_range: JSON.stringify({
+            since: dateRange.startDate,
+            until: dateRange.endDate
+          })
         }
-      });
+      );
 
-      return transformInsightsData(data);
-    } catch (error: any) {
-      console.error('MetaInsightsService.getInsights error:', error.response?.data || error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch insights');
+      return transformInsightsData(data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch Meta insights:', error);
+      throw error;
     }
   }
 }

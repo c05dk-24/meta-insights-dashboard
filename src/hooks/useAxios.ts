@@ -4,10 +4,10 @@ import { getApiUrl } from '../utils/config';
 
 export const useAxios = () => {
   const { token, logout } = useAuth();
-  const API_URL = getApiUrl();
+  const baseURL = getApiUrl();
 
   const instance = axios.create({
-    baseURL: API_URL,
+    baseURL,
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -18,11 +18,15 @@ export const useAxios = () => {
   // Add request interceptor for logging
   instance.interceptors.request.use(
     (config) => {
+      // Remove duplicate /api in URL if present
+      if (config.url?.startsWith('/api/api/')) {
+        config.url = config.url.replace('/api/api/', '/api/');
+      }
+      
       console.log('API Request:', {
         method: config.method?.toUpperCase(),
         url: config.url,
         params: config.params,
-        headers: config.headers,
       });
       return config;
     },
