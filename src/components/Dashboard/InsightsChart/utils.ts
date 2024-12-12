@@ -1,16 +1,16 @@
 import { ChartData } from './types';
 
 export const transformInsightsData = (data: any): ChartData[] => {
-  if (!data?.data) {
+  if (!Array.isArray(data)) {
     console.warn('Invalid insights data:', data);
     return [];
   }
 
-  console.log('Transforming insights data:', data.data);
+  console.log('Transforming insights data:', data);
 
   // Group data by month
-  const monthlyData = data.data.reduce((acc: Record<string, ChartData>, item: any) => {
-    const date = new Date(item.date_start);
+  const monthlyData = data.reduce((acc: Record<string, ChartData>, item: any) => {
+    const date = new Date(item.date_start || item.date);
     const month = date.toLocaleString('default', { month: 'short' });
     
     if (!acc[month]) {
