@@ -4,25 +4,21 @@ import { Lock, Mail } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(import.meta.env.DEV ? 'admin@example.com' : '');
+  const [password, setPassword] = useState(import.meta.env.DEV ? 'admin123' : '');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
     
     try {
       await login(email, password);
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -82,12 +78,23 @@ export const Login = () => {
             disabled={isLoading}
             className={`
               w-full bg-blue-500 text-white py-2 sm:py-3 px-4 rounded-lg text-sm sm:text-base
-              hover:bg-blue-600 transition-colors
-              disabled:bg-blue-300 disabled:cursor-not-allowed
+              transition-colors duration-200
+              ${isLoading 
+                ? 'bg-blue-400 cursor-not-allowed' 
+                : 'hover:bg-blue-600 active:bg-blue-700'
+              }
             `}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
+
+          {import.meta.env.DEV && (
+            <div className="text-xs text-gray-500 text-center">
+              <p>Development Mode</p>
+              <p>Email: admin@example.com</p>
+              <p>Password: admin123</p>
+            </div>
+          )}
         </form>
       </div>
     </div>
