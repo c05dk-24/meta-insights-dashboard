@@ -56,9 +56,9 @@ export const InsightsChart = () => {
     console.log(`InsightsChart - Month Data (${month}):`, monthData);
 
     return {
-      name: month,
+      month,
       leads: monthData.leads,
-      amountSpent: monthData.amountSpent
+      spend: monthData.amountSpent // Changed from amountSpent to spend for clarity
     };
   });
 
@@ -71,13 +71,13 @@ export const InsightsChart = () => {
       <div className="bg-white p-3 border rounded shadow-lg">
         <p className="font-medium mb-2">{label}</p>
         {payload.map((entry: any) => (
-          <p key={entry.name} className="text-sm">
+          <p key={entry.dataKey} className="text-sm">
             <span style={{ color: entry.color }}>
-              {entry.name === 'amountSpent' ? 'Spend: ' : 'Leads: '}
+              {entry.dataKey === 'spend' ? 'Spend: ' : 'Leads: '}
             </span>
-            {entry.name === 'amountSpent' 
+            {entry.dataKey === 'spend' 
               ? formatCurrency(entry.value)
-              : formatNumber(entry.value)}
+              : `${formatNumber(entry.value)} leads`}
           </p>
         ))}
       </div>
@@ -93,7 +93,7 @@ export const InsightsChart = () => {
         <LineChart data={monthlyData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
-            dataKey="name"
+            dataKey="month"
             tick={{ fontSize: 12 }}
           />
           <YAxis 
@@ -109,7 +109,7 @@ export const InsightsChart = () => {
           <YAxis
             yAxisId="right"
             orientation="right"
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={formatCurrency}
             label={{ 
               value: 'Spend',
               angle: 90,
@@ -124,16 +124,16 @@ export const InsightsChart = () => {
             type="monotone"
             dataKey="leads"
             stroke="#8884d8"
-            name="Leads"
+            name="Total Leads"
             strokeWidth={2}
             dot={{ strokeWidth: 2 }}
           />
           <Line
             yAxisId="right"
             type="monotone"
-            dataKey="amountSpent"
+            dataKey="spend"
             stroke="#82ca9d"
-            name="Spend"
+            name="Total Spend"
             strokeWidth={2}
             dot={{ strokeWidth: 2 }}
           />
