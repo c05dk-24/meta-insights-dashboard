@@ -18,10 +18,7 @@ export const AddList: React.FC<Props> = ({ boardId }) => {
     if (!title.trim()) return;
 
     try {
-      await createList.mutateAsync({
-        boardId,
-        title: title.trim()
-      });
+      await createList.mutateAsync({ boardId, title: title.trim() });
       setTitle('');
       setIsAdding(false);
     } catch (error) {

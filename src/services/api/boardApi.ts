@@ -4,26 +4,22 @@ import { API_CONFIG } from './config';
 import { Board, List, Card } from '../../types/board';
 
 class BoardApi {
-  setToken(token: string) {
-    apiClient.setAuthToken(token);
-  }
-
-  getBoards() {
+  async getBoards() {
     return apiClient.get<Board[]>(API_CONFIG.endpoints.boards);
   }
 
-  createBoard(title: string) {
+  async createBoard(title: string) {
     return apiClient.post<Board>(API_CONFIG.endpoints.boards, { title });
   }
 
-  createList(boardId: string, title: string) {
+  async createList(boardId: string, title: string) {
     return apiClient.post<List>(
       API_CONFIG.endpoints.lists(boardId),
       { title }
     );
   }
 
-  createCard(
+  async createCard(
     boardId: string,
     listId: string,
     { title, description }: { title: string; description?: string }
