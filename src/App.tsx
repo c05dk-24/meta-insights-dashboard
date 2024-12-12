@@ -5,12 +5,12 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { useAuth } from './hooks/useAuth';
 import { Toaster } from 'react-hot-toast';
-import Dashboard from './pages/Dashboard';
-import Boards from './pages/Boards';
-import AI from './pages/AI';
-import Login from './pages/Login';
-import MainLayout from './components/Layout/MainLayout';
-import PrivateRoute from './components/PrivateRoute';
+import { Dashboard } from './pages/Dashboard/Dashboard';
+import { Boards } from './pages/Boards/Boards';
+import { AI } from './pages/AI/AI';
+import { Login } from './pages/Login/Login';
+import { MainLayout } from './components/Layout/MainLayout';
+import { PrivateRoute } from './components/PrivateRoute';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export const App = () => {
+export function App() {
   const { isAuthenticated } = useAuth();
 
   return (
@@ -33,11 +33,7 @@ export const App = () => {
             <Route 
               path="/login" 
               element={
-                isAuthenticated ? (
-                  <Navigate to="/" replace />
-                ) : (
-                  <Login />
-                )
+                isAuthenticated ? <Navigate to="/" replace /> : <Login />
               } 
             />
             
@@ -81,4 +77,4 @@ export const App = () => {
       </QueryClientProvider>
     </ErrorBoundary>
   );
-};
+}

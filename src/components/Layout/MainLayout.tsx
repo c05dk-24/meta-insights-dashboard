@@ -7,7 +7,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const MainLayout: React.FC<Props> = ({ children }) => {
+export function MainLayout({ children }: Props) {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
   return (
