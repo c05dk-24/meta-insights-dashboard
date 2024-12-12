@@ -11,15 +11,14 @@ export const useAxios = () => {
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    withCredentials: true,
+    }
   });
 
-  // Add request interceptor for logging
+  // Add request interceptor
   instance.interceptors.request.use(
     (config) => {
       // Remove duplicate /api in URL if present
-      if (config.url?.startsWith('/api/api/')) {
+      if (config.url?.includes('/api/api/')) {
         config.url = config.url.replace('/api/api/', '/api/');
       }
       

@@ -1,56 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAxios } from './useAxios';
-import { Board, List, Card } from '../types/board';
+import { boardService } from '../services/boardService';
 import { toast } from 'react-hot-toast';
 
 export const useBoards = () => {
-  const axios = useAxios();
   const queryClient = useQueryClient();
-
-  const fetchBoards = async (): Promise<Board[]> => {
-    const { data } = await axios.get('/api/boards');
-    return data;
-  };
-
-  const createBoard = async (title: string): Promise<Board> => {
-    const { data } = await axios.post('/api/boards', { title });
-    return data;
-  };
-
-  const createList = async ({ boardId, title }: { boardId: string; title: string }): Promise<List> => {
-    const { data } = await axios.post(`/api/boards/${boardId}/lists`, { title });
-    return data;
-  };
-
-  const createCard = async ({ 
-    boardId, 
-    listId, 
-    title, 
-    description 
-  }: { 
-    boardId: string;
-    listId: string;
-    title: string;
-    description?: string;
-  }): Promise<Card> => {
-    const { data } = await axios.post(
-      `/api/boards/${boardId}/lists/${listId}/cards`, 
-      { title, description }
-    );
-    return data;
-  };
 
   return {
     useBoards: () => useQuery({
       queryKey: ['boards'],
-      queryFn: fetchBoards,
+      queryFn: () => boardService.getBoards(),
       onError: (error: any) => {
         toast.error(error.message || 'Failed to fetch boards');
       }
     }),
 
     useCreateBoard: () => useMutation({
-      mutationFn: createBoard,
+      mutationFn: (title: string) => boardService.createBoard(title),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['boards'] });
         toast.success('Board created successfully');
@@ -61,7 +26,8 @@ export const useBoards = () => {
     }),
 
     useCreateList: () => useMutation({
-      mutationFn: createList,
+      mutationFn: ({ boardId, title }: { boardId: string; title: string }) => 
+        boardService.createList(boardId, title),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['boards'] });
         toast.success('List created successfully');
@@ -72,7 +38,17 @@ export const useBoards = () => {
     }),
 
     useCreateCard: () => useMutation({
-      mutationFn: createCard,
+      mutationFn: ({ 
+        boardId, 
+        listId, 
+        title, 
+        description 
+      }: { 
+        boardId: string;
+        listId: string;
+        title: string;
+        description?: string;
+      }) => boardService.createCard(boardId, listId, { title, description }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['boards'] });
         toast.success('Card created successfully');
