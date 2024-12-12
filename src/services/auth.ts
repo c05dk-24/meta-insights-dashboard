@@ -20,12 +20,19 @@ export const loginUser = async (email: string, password: string) => {
 
     const { token, user } = response.data;
     
-    // Store token
+    // Store token and user data
     localStorage.setItem('auth_token', token);
+    localStorage.setItem('auth_user', JSON.stringify(user));
     
     // Set axios default header
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     
+    console.log('Logged in user:', {
+      userId: user.id,
+      companyId: user.company_id,
+      companyName: user.companyName
+    });
+
     return { user, token };
   } catch (error: any) {
     const errorMessage = error.response?.data?.error || 'Login failed. Please check your credentials and try again.';
@@ -35,6 +42,7 @@ export const loginUser = async (email: string, password: string) => {
 
 export const logoutUser = () => {
   localStorage.removeItem('auth_token');
+  localStorage.removeItem('auth_user');
   delete axios.defaults.headers.common['Authorization'];
 };
 
