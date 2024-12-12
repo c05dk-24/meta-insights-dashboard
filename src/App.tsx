@@ -5,16 +5,12 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { useAuth } from './hooks/useAuth';
 import { Toaster } from 'react-hot-toast';
-
-// Lazy load pages
-const Dashboard = React.lazy(() => import('./pages/Dashboard'));
-const Boards = React.lazy(() => import('./pages/Boards'));
-const AI = React.lazy(() => import('./pages/AI'));
-const Login = React.lazy(() => import('./pages/Login'));
-
-// Lazy load components
-const MainLayout = React.lazy(() => import('./components/Layout/MainLayout').then(m => ({ default: m.MainLayout })));
-const PrivateRoute = React.lazy(() => import('./components/PrivateRoute').then(m => ({ default: m.PrivateRoute })));
+import { Dashboard } from './pages/Dashboard/Dashboard';
+import { Boards } from './pages/Boards/Boards';
+import { AI } from './pages/AI/AI';
+import { Login } from './pages/Login/Login';
+import { MainLayout } from './components/Layout/MainLayout/MainLayout';
+import { PrivateRoute } from './components/PrivateRoute/PrivateRoute';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
+export const App = () => {
   const { isAuthenticated } = useAuth();
 
   return (
@@ -40,9 +36,7 @@ const App = () => {
                 isAuthenticated ? (
                   <Navigate to="/" replace />
                 ) : (
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <Login />
-                  </Suspense>
+                  <Login />
                 )
               } 
             />
@@ -52,9 +46,7 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <MainLayout>
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <Dashboard />
-                    </Suspense>
+                    <Dashboard />
                   </MainLayout>
                 </PrivateRoute>
               }
@@ -65,9 +57,7 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <MainLayout>
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <Boards />
-                    </Suspense>
+                    <Boards />
                   </MainLayout>
                 </PrivateRoute>
               }
@@ -78,9 +68,7 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <MainLayout>
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <AI />
-                    </Suspense>
+                    <AI />
                   </MainLayout>
                 </PrivateRoute>
               }
@@ -94,5 +82,3 @@ const App = () => {
     </ErrorBoundary>
   );
 };
-
-export default App;
