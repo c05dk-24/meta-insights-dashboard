@@ -2,54 +2,71 @@ import { useQuery } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
 import { useAuth } from './useAuth';
 import { getDateRange } from '../utils/dateRanges';
+import { API_PATHS, META_API_CONFIG } from '../utils/config';
 
 export const useMeta = () => {
   const axios = useAxios();
   const { user } = useAuth();
 
   const getInsights = async (range: string) => {
-    console.log('MetaApiClient.getInsights - Params:', {
-      accountId: user?.meta_page_id,
-      ...getDateRange(range)
-    });
+    if (!user?.meta_page_id) {
+      throw new Error('Meta page ID not found');
+    }
 
     const { startDate, endDate } = getDateRange(range);
     
-    const params = {
-      fields: 'impressions,reach,actions,spend',
-      page_id: user?.meta_page_id,
-      time_range: JSON.stringify({
-        since: startDate,
-        until: endDate
-      })
-    };
+    console.log('Fetching Meta insights:', {
+      pageId: user.meta_page_id,
+      startDate,
+      endDate,
+      range
+    });
 
-    console.log('MetaApiClient.getInsights - Query params:', params);
+    try {
+      const { data } = await axios.get(API_PATHS.META.INSIGHTS, {
+        params: {
+          fields: META_API_CONFIG.FIELDS.INSIGHTS,
+          page_id: user.meta_page_id,
+          start_date: startDate,
+          end_date: endDate
+        }
+      });
 
-    const { data } = await axios.get('/meta/ads/insights', { params });
-    return data;
+      console.log('Meta insights response:', data);
+      return data;
+    } catch (error: any) {
+      console.error('Error fetching insights:', error.response?.data || error);
+      throw error;
+    }
   };
 
   const getCampaigns = async (dateRange: { from: Date; to: Date }) => {
-    console.log('MetaApiClient.getCampaigns - Params:', {
-      accountId: user?.meta_page_id,
-      dateRange
+    if (!user?.meta_page_id) {
+      throw new Error('Meta page ID not found');
+    }
+
+    console.log('Fetching Meta campaigns:', {
+      pageId: user.meta_page_id,
+      startDate: dateRange.from,
+      endDate: dateRange.to
     });
 
-    const params = {
-      fields: 'campaign_id,campaign_name,insights',
-      page_id: user?.meta_page_id,
-      time_range: JSON.stringify({
-        since: dateRange.from.toISOString().split('T')[0],
-        until: dateRange.to.toISOString().split('T')[0]
-      }),
-      level: 'campaign'
-    };
+    try {
+      const { data } = await axios.get(API_PATHS.META.CAMPAIGNS, {
+        params: {
+          fields: META_API_CONFIG.FIELDS.CAMPAIGNS,
+          page_id: user.meta_page_id,
+          start_date: dateRange.from.toISOString().split('T')[0],
+          end_date: dateRange.to.toISOString().split('T')[0]
+        }
+      });
 
-    console.log('MetaApiClient.getCampaigns - Query params:', params);
-
-    const { data } = await axios.get('/meta/ads/insights', { params });
-    return data;
+      console.log('Meta campaigns response:', data);
+      return data;
+    } catch (error: any) {
+      console.error('Error fetching campaigns:', error.response?.data || error);
+      throw error;
+    }
   };
 
   return {

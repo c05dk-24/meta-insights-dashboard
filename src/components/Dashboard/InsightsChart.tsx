@@ -16,7 +16,7 @@ export const InsightsChart = () => {
   const { useInsights } = useMeta();
   const { data: insights, isLoading, error } = useInsights('thisYear');
 
-  console.log('InsightsChart render:', { insights, isLoading, error });
+  console.log('InsightsChart - Raw data:', { insights, isLoading, error });
 
   if (isLoading) {
     return (
@@ -38,7 +38,7 @@ export const InsightsChart = () => {
     );
   }
 
-  if (!insights?.data) {
+  if (!insights?.data?.length) {
     return (
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
         <div className="text-gray-500 p-4 text-center">
@@ -50,11 +50,21 @@ export const InsightsChart = () => {
   }
 
   // Transform API data for the chart
-  const chartData = insights.data.map((item: any) => ({
-    month: new Date(item.date_start).toLocaleString('default', { month: 'short' }),
-    leads: item.actions?.find((a: any) => a.action_type === 'lead')?.value || 0,
-    amountSpent: parseFloat(item.spend || 0)
-  }));
+  const chartData = insights.data.map(item => {
+    const date = new Date(item.date_start || item.date);
+    const leads = item.actions?.find(a => 
+      a.action_type === 'lead' || 
+      a.action_type === 'leadgen'
+    )?.value || 0;
+
+    return {
+      month: date.toLocaleString('default', { month: 'short' }),
+      leads: parseInt(leads, 10),
+      amountSpent: parseFloat(item.spend || '0')
+    };
+  });
+
+  console.log('Chart data:', chartData);
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">

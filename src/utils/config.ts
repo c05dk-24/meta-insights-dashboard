@@ -13,3 +13,23 @@ export const API_PATHS = {
     ADS: '/api/meta/campaigns/:campaignId/ads'
   }
 } as const;
+
+export const META_API_CONFIG = {
+  FIELDS: {
+    INSIGHTS: [
+      'impressions',
+      'reach',
+      'actions',
+      'spend',
+      'date_start',
+      'date_stop'
+    ].join(','),
+    CAMPAIGNS: [
+      'campaign_id',
+      'campaign_name',
+      'objective',
+      'status',
+      'insights'
+    ].join(',')
+  }
+} as const;
