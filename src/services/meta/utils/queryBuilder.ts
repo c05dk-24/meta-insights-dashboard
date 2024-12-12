@@ -12,17 +12,25 @@ export const buildQueryParams = (endpoint: EndpointType, params: any) => {
   console.log('buildQueryParams - Input:', { endpoint, params });
 
   const queryParams: Record<string, any> = {
-    fields: ENDPOINT_FIELDS[endpoint],
-    access_token: params.access_token,
-    time_range: JSON.stringify({
-      since: params.start_date || params.startDate,
-      until: params.end_date || params.endDate
-    })
+    fields: ENDPOINT_FIELDS[endpoint]
   };
 
-  // Only add page_id if it exists
+  // Add time range if dates are provided
+  if (params.start_date && params.end_date) {
+    queryParams.time_range = JSON.stringify({
+      since: params.start_date || params.startDate,
+      until: params.end_date || params.endDate
+    });
+  }
+
+  // Add access token if provided
+  if (params.access_token) {
+    queryParams.access_token = params.access_token;
+  }
+
+  // Add account ID if provided
   if (params.accountId) {
-    queryParams.page_id = params.accountId;
+    queryParams.account_id = params.accountId;
   }
 
   // Add level for campaign/adset queries

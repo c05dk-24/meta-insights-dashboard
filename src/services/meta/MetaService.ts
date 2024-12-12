@@ -14,7 +14,13 @@ export class MetaService {
     console.log('MetaService.getInsights - Input params:', params);
     
     try {
-      const data = await this.client.getInsights(params);
+      // Add access token to params
+      const paramsWithToken = {
+        ...params,
+        access_token: process.env.META_ACCESS_TOKEN || params.access_token
+      };
+
+      const data = await this.client.getInsights(paramsWithToken);
       console.log('MetaService.getInsights - Raw response:', data);
       
       const transformed = MetaDataTransformer.transformInsights(data);
