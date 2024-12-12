@@ -1,23 +1,40 @@
-type EndpointType = 'insights' | 'campaigns';
+import { MetaInsightsParams } from '../../../types/meta';
 
-interface QueryParams {
-  accountId: string;
-  fields: string;
-  start_date: string;
-  end_date: string;
-  [key: string]: any;
-}
+type EndpointType = 'insights' | 'campaigns' | 'adsets';
 
-export const buildQueryParams = (endpoint: EndpointType, params: QueryParams) => {
+const ENDPOINT_FIELDS = {
+  insights: 'impressions,reach,actions,spend',
+  campaigns: 'campaign_id,campaign_name,insights',
+  adsets: 'adset_id,adset_name,insights'
+};
+
+export const buildQueryParams = (endpoint: EndpointType, params: any) => {
+  console.log('buildQueryParams - Input:', { endpoint, params });
+
   const queryParams: Record<string, any> = {
-    fields: params.fields,
-    start_date: params.start_date,
-    end_date: params.end_date
+    fields: ENDPOINT_FIELDS[endpoint],
+    access_token: params.access_token,
+    time_range: JSON.stringify({
+      since: params.start_date || params.startDate,
+      until: params.end_date || params.endDate
+    })
   };
 
+  // Only add page_id if it exists
   if (params.accountId) {
-    queryParams.accountId = params.accountId;
+    queryParams.page_id = params.accountId;
   }
 
+  // Add level for campaign/adset queries
+  if (params.level) {
+    queryParams.level = params.level;
+  }
+
+  // Add campaign_id for adset queries
+  if (params.campaignId) {
+    queryParams.campaign_id = params.campaignId;
+  }
+
+  console.log('buildQueryParams - Output:', queryParams);
   return queryParams;
 };

@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
-import { Board, List, Card } from '../types/board';
-import { toast } from 'react-hot-toast';
+import { Board, List } from '../types/meta';
 
 export const useBoards = () => {
   const axios = useAxios();
@@ -9,7 +8,7 @@ export const useBoards = () => {
 
   const fetchBoards = async (): Promise<Board[]> => {
     const { data } = await axios.get('/api/boards');
-    return data;
+    return data || [];
   };
 
   const createBoard = async (title: string): Promise<Board> => {
@@ -22,41 +21,35 @@ export const useBoards = () => {
     return data;
   };
 
-  const createCard = async ({ 
-    boardId, 
-    listId, 
-    title, 
-    description 
-  }: { 
+  const updateList = async ({ boardId, listId, updates }: { 
     boardId: string;
     listId: string;
-    title: string;
-    description?: string;
-  }): Promise<Card> => {
-    const { data } = await axios.post(
-      `/api/boards/${boardId}/lists/${listId}/cards`, 
-      { title, description }
-    );
+    updates: Partial<List>;
+  }): Promise<List> => {
+    const { data } = await axios.put(`/api/boards/${boardId}/lists/${listId}`, updates);
     return data;
+  };
+
+  const deleteList = async ({ boardId, listId }: {
+    boardId: string;
+    listId: string;
+  }): Promise<void> => {
+    await axios.delete(`/api/boards/${boardId}/lists/${listId}`);
   };
 
   return {
     useBoards: () => useQuery({
       queryKey: ['boards'],
       queryFn: fetchBoards,
-      onError: (error: any) => {
-        toast.error(error.message || 'Failed to fetch boards');
-      }
+      retry: 1,
+      staleTime: 30000,
+      refetchOnWindowFocus: true
     }),
 
     useCreateBoard: () => useMutation({
       mutationFn: createBoard,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['boards'] });
-        toast.success('Board created successfully');
-      },
-      onError: (error: any) => {
-        toast.error(error.message || 'Failed to create board');
       }
     }),
 
@@ -64,21 +57,20 @@ export const useBoards = () => {
       mutationFn: createList,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['boards'] });
-        toast.success('List created successfully');
-      },
-      onError: (error: any) => {
-        toast.error(error.message || 'Failed to create list');
       }
     }),
 
-    useCreateCard: () => useMutation({
-      mutationFn: createCard,
+    useUpdateList: () => useMutation({
+      mutationFn: updateList,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['boards'] });
-        toast.success('Card created successfully');
-      },
-      onError: (error: any) => {
-        toast.error(error.message || 'Failed to create card');
+      }
+    }),
+
+    useDeleteList: () => useMutation({
+      mutationFn: deleteList,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['boards'] });
       }
     })
   };

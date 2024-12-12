@@ -1,56 +1,77 @@
 import { useQuery } from '@tanstack/react-query';
+import { useAxios } from './useAxios';
 import { useAuth } from './useAuth';
-import { MetaApiClient } from '../services/meta/MetaApiClient';
-import { MetaInsightsService } from '../services/meta/MetaInsightsService';
-import { MetaCampaignService } from '../services/meta/MetaCampaignService';
+import { MetaService } from '../services/meta/MetaService';
 import { getDateRange } from '../utils/dateRanges';
+import { DateRange } from '../types/meta';
 
 export const useMeta = () => {
+  const axios = useAxios();
   const { user } = useAuth();
+  const metaService = new MetaService(axios);
 
-  const getMetaServices = () => {
-    if (!user?.meta_access_token) {
-      throw new Error('Meta access token not found');
+  const validateUser = () => {
+    if (!user?.meta_page_id) {
+      throw new Error('No Meta ad account connected');
     }
-
-    const client = new MetaApiClient(user.meta_access_token);
-    return {
-      insights: new MetaInsightsService(client),
-      campaigns: new MetaCampaignService(client)
-    };
+    return user.meta_page_id;
   };
 
   return {
     useInsights: (range: string) => 
       useQuery({
-        queryKey: ['meta-insights', range],
+        queryKey: ['insights', range],
         queryFn: async () => {
-          if (!user?.meta_page_id) {
-            throw new Error('Meta page ID not found');
+          try {
+            const accountId = validateUser();
+            const { startDate, endDate } = getDateRange(range);
+            return metaService.getInsights({ 
+              accountId, 
+              start_date: startDate,
+              end_date: endDate,
+              access_token: user?.meta_access_token
+            });
+          } catch (error) {
+            console.error('useInsights error:', error);
+            throw error;
           }
-          const { insights } = getMetaServices();
-          return insights.getInsights(user.meta_page_id, getDateRange(range));
         },
-        enabled: !!user?.meta_page_id && !!user?.meta_access_token
+        enabled: !!user?.id && !!user?.meta_page_id && !!user?.meta_access_token,
+        retry: 1,
+        staleTime: 5 * 60 * 1000
       }),
 
-    useCampaigns: (dateRange: { from: Date; to: Date }) =>
+    useCampaigns: (dateRange: DateRange) =>
       useQuery({
-        queryKey: ['meta-campaigns', dateRange],
+        queryKey: ['campaigns', dateRange],
         queryFn: async () => {
-          if (!user?.meta_page_id) {
-            throw new Error('Meta page ID not found');
+          try {
+            const accountId = validateUser();
+            return metaService.getCampaigns(accountId, dateRange);
+          } catch (error) {
+            console.error('useCampaigns error:', error);
+            throw error;
           }
-          const { campaigns } = getMetaServices();
-          return campaigns.getCampaigns(
-            user.meta_page_id,
-            {
-              startDate: dateRange.from.toISOString().split('T')[0],
-              endDate: dateRange.to.toISOString().split('T')[0]
-            }
-          );
         },
-        enabled: !!user?.meta_page_id && !!user?.meta_access_token
+        enabled: !!user?.id && !!user?.meta_page_id && !!user?.meta_access_token,
+        staleTime: 5 * 60 * 1000
+      }),
+
+    useAdSets: (dateRange: DateRange, campaignId: string | null) =>
+      useQuery({
+        queryKey: ['adsets', dateRange, campaignId],
+        queryFn: async () => {
+          try {
+            const accountId = validateUser();
+            if (!campaignId) return null;
+            return metaService.getAdSets(accountId, campaignId, dateRange);
+          } catch (error) {
+            console.error('useAdSets error:', error);
+            throw error;
+          }
+        },
+        enabled: !!user?.id && !!user?.meta_page_id && !!user?.meta_access_token && !!campaignId,
+        staleTime: 5 * 60 * 1000
       })
   };
 };
