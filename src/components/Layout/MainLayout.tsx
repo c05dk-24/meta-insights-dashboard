@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
-import { useStore } from '../../store';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
 
 interface Props {
   children: React.ReactNode;
@@ -16,9 +16,11 @@ export const MainLayout: React.FC<Props> = ({ children }) => {
       <div className="flex h-[calc(100vh-4rem)]">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <main className="flex-1 overflow-auto w-full">
-          {children}
+          <Suspense fallback={<LoadingSpinner />}>
+            {children}
+          </Suspense>
         </main>
       </div>
     </div>
   );
-};
+}
