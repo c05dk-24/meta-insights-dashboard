@@ -1,15 +1,14 @@
 import express from 'express';
-import { authenticate } from '../../middleware/auth.js';
-import { validateMetaToken } from '../../middleware/metaAuth.js';
+import authRoutes from './auth.js';
 import insightsRoutes from './insights.js';
 import campaignRoutes from './campaigns.js';
 
 const router = express.Router();
 
-// Apply authentication middleware to all Meta routes
-router.use(authenticate);
-router.use(validateMetaToken);
+// Meta authentication routes (no Meta token validation)
+router.use('/auth', authRoutes);
 
+// Protected Meta API routes
 router.use('/insights', insightsRoutes);
 router.use('/campaigns', campaignRoutes);
 

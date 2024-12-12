@@ -3,12 +3,24 @@ import { MetricCards } from '../components/Dashboard/MetricCards';
 import { InsightsChart } from '../components/Dashboard/InsightsChart';
 import { DateRangeSelector } from '../components/Dashboard/DateRangeSelector';
 import { CampaignSection } from '../components/Dashboard/CampaignSection';
+import { MetaConnect } from '../components/MetaConnect';
 import { useMeta } from '../hooks/useMeta';
+import { useMetaAuth } from '../hooks/useMetaAuth';
 
 export const Dashboard = () => {
   const [dateRange, setDateRange] = useState('thisWeek');
   const { useInsights } = useMeta();
   const { data: insights, isLoading } = useInsights(dateRange);
+  const { isConnected } = useMetaAuth();
+
+  if (!isConnected) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8">
+        <h1 className="text-xl sm:text-2xl font-bold mb-6">Meta Insights Dashboard</h1>
+        <MetaConnect />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">

@@ -10,20 +10,26 @@ const router = express.Router();
 
 router.get('/', authenticate, validateMetaToken, async (req, res) => {
   try {
-    const { page_id, start_date, end_date, fields } = req.query;
+    const { start_date, end_date, fields } = req.query;
     
     // Get user's Meta credentials
     const user = await User.findByPk(req.user.id);
-    if (!user?.meta_page_id || !user?.meta_access_token) {
+    if (!user?.meta_page_id) {
       return res.status(400).json({ 
-        error: 'META_CREDENTIALS_MISSING',
-        message: 'Meta credentials not found' 
+        error: 'META_PAGE_ID_MISSING',
+        message: 'Meta page ID not found' 
       });
     }
 
+    dbLogger.log('Fetching Meta insights:', {
+      pageId: user.meta_page_id,
+      startDate: start_date,
+      endDate: end_date
+    });
+
     // Call Meta Graph API
     const response = await axios.get(
-      `${metaConfig.graphUrl}/${metaConfig.apiVersion}/${page_id || user.meta_page_id}/insights`,
+      `${metaConfig.graphUrl}/${metaConfig.apiVersion}/${user.meta_page_id}/insights`,
       {
         params: {
           access_token: user.meta_access_token,
