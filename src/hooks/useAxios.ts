@@ -10,13 +10,18 @@ export const useAxios = () => {
     baseURL,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     }
   });
 
   // Add request interceptor
   instance.interceptors.request.use(
     (config) => {
+      // Remove duplicate /api in URL if present
+      if (config.url?.includes('/api/api/')) {
+        config.url = config.url.replace('/api/api/', '/api/');
+      }
+      
       console.log('API Request:', {
         method: config.method?.toUpperCase(),
         url: config.url,

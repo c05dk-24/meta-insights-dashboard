@@ -7,7 +7,6 @@ import { Login } from './pages/Login';
 import { PrivateRoute } from './components/PrivateRoute';
 import { MainLayout } from './components/Layout/MainLayout';
 import { useAuth } from './hooks/useAuth';
-import { Toaster } from 'react-hot-toast';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,7 +66,6 @@ function App() {
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <Toaster position="top-right" />
     </QueryClientProvider>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
-import { useCreateList } from '../../hooks/board';
+import { useBoards } from '../../hooks/useBoards';
 
 interface Props {
   boardId: string;
@@ -9,6 +9,7 @@ interface Props {
 export const AddList: React.FC<Props> = ({ boardId }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState('');
+  const { useCreateList } = useBoards();
   const createList = useCreateList();
 
   const handleSubmit = async (e: React.FormEvent) => {
