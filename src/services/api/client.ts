@@ -18,7 +18,12 @@ class ApiClient {
   private setupInterceptors() {
     this.client.interceptors.request.use(
       (config) => {
-        console.log('API Request:', {
+        // Remove duplicate /api prefix if present
+        if (config.url?.startsWith('/api/api/')) {
+          config.url = config.url.replace('/api/api/', '/api/');
+        }
+        
+        console.log('Board API Request:', {
           method: config.method?.toUpperCase(),
           url: config.url,
           data: config.data
@@ -26,7 +31,7 @@ class ApiClient {
         return config;
       },
       (error) => {
-        console.error('API Request Error:', error);
+        console.error('Board API Error:', error);
         return Promise.reject(error);
       }
     );
@@ -34,7 +39,7 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
-        console.error('API Response Error:', {
+        console.error('Board API Error:', {
           status: error.response?.status,
           data: error.response?.data,
           message: error.message

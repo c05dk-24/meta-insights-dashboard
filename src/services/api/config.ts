@@ -8,10 +8,10 @@ export const API_CONFIG = {
     'Content-Type': 'application/json'
   },
   endpoints: {
-    auth: '/api/auth',
-    boards: '/api/boards',
-    lists: (boardId: string) => `/api/boards/${boardId}/lists`,
-    cards: (boardId: string, listId: string) => `/api/boards/${boardId}/lists/${listId}/cards`
+    auth: '/auth',
+    boards: '/boards',
+    lists: (boardId: string) => `/boards/${boardId}/lists`,
+    cards: (boardId: string, listId: string) => `/boards/${boardId}/lists/${listId}/cards`
   }
 } as const;
 ```

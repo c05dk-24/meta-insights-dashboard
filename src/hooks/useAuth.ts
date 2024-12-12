@@ -17,7 +17,7 @@ export const useAuth = () => {
     login: store.login,
     logout: () => {
       store.logout();
-      apiClient.setAuthToken(null); // Clear token on logout
+      apiClient.setAuthToken(null);
     },
   };
 };
