@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
-import dbLogger from '../utils/db-logger.js';
+import { logger } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -17,56 +17,51 @@ router.post('/login', authLimiter, async (req, res, next) => {
       });
     }
     
-    dbLogger.log(`Login attempt for email: ${email}`);
+    logger.info(`Login attempt for email: ${email}`);
     
-    // Find user with company_id
     const user = await User.findOne({ 
       where: { email },
-      attributes: ['id', 'email', 'password', 'name', 'company_id', 'meta_page_id']
+      attributes: ['id', 'email', 'password', 'name', 'company_id']
     });
 
     if (!user) {
-      dbLogger.warn(`Login failed: User not found - ${email}`);
+      logger.warn(`Login failed: User not found - ${email}`);
       return res.status(401).json({
         error: 'INVALID_CREDENTIALS',
         message: 'Invalid email or password'
       });
     }
 
-    // Compare passwords
     const isValid = await user.comparePassword(password);
     if (!isValid) {
-      dbLogger.warn(`Login failed: Invalid password - ${email}`);
+      logger.warn(`Login failed: Invalid password - ${email}`);
       return res.status(401).json({
         error: 'INVALID_CREDENTIALS',
         message: 'Invalid email or password'
       });
     }
 
-    // Generate token
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
-    // Remove sensitive data
     const userResponse = {
       id: user.id,
       email: user.email,
       name: user.name,
-      company_id: user.company_id,
-      meta_page_id: user.meta_page_id
+      company_id: user.company_id
     };
 
-    dbLogger.log(`User logged in successfully: ${email}`);
+    logger.info(`User logged in successfully: ${email}`);
 
     res.json({
       token,
       user: userResponse
     });
   } catch (error) {
-    dbLogger.error('Login error:', error);
+    logger.error('Login error:', error);
     next(error);
   }
 });
