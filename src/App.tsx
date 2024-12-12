@@ -11,6 +11,8 @@ const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Boards = React.lazy(() => import('./pages/Boards'));
 const AI = React.lazy(() => import('./pages/AI'));
 const Login = React.lazy(() => import('./pages/Login'));
+
+// Lazy load components
 const MainLayout = React.lazy(() => import('./components/Layout/MainLayout').then(m => ({ default: m.MainLayout })));
 const PrivateRoute = React.lazy(() => import('./components/PrivateRoute').then(m => ({ default: m.PrivateRoute })));
 
@@ -24,7 +26,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function App() {
+const App = () => {
   const { isAuthenticated } = useAuth();
 
   return (
@@ -91,4 +93,6 @@ export default function App() {
       </QueryClientProvider>
     </ErrorBoundary>
   );
-}
+};
+
+export default App;
