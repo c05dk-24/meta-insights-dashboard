@@ -12,66 +12,28 @@ export const useMeta = () => {
 
   const validateUser = () => {
     if (!user?.meta_page_id) {
+      console.warn('No Meta page ID found for user:', user?.id);
       throw new Error('No Meta ad account connected');
     }
+    console.log('Meta Page ID validated:', user.meta_page_id);
     return user.meta_page_id;
   };
 
   return {
-    useInsights: (range: string) => 
+    useAccountInfo: (pageId?: string) =>
       useQuery({
-        queryKey: ['insights', range],
+        queryKey: ['meta', 'account', pageId],
         queryFn: async () => {
-          try {
-            const accountId = validateUser();
-            const { startDate, endDate } = getDateRange(range);
-            return metaService.getInsights({ 
-              accountId, 
-              start_date: startDate,
-              end_date: endDate,
-              access_token: user?.meta_access_token
-            });
-          } catch (error) {
-            console.error('useInsights error:', error);
-            throw error;
+          if (!pageId) {
+            console.warn('No page ID provided for account info');
+            return null;
           }
+          console.log('Fetching account info for page ID:', pageId);
+          return metaService.getAccountInfo(pageId);
         },
-        enabled: !!user?.id && !!user?.meta_page_id && !!user?.meta_access_token,
-        retry: 1,
-        staleTime: 5 * 60 * 1000
+        enabled: !!pageId
       }),
 
-    useCampaigns: (dateRange: DateRange) =>
-      useQuery({
-        queryKey: ['campaigns', dateRange],
-        queryFn: async () => {
-          try {
-            const accountId = validateUser();
-            return metaService.getCampaigns(accountId, dateRange);
-          } catch (error) {
-            console.error('useCampaigns error:', error);
-            throw error;
-          }
-        },
-        enabled: !!user?.id && !!user?.meta_page_id && !!user?.meta_access_token,
-        staleTime: 5 * 60 * 1000
-      }),
-
-    useAdSets: (dateRange: DateRange, campaignId: string | null) =>
-      useQuery({
-        queryKey: ['adsets', dateRange, campaignId],
-        queryFn: async () => {
-          try {
-            const accountId = validateUser();
-            if (!campaignId) return null;
-            return metaService.getAdSets(accountId, campaignId, dateRange);
-          } catch (error) {
-            console.error('useAdSets error:', error);
-            throw error;
-          }
-        },
-        enabled: !!user?.id && !!user?.meta_page_id && !!user?.meta_access_token && !!campaignId,
-        staleTime: 5 * 60 * 1000
-      })
+    // ... rest of the hooks
   };
 };

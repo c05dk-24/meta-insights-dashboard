@@ -11,7 +11,7 @@ export class MetaService {
   }
 
   async getInsights(params: MetaInsightsParams): Promise<InsightsResponse> {
-    console.log('MetaService.getInsights - Input params:', params);
+    console.log('MetaService.getInsights - Meta Page ID:', params.accountId);
     
     try {
       const data = await this.client.getInsights(params);
@@ -27,37 +27,17 @@ export class MetaService {
     }
   }
 
-  async getCampaigns(accountId: string, dateRange: DateRange): Promise<Campaign[]> {
-    console.log('MetaService.getCampaigns - Input:', { accountId, dateRange });
-    
+  async getAccountInfo(accountId: string): Promise<{ name: string }> {
+    console.log('MetaService.getAccountInfo - Meta Page ID:', accountId);
     try {
-      const data = await this.client.getCampaigns(accountId, dateRange);
-      console.log('MetaService.getCampaigns - Raw response:', data);
-      
-      const transformed = MetaDataTransformer.transformCampaigns(data.data || []);
-      console.log('MetaService.getCampaigns - Transformed data:', transformed);
-      
-      return transformed;
+      const data = await this.client.getAccountInfo(accountId);
+      console.log('MetaService.getAccountInfo - Response:', data);
+      return { name: data.name };
     } catch (error) {
-      console.error('MetaService.getCampaigns - Error:', error);
+      console.error('MetaService.getAccountInfo - Error:', error);
       throw error;
     }
   }
 
-  async getAdSets(accountId: string, campaignId: string, dateRange: DateRange): Promise<AdSet[]> {
-    console.log('MetaService.getAdSets - Input:', { accountId, campaignId, dateRange });
-    
-    try {
-      const data = await this.client.getAdSets(accountId, campaignId, dateRange);
-      console.log('MetaService.getAdSets - Raw response:', data);
-      
-      const transformed = MetaDataTransformer.transformAdSets(data.data || []);
-      console.log('MetaService.getAdSets - Transformed data:', transformed);
-      
-      return transformed;
-    } catch (error) {
-      console.error('MetaService.getAdSets - Error:', error);
-      throw error;
-    }
-  }
+  // ... rest of the service methods
 }
