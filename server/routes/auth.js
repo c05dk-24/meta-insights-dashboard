@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/index.js';
+import { User, Company } from '../models/index.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
 import dbLogger from '../utils/db-logger.js';
 
@@ -19,10 +19,14 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     dbLogger.log(`Login attempt for email: ${email}`);
     
-    // Find user with company_id
+    // Find user with company data
     const user = await User.findOne({ 
       where: { email },
-      attributes: ['id', 'email', 'password', 'name', 'company_id', 'meta_page_id']
+      attributes: ['id', 'email', 'password', 'name', 'company_id', 'meta_page_id'],
+      include: [{
+        model: Company,
+        attributes: ['name'],
+      }]
     });
 
     if (!user) {
@@ -50,12 +54,13 @@ router.post('/login', authLimiter, async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
-    // Remove sensitive data
+    // Remove sensitive data and include company name
     const userResponse = {
       id: user.id,
       email: user.email,
       name: user.name,
       company_id: user.company_id,
+      companyName: user.Company?.name,
       meta_page_id: user.meta_page_id
     };
 

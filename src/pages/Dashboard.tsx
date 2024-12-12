@@ -16,12 +16,6 @@ export const Dashboard = () => {
   const { isConnected } = useMetaAuth();
   const { user } = useAuth();
 
-  console.log('Current user and company:', {
-    userId: user?.id,
-    companyId: user?.company_id,
-    companyName: user?.companyName
-  });
-
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 lg:mb-8">
@@ -30,7 +24,7 @@ export const Dashboard = () => {
           {user?.companyName && (
             <div className="flex items-center gap-2 text-gray-600 mt-2">
               <Building2 className="w-4 h-4" />
-              <span>{user.companyName}</span>
+              <span className="font-medium">{user.companyName}</span>
             </div>
           )}
         </div>
