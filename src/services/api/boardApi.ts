@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Board, List, Card } from '../../types/board';
-import { getApiUrl, API_CONFIG } from '../../utils/config';
+import { getApiUrl } from '../../utils/config';
 
 const api = axios.create({
   baseURL: getApiUrl(),
@@ -12,6 +12,11 @@ const api = axios.create({
 // Add request interceptor for logging
 api.interceptors.request.use(
   (config) => {
+    // Remove duplicate /api prefix if present
+    if (config.url?.startsWith('/api/api/')) {
+      config.url = config.url.replace('/api/api/', '/api/');
+    }
+    
     console.log('Board API Request:', {
       method: config.method?.toUpperCase(),
       url: config.url,
@@ -44,17 +49,17 @@ export const boardApi = {
   },
 
   getBoards: async (): Promise<Board[]> => {
-    const { data } = await api.get('/api/boards');
+    const { data } = await api.get('api/boards');
     return data;
   },
 
   createBoard: async (title: string): Promise<Board> => {
-    const { data } = await api.post('/api/boards', { title });
+    const { data } = await api.post('api/boards', { title });
     return data;
   },
 
   createList: async (boardId: string, title: string): Promise<List> => {
-    const { data } = await api.post(`/api/boards/${boardId}/lists`, { title });
+    const { data } = await api.post(`api/boards/${boardId}/lists`, { title });
     return data;
   },
 
@@ -64,7 +69,7 @@ export const boardApi = {
     { title, description }: { title: string; description?: string }
   ): Promise<Card> => {
     const { data } = await api.post(
-      `/api/boards/${boardId}/lists/${listId}/cards`,
+      `api/boards/${boardId}/lists/${listId}/cards`,
       { title, description }
     );
     return data;
