@@ -9,65 +9,48 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { useMeta } from '../../hooks/useMeta';
-import { formatCurrency, formatNumber } from '../../utils/metrics';
+import { formatCurrency, formatNumber } from '../../../utils/metrics';
+import { ChartData } from './types';
 
-export const InsightsChart = () => {
-  const { useInsights } = useMeta();
-  const { data: insights, isLoading, error } = useInsights('thisYear');
+interface Props {
+  data: ChartData[];
+}
 
-  console.log('InsightsChart render:', { insights, isLoading, error });
+export const InsightsChartView = {
+  Loading: () => (
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96 animate-pulse">
+      <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+      <div className="h-full bg-gray-100 rounded"></div>
+    </div>
+  ),
 
-  if (isLoading) {
-    return (
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96 animate-pulse">
-        <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="h-full bg-gray-100 rounded"></div>
+  Error: ({ error }: { error: Error }) => (
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+      <div className="text-red-500 p-4 rounded-lg bg-red-50">
+        <p className="font-medium">Failed to load insights</p>
+        <p className="text-sm mt-1">{error.message}</p>
       </div>
-    );
-  }
+    </div>
+  ),
 
-  if (error) {
-    return (
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
-        <div className="text-red-500 p-4 rounded-lg bg-red-50">
-          <p className="font-medium">Failed to load insights</p>
-          <p className="text-sm mt-1">{error instanceof Error ? error.message : 'Unknown error occurred'}</p>
-        </div>
+  Empty: () => (
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+      <div className="text-gray-500 p-4 text-center">
+        <p className="font-medium">No data available</p>
+        <p className="text-sm mt-1">Connect your Meta account to see insights</p>
       </div>
-    );
-  }
+    </div>
+  ),
 
-  if (!insights?.data) {
-    return (
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
-        <div className="text-gray-500 p-4 text-center">
-          <p className="font-medium">No data available</p>
-          <p className="text-sm mt-1">Connect your Meta account to see insights</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Transform API data for the chart
-  const chartData = insights.data.map((item: any) => ({
-    month: new Date(item.date_start).toLocaleString('default', { month: 'short' }),
-    leads: item.actions?.find((a: any) => a.action_type === 'lead')?.value || 0,
-    amountSpent: parseFloat(item.spend || 0)
-  }));
-
-  return (
+  Default: ({ data }: Props) => (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
       <h2 className="text-lg sm:text-xl font-semibold mb-4">
         {new Date().getFullYear()} Performance
       </h2>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
+        <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="month"
-            tick={{ fontSize: 12 }}
-          />
+          <XAxis dataKey="month" tick={{ fontSize: 12 }} />
           <YAxis 
             yAxisId="left"
             tickFormatter={formatNumber}
@@ -117,5 +100,5 @@ export const InsightsChart = () => {
         </LineChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 };
