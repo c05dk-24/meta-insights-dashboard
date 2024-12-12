@@ -3,7 +3,7 @@ import { useAuth } from './useAuth';
 import { MetaApiClient } from '../services/meta/MetaApiClient';
 import { MetaInsightsService } from '../services/meta/MetaInsightsService';
 import { MetaCampaignService } from '../services/meta/MetaCampaignService';
-import { getDateRange } from '../utils/dateRanges';
+import { getDateRange } from '../shared/utils/dates';
 
 export const useMeta = () => {
   const { user } = useAuth();

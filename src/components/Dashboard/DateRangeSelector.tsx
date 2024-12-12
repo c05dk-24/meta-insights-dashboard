@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
-import { DATE_RANGES } from '../../utils/dateRanges';
+import { DATE_RANGES } from '../../shared/utils/dates';
 
 interface Props {
   range: string;
