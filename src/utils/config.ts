@@ -1,6 +1,6 @@
 export const getApiUrl = () => {
   // Use the production URL from .env.production or localhost for development
-  return import.meta.env.VITE_API_URL || 'https://meta-insights-api.onrender.com';
+  return import.meta.env.VITE_API_URL || 'http://localhost:3001';
 };
 
 export const API_CONFIG = {

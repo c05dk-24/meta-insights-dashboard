@@ -3,7 +3,10 @@ import { Board, List, Card } from '../../types/board';
 import { getApiUrl, API_CONFIG } from '../../utils/config';
 
 const api = axios.create({
-  baseURL: getApiUrl()
+  baseURL: getApiUrl(),
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
 // Add request interceptor for logging
@@ -41,17 +44,17 @@ export const boardApi = {
   },
 
   getBoards: async (): Promise<Board[]> => {
-    const { data } = await api.get(API_CONFIG.ENDPOINTS.BOARDS);
+    const { data } = await api.get('/api/boards');
     return data;
   },
 
   createBoard: async (title: string): Promise<Board> => {
-    const { data } = await api.post(API_CONFIG.ENDPOINTS.BOARDS, { title });
+    const { data } = await api.post('/api/boards', { title });
     return data;
   },
 
   createList: async (boardId: string, title: string): Promise<List> => {
-    const { data } = await api.post(API_CONFIG.ENDPOINTS.LISTS(boardId), { title });
+    const { data } = await api.post(`/api/boards/${boardId}/lists`, { title });
     return data;
   },
 
@@ -61,7 +64,7 @@ export const boardApi = {
     { title, description }: { title: string; description?: string }
   ): Promise<Card> => {
     const { data } = await api.post(
-      API_CONFIG.ENDPOINTS.CARDS(boardId, listId),
+      `/api/boards/${boardId}/lists/${listId}/cards`,
       { title, description }
     );
     return data;

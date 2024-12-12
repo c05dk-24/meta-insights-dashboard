@@ -16,7 +16,7 @@ export const useAuth = () => {
     login: store.login,
     logout: () => {
       store.logout();
-      boardApi.setToken('');
+      boardApi.setToken(''); // Clear token on logout
     },
   };
 };
