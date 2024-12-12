@@ -10,21 +10,20 @@ export class MetaCampaignService {
   async getCampaigns(adAccountId: string, dateRange: DateRange): Promise<Campaign[]> {
     try {
       const data = await this.client.get(
-        META_API_ENDPOINTS.CAMPAIGNS(adAccountId),
+        META_API_ENDPOINTS.CAMPAIGNS,
         {
+          account_id: adAccountId,
           fields: META_API_FIELDS.CAMPAIGNS,
-          time_range: JSON.stringify({
-            since: dateRange.startDate,
-            until: dateRange.endDate
-          }),
-          limit: 500 // Meta's recommended limit per page
+          start_date: dateRange.startDate,
+          end_date: dateRange.endDate,
+          limit: 500
         }
       );
 
       return transformCampaignData(data.data || []);
     } catch (error) {
       console.error('Failed to fetch Meta campaigns:', error);
-      throw error;
+      throw new Error('Failed to fetch campaigns');
     }
   }
 }

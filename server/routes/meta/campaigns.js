@@ -1,14 +1,16 @@
 import express from 'express';
 import axios from 'axios';
 import { authenticate } from '../../middleware/auth.js';
+import { validateMetaToken } from '../../middleware/metaAuth.js';
 import { User } from '../../models/index.js';
 import dbLogger from '../../utils/db-logger.js';
+import { metaConfig } from '../../config/meta.js';
 
 const router = express.Router();
 
-router.get('/', authenticate, async (req, res) => {
+router.get('/', authenticate, validateMetaToken, async (req, res) => {
   try {
-    const { start_date, end_date } = req.query;
+    const { account_id, start_date, end_date, fields } = req.query;
     
     // Get user's Meta credentials
     const user = await User.findByPk(req.user.id);
@@ -21,11 +23,11 @@ router.get('/', authenticate, async (req, res) => {
 
     // Call Meta Graph API
     const response = await axios.get(
-      `https://graph.facebook.com/v18.0/act_${user.meta_page_id}/campaigns`,
+      `${metaConfig.graphUrl}/${metaConfig.apiVersion}/act_${account_id || user.meta_page_id}/campaigns`,
       {
         params: {
           access_token: user.meta_access_token,
-          fields: 'campaign_id,campaign_name,objective,status,insights{impressions,reach,actions,spend}',
+          fields,
           time_range: JSON.stringify({
             since: start_date,
             until: end_date
