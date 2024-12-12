@@ -1,18 +1,17 @@
-import axios from 'axios';
-import { getApiUrl } from '../../../utils/config';
 import { LoginRequest, LoginResponse } from '../types';
 import { createAuthApiClient } from './client';
-import { handleApiError } from './errorHandler';
+import { handleAuthError } from '../utils/errorHandler';
+import { AUTH_ENDPOINTS } from '../constants';
 
 const api = createAuthApiClient();
 
 export const authApi = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const { data } = await api.post('/auth/login', credentials);
+      const { data } = await api.post(AUTH_ENDPOINTS.LOGIN, credentials);
       return data;
     } catch (error) {
-      throw handleApiError(error);
+      throw handleAuthError(error);
     }
   }
 };

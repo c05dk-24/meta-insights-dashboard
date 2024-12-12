@@ -1,9 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useStore } from '../store';
-import { AuthService } from '../services/auth/AuthService';
-import { validateLoginInput } from '../services/auth/utils/validation';
+import { AuthService } from '../services/auth';
 import { toast } from 'react-hot-toast';
-import { AUTH_ERROR_CODES } from '../services/auth/config/constants';
+import { AUTH_ERROR_CODES } from '../services/auth/constants';
 
 const authService = new AuthService();
 
@@ -12,13 +11,6 @@ export const useAuth = () => {
   const store = useStore();
   
   const login = useCallback(async (email: string, password: string) => {
-    // Validate input first
-    const validationError = validateLoginInput(email, password);
-    if (validationError) {
-      toast.error(validationError);
-      throw new Error(validationError);
-    }
-
     setIsLoading(true);
     try {
       const { user, token } = await authService.login(email, password);
