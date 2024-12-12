@@ -1,63 +1,89 @@
-import { AxiosInstance } from 'axios';
-import { MetaInsightsParams, DateRange } from '../../types/meta';
+import axios, { AxiosInstance } from 'axios';
+import { META_API_CONFIG } from './config';
+import { MetaApiConfig, MetaApiParams, MetaApiResponse } from './types';
+import { buildApiUrl, buildQueryParams } from './utils/urlBuilder';
 import { handleApiError } from './utils/errorHandler';
-import { buildQueryParams } from './utils/queryBuilder';
-import { API_PATHS } from '../../utils/config';
 
 export class MetaApiClient {
-  constructor(private axios: AxiosInstance) {}
+  private axios: AxiosInstance;
+  private config: MetaApiConfig;
 
-  async getInsights(params: MetaInsightsParams) {
-    console.log('MetaApiClient.getInsights - Params:', params);
-    try {
-      const queryParams = buildQueryParams('insights', params);
-      console.log('MetaApiClient.getInsights - Query params:', queryParams);
+  constructor(config: MetaApiConfig) {
+    this.config = config;
+    this.axios = axios.create({
+      baseURL: config.baseUrl,
+      params: {
+        access_token: config.accessToken
+      }
+    });
 
-      const { data } = await this.axios.get(API_PATHS.META.INSIGHTS, { params: queryParams });
-      console.log('MetaApiClient.getInsights - Response:', data);
-      return data;
-    } catch (error) {
-      console.error('MetaApiClient.getInsights - Error:', error);
-      throw handleApiError(error);
-    }
+    // Add logging interceptors
+    this.setupInterceptors();
   }
 
-  async getCampaigns(accountId: string, dateRange: DateRange) {
-    console.log('MetaApiClient.getCampaigns - Params:', { accountId, dateRange });
+  async getInsights<T>(params: MetaApiParams): Promise<MetaApiResponse<T>> {
     try {
-      const queryParams = buildQueryParams('campaigns', {
-        accountId,
-        ...dateRange,
-        level: 'campaign'
-      });
-      console.log('MetaApiClient.getCampaigns - Query params:', queryParams);
-
-      const { data } = await this.axios.get(API_PATHS.META.CAMPAIGNS, { params: queryParams });
-      console.log('MetaApiClient.getCampaigns - Response:', data);
-      return data;
-    } catch (error) {
-      console.error('MetaApiClient.getCampaigns - Error:', error);
-      throw handleApiError(error);
-    }
-  }
-
-  async getAdSets(accountId: string, campaignId: string, dateRange: DateRange) {
-    console.log('MetaApiClient.getAdSets - Params:', { accountId, campaignId, dateRange });
-    try {
-      const queryParams = buildQueryParams('adsets', {
-        accountId,
-        ...dateRange,
-        level: 'adset'
-      });
-      console.log('MetaApiClient.getAdSets - Query params:', queryParams);
-
-      const url = API_PATHS.META.ADSETS.replace(':campaignId', campaignId);
+      console.log('Fetching Meta insights:', { accountId: this.config.accountId, params });
+      
+      const url = buildApiUrl(META_API_CONFIG.ENDPOINTS.INSIGHTS, this.config.accountId);
+      const queryParams = buildQueryParams(params);
+      
       const { data } = await this.axios.get(url, { params: queryParams });
-      console.log('MetaApiClient.getAdSets - Response:', data);
       return data;
     } catch (error) {
-      console.error('MetaApiClient.getAdSets - Error:', error);
       throw handleApiError(error);
     }
+  }
+
+  async getCampaigns<T>(params: MetaApiParams): Promise<MetaApiResponse<T>> {
+    try {
+      console.log('Fetching Meta campaigns:', { accountId: this.config.accountId, params });
+      
+      const url = buildApiUrl(META_API_CONFIG.ENDPOINTS.CAMPAIGNS, this.config.accountId);
+      const queryParams = buildQueryParams(params);
+      
+      const { data } = await this.axios.get(url, { params: queryParams });
+      return data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  private setupInterceptors() {
+    // Request logging
+    this.axios.interceptors.request.use(
+      (config) => {
+        console.log('Meta API Request:', {
+          method: config.method?.toUpperCase(),
+          url: config.url,
+          params: config.params
+        });
+        return config;
+      },
+      (error) => {
+        console.error('Meta API Request Error:', error);
+        return Promise.reject(error);
+      }
+    );
+
+    // Response logging
+    this.axios.interceptors.response.use(
+      (response) => {
+        console.log('Meta API Response:', {
+          status: response.status,
+          url: response.config.url,
+          data: response.data
+        });
+        return response;
+      },
+      (error) => {
+        console.error('Meta API Response Error:', {
+          status: error.response?.status,
+          url: error.config?.url,
+          error: error.response?.data
+        });
+        return Promise.reject(error);
+      }
+    );
   }
 }

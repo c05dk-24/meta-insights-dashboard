@@ -16,7 +16,7 @@ export const InsightsChart = () => {
   const { useInsights } = useMeta();
   const { data: insights, isLoading, error } = useInsights('thisYear');
 
-  console.log('InsightsChart - Data:', { insights, isLoading, error });
+  console.log('InsightsChart render:', { insights, isLoading, error });
 
   if (isLoading) {
     return (
@@ -39,14 +39,16 @@ export const InsightsChart = () => {
     );
   }
 
-  // Use real data if available, otherwise use placeholder data
-  const monthlyData = insights?.monthly || Array.from({ length: 12 }, (_, i) => ({
-    month: new Date(2024, i).toLocaleString('default', { month: 'short' }),
-    leads: Math.floor(Math.random() * 100),
-    spend: Math.random() * 10000
-  }));
-
-  console.log('Chart data:', monthlyData);
+  if (!insights?.monthly) {
+    return (
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+        <div className="text-gray-500 p-4 text-center">
+          <p className="font-medium">No data available</p>
+          <p className="text-sm mt-1">Connect your Meta account to see insights</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
@@ -54,7 +56,7 @@ export const InsightsChart = () => {
         2024 Performance
       </h2>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={monthlyData}>
+        <LineChart data={insights.monthly}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="month"
