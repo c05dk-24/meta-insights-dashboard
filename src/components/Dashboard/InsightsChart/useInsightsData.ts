@@ -6,22 +6,15 @@ export const useInsightsData = () => {
   const { useInsights } = useMeta();
   const { data: insights, isLoading, error } = useInsights('thisYear');
 
-  console.log('useInsightsData - Raw:', { insights, isLoading, error });
+  console.log('InsightsChart - Raw data:', { insights, isLoading, error });
 
-  const transformedData = useMemo(() => {
-    if (!insights) {
-      console.log('No insights data available');
-      return [];
-    }
-
-    console.log('Raw insights data:', insights);
-    const transformed = transformInsightsData(insights);
-    console.log('Transformed insights data:', transformed);
-    return transformed;
+  const chartData = useMemo(() => {
+    if (!insights?.data) return [];
+    return transformInsightsData(insights.data);
   }, [insights]);
 
   return {
-    data: transformedData,
+    data: chartData,
     isLoading,
     error: error as Error | null
   };

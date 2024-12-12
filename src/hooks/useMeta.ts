@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
 import { useAuth } from './useAuth';
 import { getDateRange } from '../utils/dateRanges';
-import { API_PATHS, META_API_CONFIG } from '../utils/config';
+import { META_API_CONFIG } from '../utils/config';
 
 export const useMeta = () => {
   const axios = useAxios();
@@ -23,7 +23,7 @@ export const useMeta = () => {
     });
 
     try {
-      const { data } = await axios.get(API_PATHS.META.INSIGHTS, {
+      const { data } = await axios.get(META_API_CONFIG.ENDPOINTS.INSIGHTS, {
         params: {
           fields: META_API_CONFIG.FIELDS.INSIGHTS,
           page_id: user.meta_page_id,
@@ -52,7 +52,7 @@ export const useMeta = () => {
     });
 
     try {
-      const { data } = await axios.get(API_PATHS.META.CAMPAIGNS, {
+      const { data } = await axios.get(META_API_CONFIG.ENDPOINTS.CAMPAIGNS, {
         params: {
           fields: META_API_CONFIG.FIELDS.CAMPAIGNS,
           page_id: user.meta_page_id,
