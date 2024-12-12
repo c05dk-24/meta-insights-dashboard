@@ -1,3 +1,4 @@
+```typescript
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useCreateList } from '../../hooks/board';
@@ -72,3 +73,4 @@ export const AddList: React.FC<Props> = ({ boardId }) => {
     </div>
   );
 };
+```

@@ -4,65 +4,42 @@ import { API_CONFIG } from './config';
 
 class ApiClient {
   private client: AxiosInstance;
-  private retryCount: Map<string, number>;
 
   constructor() {
-    const baseURL = `${API_CONFIG.baseURL}/api`;
-    
     this.client = axios.create({
-      baseURL,
+      baseURL: `${API_CONFIG.baseURL}/api`,
       timeout: API_CONFIG.timeout,
       headers: API_CONFIG.headers
     });
 
-    this.retryCount = new Map();
     this.setupInterceptors();
   }
 
   private setupInterceptors() {
     this.client.interceptors.request.use(
       (config) => {
-        const url = config.url?.replace(/\/+/g, '/');
         console.log('API Request:', {
           method: config.method?.toUpperCase(),
-          url,
+          url: config.url,
           data: config.data
         });
-        return { ...config, url };
+        return config;
       },
       (error) => {
-        console.error('API Request Error:', error);
+        console.error('API Error:', error);
         return Promise.reject(error);
       }
     );
 
     this.client.interceptors.response.use(
-      (response) => {
-        console.log('API Response:', {
-          status: response.status,
-          data: response.data
+      (response) => response,
+      (error: AxiosError) => {
+        console.error('API Error:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
         });
-        return response;
-      },
-      async (error: AxiosError) => {
-        if (!error.config) return Promise.reject(error);
-
-        const requestKey = `${error.config.method}-${error.config.url}`;
-        const currentRetryCount = this.retryCount.get(requestKey) || 0;
-
-        if (
-          currentRetryCount < API_CONFIG.retries &&
-          (!error.response || error.response.status >= 500)
-        ) {
-          this.retryCount.set(requestKey, currentRetryCount + 1);
-          await new Promise(resolve => 
-            setTimeout(resolve, API_CONFIG.retryDelay * (currentRetryCount + 1))
-          );
-          return this.client(error.config);
-        }
-
-        this.retryCount.delete(requestKey);
-        return Promise.reject(error.response?.data || error);
+        return Promise.reject(error);
       }
     );
   }

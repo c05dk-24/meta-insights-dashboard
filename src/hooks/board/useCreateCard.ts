@@ -1,3 +1,4 @@
+```typescript
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { boardApi } from '../../services/api/boardApi';
 import { toast } from 'react-hot-toast';
@@ -26,3 +27,4 @@ export const useCreateCard = () => {
     }
   });
 };
+```
