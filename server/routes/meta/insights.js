@@ -5,26 +5,36 @@ import { validateMetaToken } from '../../middleware/metaAuth.js';
 import { User } from '../../models/index.js';
 import dbLogger from '../../utils/db-logger.js';
 import { metaConfig } from '../../config/meta.js';
+import { getDateRange } from '../../utils/dateRanges.js';
 
 const router = express.Router();
 
 router.get('/', authenticate, validateMetaToken, async (req, res) => {
   try {
-    const { start_date, end_date, fields } = req.query;
+    const { range } = req.query;
     
     // Get user's Meta credentials
     const user = await User.findByPk(req.user.id);
-    if (!user?.meta_page_id) {
+    if (!user?.meta_page_id || !user?.meta_access_token) {
       return res.status(400).json({ 
-        error: 'META_PAGE_ID_MISSING',
-        message: 'Meta page ID not found' 
+        error: 'META_CREDENTIALS_MISSING',
+        message: 'Meta credentials not found' 
+      });
+    }
+
+    const { startDate, endDate } = getDateRange(range);
+    if (!startDate || !endDate) {
+      return res.status(400).json({ 
+        error: 'INVALID_DATE_RANGE',
+        message: 'Invalid date range provided' 
       });
     }
 
     dbLogger.log('Fetching Meta insights:', {
       pageId: user.meta_page_id,
-      startDate: start_date,
-      endDate: end_date
+      startDate,
+      endDate,
+      range
     });
 
     // Call Meta Graph API
@@ -33,10 +43,10 @@ router.get('/', authenticate, validateMetaToken, async (req, res) => {
       {
         params: {
           access_token: user.meta_access_token,
-          fields,
+          fields: 'impressions,reach,actions,spend',
           time_range: JSON.stringify({
-            since: start_date,
-            until: end_date
+            since: startDate,
+            until: endDate
           })
         }
       }

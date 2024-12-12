@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
+import { DATE_RANGES } from '../../utils/dateRanges';
 
 interface Props {
   range: string;
@@ -8,10 +9,11 @@ interface Props {
 
 export const DateRangeSelector: React.FC<Props> = ({ range, onChange }) => {
   const ranges = [
-    { value: 'today', label: 'Today' },
-    { value: 'thisWeek', label: 'This Week' },
-    { value: 'lastWeek', label: 'Last Week' },
-    { value: 'thisMonth', label: 'This Month' },
+    { value: DATE_RANGES.TODAY, label: 'Today' },
+    { value: DATE_RANGES.THIS_WEEK, label: 'This Week' },
+    { value: DATE_RANGES.LAST_WEEK, label: 'Last Week' },
+    { value: DATE_RANGES.THIS_MONTH, label: 'This Month' },
+    { value: DATE_RANGES.LAST_30_DAYS, label: 'Last 30 Days' },
   ];
 
   return (

@@ -5,9 +5,11 @@ import healthRoutes from './health.js';
 
 const router = express.Router();
 
+// Health check route (no auth required)
+router.use('/health', healthRoutes);
+
 // API routes
 router.use('/auth', authRoutes);
-router.use('/meta', metaRoutes); // Mount meta routes under /api/meta
-router.use('/health', healthRoutes);
+router.use('/meta', metaRoutes);
 
 export default router;

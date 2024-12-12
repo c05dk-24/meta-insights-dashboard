@@ -13,15 +13,6 @@ export const Dashboard = () => {
   const { data: insights, isLoading } = useInsights(dateRange);
   const { isConnected } = useMetaAuth();
 
-  if (!isConnected) {
-    return (
-      <div className="p-4 sm:p-6 lg:p-8">
-        <h1 className="text-xl sm:text-2xl font-bold mb-6">Meta Insights Dashboard</h1>
-        <MetaConnect />
-      </div>
-    );
-  }
-
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 lg:mb-8">
@@ -30,6 +21,12 @@ export const Dashboard = () => {
       </div>
       
       <div className="space-y-6 lg:space-y-8">
+        {!isConnected && (
+          <div className="mb-6">
+            <MetaConnect />
+          </div>
+        )}
+        
         <MetricCards insights={insights} isLoading={isLoading} />
         <InsightsChart />
         <CampaignSection />

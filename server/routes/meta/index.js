@@ -2,10 +2,14 @@ import express from 'express';
 import authRoutes from './auth.js';
 import insightsRoutes from './insights.js';
 import campaignRoutes from './campaigns.js';
+import healthRoutes from './health.js';
 
 const router = express.Router();
 
-// Meta authentication routes (no Meta token validation)
+// Health check route (no auth required)
+router.use('/health', healthRoutes);
+
+// Meta authentication routes
 router.use('/auth', authRoutes);
 
 // Protected Meta API routes

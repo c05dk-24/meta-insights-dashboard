@@ -1,29 +1,32 @@
 import React from 'react';
 import { Facebook } from 'lucide-react';
 import { useMetaAuth } from '../hooks/useMetaAuth';
+import { useAxios } from '../hooks/useAxios';
 import { toast } from 'react-hot-toast';
 
 export const MetaConnect = () => {
   const { isConnected, disconnect } = useMetaAuth();
+  const axios = useAxios();
 
-  const handleConnect = () => {
-    // Get auth URL from backend
-    fetch('/api/meta/auth/url')
-      .then(res => res.json())
-      .then(data => {
-        if (data.authUrl) {
-          window.location.href = data.authUrl;
-        } else {
-          toast.error('Failed to get Meta authentication URL');
-        }
-      })
-      .catch(() => {
-        toast.error('Failed to initiate Meta connection');
-      });
+  const handleConnect = async () => {
+    try {
+      const { data } = await axios.get('/api/meta/auth/url');
+      if (data.authUrl) {
+        window.location.href = data.authUrl;
+      } else {
+        toast.error('Failed to get Meta authentication URL');
+      }
+    } catch (error) {
+      console.error('Meta connection error:', error);
+      toast.error('Failed to initiate Meta connection');
+    }
   };
 
   const handleDisconnect = () => {
-    disconnect.mutate();
+    disconnect.mutate(undefined, {
+      onSuccess: () => toast.success('Successfully disconnected Meta account'),
+      onError: () => toast.error('Failed to disconnect Meta account')
+    });
   };
 
   return (
