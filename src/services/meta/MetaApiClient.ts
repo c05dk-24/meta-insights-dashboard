@@ -7,41 +7,55 @@ export class MetaApiClient {
   constructor(private axios: AxiosInstance) {}
 
   async getInsights(params: MetaInsightsParams) {
+    console.log('MetaApiClient.getInsights - Params:', params);
     try {
-      const { data } = await this.axios.get(`/api/meta/ads/insights`, {
-        params: buildQueryParams('insights', params)
-      });
+      const queryParams = buildQueryParams('insights', params);
+      console.log('MetaApiClient.getInsights - Query params:', queryParams);
+
+      const { data } = await this.axios.get('/meta/ads/insights', { params: queryParams });
+      console.log('MetaApiClient.getInsights - Response:', data);
       return data;
     } catch (error) {
+      console.error('MetaApiClient.getInsights - Error:', error);
       throw handleApiError(error);
     }
   }
 
   async getCampaigns(accountId: string, dateRange: DateRange) {
+    console.log('MetaApiClient.getCampaigns - Params:', { accountId, dateRange });
     try {
-      const { data } = await this.axios.get(`/api/meta/ads/insights`, {
-        params: buildQueryParams('campaigns', {
-          ...dateRange,
-          level: 'campaign'
-        })
+      const queryParams = buildQueryParams('campaigns', {
+        accountId,
+        ...dateRange,
+        level: 'campaign'
       });
+      console.log('MetaApiClient.getCampaigns - Query params:', queryParams);
+
+      const { data } = await this.axios.get('/meta/ads/insights', { params: queryParams });
+      console.log('MetaApiClient.getCampaigns - Response:', data);
       return data;
     } catch (error) {
+      console.error('MetaApiClient.getCampaigns - Error:', error);
       throw handleApiError(error);
     }
   }
 
   async getAdSets(accountId: string, campaignId: string, dateRange: DateRange) {
+    console.log('MetaApiClient.getAdSets - Params:', { accountId, campaignId, dateRange });
     try {
-      const { data } = await this.axios.get(`/api/meta/ads/insights`, {
-        params: buildQueryParams('adsets', {
-          ...dateRange,
-          level: 'adset',
-          campaign_id: campaignId
-        })
+      const queryParams = buildQueryParams('adsets', {
+        accountId,
+        campaignId,
+        ...dateRange,
+        level: 'adset'
       });
+      console.log('MetaApiClient.getAdSets - Query params:', queryParams);
+
+      const { data } = await this.axios.get('/meta/ads/insights', { params: queryParams });
+      console.log('MetaApiClient.getAdSets - Response:', data);
       return data;
     } catch (error) {
+      console.error('MetaApiClient.getAdSets - Error:', error);
       throw handleApiError(error);
     }
   }

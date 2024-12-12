@@ -9,9 +9,11 @@ const ENDPOINT_FIELDS = {
 };
 
 export const buildQueryParams = (endpoint: EndpointType, params: any) => {
+  console.log('buildQueryParams - Input:', { endpoint, params });
+
   const queryParams = {
-    access_token: process.env.META_ACCESS_TOKEN,
     fields: ENDPOINT_FIELDS[endpoint],
+    page_id: params.accountId,
     time_range: JSON.stringify({
       since: params.start_date || params.startDate,
       until: params.end_date || params.endDate
@@ -19,11 +21,13 @@ export const buildQueryParams = (endpoint: EndpointType, params: any) => {
   };
 
   if (params.level) {
-    return {
-      ...queryParams,
-      level: params.level
-    };
+    queryParams['level'] = params.level;
   }
 
+  if (params.campaignId) {
+    queryParams['campaign_id'] = params.campaignId;
+  }
+
+  console.log('buildQueryParams - Output:', queryParams);
   return queryParams;
 };

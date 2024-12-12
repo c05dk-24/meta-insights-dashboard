@@ -15,10 +15,40 @@ export const useAxios = () => {
     withCredentials: true,
   });
 
+  // Add request interceptor for logging
+  instance.interceptors.request.use(
+    (config) => {
+      console.log('API Request:', {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        params: config.params,
+        headers: config.headers,
+      });
+      return config;
+    },
+    (error) => {
+      console.error('API Request Error:', error);
+      return Promise.reject(error);
+    }
+  );
+
   // Add response interceptor
   instance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      console.log('API Response:', {
+        status: response.status,
+        url: response.config.url,
+        data: response.data,
+      });
+      return response;
+    },
     (error) => {
+      console.error('API Response Error:', {
+        status: error.response?.status,
+        url: error.config?.url,
+        error: error.response?.data || error.message,
+      });
+
       if (error.response?.status === 401) {
         logout();
       }
