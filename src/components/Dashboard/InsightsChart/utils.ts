@@ -1,7 +1,7 @@
 import { ChartData } from './types';
 
 export const transformInsightsData = (data: any): ChartData[] => {
-  if (!data || !Array.isArray(data.data)) {
+  if (!data?.data) {
     console.warn('Invalid insights data:', data);
     return [];
   }
@@ -9,8 +9,8 @@ export const transformInsightsData = (data: any): ChartData[] => {
   console.log('Transforming insights data:', data.data);
 
   // Group data by month
-  const monthlyData = data.data.reduce((acc: Record<string, ChartData>, item) => {
-    const date = new Date(item.date_start || item.date);
+  const monthlyData = data.data.reduce((acc: Record<string, ChartData>, item: any) => {
+    const date = new Date(item.date_start);
     const month = date.toLocaleString('default', { month: 'short' });
     
     if (!acc[month]) {
@@ -24,7 +24,8 @@ export const transformInsightsData = (data: any): ChartData[] => {
     // Extract leads from actions array
     const leads = item.actions?.find((a: any) => 
       a.action_type === 'lead' || 
-      a.action_type === 'leadgen'
+      a.action_type === 'leadgen' ||
+      a.action_type === 'onsite_conversion.lead_grouped'
     )?.value || 0;
 
     // Add values to monthly totals
@@ -40,6 +41,6 @@ export const transformInsightsData = (data: any): ChartData[] => {
     months.indexOf(a.month) - months.indexOf(b.month)
   );
 
-  console.log('Final transformed data:', result);
+  console.log('Transformed insights data:', result);
   return result;
 };

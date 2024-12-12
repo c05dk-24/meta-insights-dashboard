@@ -1,35 +1,31 @@
 export const getApiUrl = () => {
-  if (import.meta.env.PROD) {
-    return 'https://meta-insights-dashboard-1.onrender.com';
-  }
-  return 'https://meta-insights-dashboard-1.onrender.com';
+  return 'https://graph.facebook.com/v18.0';
 };
 
-export const API_PATHS = {
+export const API_CONFIG = {
   META: {
-    INSIGHTS: '/api/meta/insights',
-    CAMPAIGNS: '/api/meta/campaigns',
-    ADSETS: '/api/meta/campaigns/:campaignId/adsets',
-    ADS: '/api/meta/campaigns/:campaignId/ads'
-  }
-} as const;
-
-export const META_API_CONFIG = {
-  FIELDS: {
-    INSIGHTS: [
-      'impressions',
-      'reach',
-      'actions',
-      'spend',
-      'date_start',
-      'date_stop'
-    ].join(','),
-    CAMPAIGNS: [
-      'campaign_id',
-      'campaign_name',
-      'objective',
-      'status',
-      'insights'
-    ].join(',')
+    ENDPOINTS: {
+      INSIGHTS: '/insights',
+      CAMPAIGNS: '/campaigns',
+      ADSETS: '/adsets',
+      ADS: '/ads'
+    },
+    FIELDS: {
+      INSIGHTS: [
+        'impressions',
+        'reach',
+        'actions',
+        'spend',
+        'date_start',
+        'date_stop'
+      ].join(','),
+      CAMPAIGNS: [
+        'campaign_id',
+        'campaign_name',
+        'objective',
+        'status',
+        'insights{impressions,reach,actions,spend}'
+      ].join(',')
+    }
   }
 } as const;
