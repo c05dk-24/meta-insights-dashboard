@@ -16,7 +16,7 @@ export const InsightsChart = () => {
   const { useInsights } = useMeta();
   const { data: insights, isLoading, error } = useInsights('thisYear');
 
-  console.log('InsightsChart - Raw Data:', { insights, isLoading, error });
+  console.log('InsightsChart - Data:', { insights, isLoading, error });
 
   if (isLoading) {
     return (
@@ -28,7 +28,7 @@ export const InsightsChart = () => {
   }
 
   if (error) {
-    console.error('InsightsChart - Error:', error);
+    console.error('Chart error:', error);
     return (
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
         <div className="text-red-500 p-4 rounded-lg bg-red-50">
@@ -39,55 +39,19 @@ export const InsightsChart = () => {
     );
   }
 
-  // Generate monthly data points for the current year
-  const currentYear = new Date().getFullYear();
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-  
-  const monthlyData = months.map((month, index) => {
-    // Get real data from insights if available, otherwise use placeholder
-    const monthData = insights?.monthly?.[index] || {
-      leads: Math.floor(Math.random() * 100),
-      amountSpent: Math.random() * 10000
-    };
+  // Use real data if available, otherwise use placeholder data
+  const monthlyData = insights?.monthly || Array.from({ length: 12 }, (_, i) => ({
+    month: new Date(2024, i).toLocaleString('default', { month: 'short' }),
+    leads: Math.floor(Math.random() * 100),
+    spend: Math.random() * 10000
+  }));
 
-    console.log(`InsightsChart - Month Data (${month}):`, monthData);
-
-    return {
-      month,
-      leads: monthData.leads,
-      spend: monthData.amountSpent // Changed from amountSpent to spend for clarity
-    };
-  });
-
-  console.log('InsightsChart - Processed Monthly Data:', monthlyData);
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (!active || !payload) return null;
-
-    return (
-      <div className="bg-white p-3 border rounded shadow-lg">
-        <p className="font-medium mb-2">{label}</p>
-        {payload.map((entry: any) => (
-          <p key={entry.dataKey} className="text-sm">
-            <span style={{ color: entry.color }}>
-              {entry.dataKey === 'spend' ? 'Spend: ' : 'Leads: '}
-            </span>
-            {entry.dataKey === 'spend' 
-              ? formatCurrency(entry.value)
-              : `${formatNumber(entry.value)} leads`}
-          </p>
-        ))}
-      </div>
-    );
-  };
+  console.log('Chart data:', monthlyData);
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
       <h2 className="text-lg sm:text-xl font-semibold mb-4">
-        {currentYear} Performance
+        2024 Performance
       </h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={monthlyData}>
@@ -117,7 +81,12 @@ export const InsightsChart = () => {
               style: { textAnchor: 'middle' }
             }}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip 
+            formatter={(value: any, name: string) => {
+              if (name === 'spend') return formatCurrency(value);
+              return formatNumber(value);
+            }}
+          />
           <Legend />
           <Line
             yAxisId="left"
