@@ -1,53 +1,47 @@
-import { User, LoginResponse } from '../../types/auth';
-import { AuthApiClient } from './AuthApiClient';
-import { AuthStorage } from './AuthStorage';
-import { transformUserResponse } from './transforms/userTransform';
-import { handleAuthError } from './utils/errorHandler';
+import { authApi } from './api/authApi';
+import { LoginCredentials, LoginResponse } from './types';
+import { AuthStorage } from './storage/AuthStorage';
+import { validateLoginInput } from './validation';
 
 export class AuthService {
-  private apiClient: AuthApiClient;
   private storage: AuthStorage;
 
   constructor() {
-    this.apiClient = new AuthApiClient();
     this.storage = new AuthStorage();
   }
 
   async login(email: string, password: string): Promise<LoginResponse> {
+    // Validate input
+    const validationError = validateLoginInput({ email, password });
+    if (validationError) {
+      throw validationError;
+    }
+
     try {
-      const response = await this.apiClient.login(email, password);
-      const { token, user } = response;
-      
-      const transformedUser = transformUserResponse(user);
-      this.storage.saveAuth(token, transformedUser);
+      // Prepare login request
+      const credentials: LoginCredentials = {
+        email,
+        password
+      };
 
-      console.log('Auth Service - Login Success:', {
-        userId: transformedUser.id,
-        email: transformedUser.email,
-        companyId: transformedUser.company_id,
-        companyName: transformedUser.companyName
-      });
+      // Make API request
+      const response = await authApi.login(credentials);
 
-      return { user: transformedUser, token };
+      // Store auth data
+      this.storage.saveAuth(response.token, response.user);
+
+      return response;
     } catch (error) {
-      throw handleAuthError(error);
+      console.error('Auth Service - Login Error:', error);
+      throw error;
     }
   }
 
   logout(): void {
-    const user = this.storage.getUser();
-    console.log('Auth Service - Logout:', {
-      userId: user?.id,
-      companyName: user?.companyName
-    });
     this.storage.clearAuth();
   }
 
-  getCurrentUser(): User | null {
-    return this.storage.getUser();
-  }
-
-  getToken(): string | null {
-    return this.storage.getToken();
+  isAuthenticated(): boolean {
+    return !!this.storage.getToken();
   }
 }
