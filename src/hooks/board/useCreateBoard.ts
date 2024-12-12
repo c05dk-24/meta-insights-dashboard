@@ -6,7 +6,7 @@ export const useCreateBoard = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (title: string) => boardApi.createBoard(title),
+    mutationFn: boardApi.createBoard,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boards'] });
       toast.success('Board created successfully');
