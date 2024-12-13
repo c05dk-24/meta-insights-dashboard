@@ -5,6 +5,7 @@ export class MetaApiService {
   constructor(private axios: AxiosInstance) {}
 
   async fetchInsights(params: MetaInsightsParams): Promise<InsightsResponse> {
+    this.validateParams(params);
     try {
       const { data } = await this.axios.get("/meta/ads/insights", {
         params: {
@@ -14,20 +15,17 @@ export class MetaApiService {
           fields: "impressions,reach,actions,spend",
         },
       });
-
       return this.transformInsightsData(data);
     } catch (error: any) {
-      console.error(
-        "Error fetching insights:",
-        error.response?.data || error.message
-      );
+      this.logError("fetchInsights", params, error);
       throw this.handleError(error);
     }
   }
 
   async fetchCampaigns(accountId: string, dateRange: DateRange) {
+    this.validateDateRange(dateRange);
     try {
-      const { data } = await this.axios.get("/api/meta/campaigns", {
+      const { data } = await this.axios.get("/meta/ads/campaigns", {
         params: {
           page_id: accountId,
           start_date: dateRange.startDate,
@@ -35,13 +33,9 @@ export class MetaApiService {
           fields: "campaign_id,campaign_name,insights",
         },
       });
-
       return this.transformCampaignData(data.data || []);
     } catch (error: any) {
-      console.error(
-        "Error fetching campaigns:",
-        error.response?.data || error.message
-      );
+      this.logError("fetchCampaigns", { accountId, dateRange }, error);
       throw this.handleError(error);
     }
   }
@@ -51,9 +45,10 @@ export class MetaApiService {
     campaignId: string,
     dateRange: DateRange
   ) {
+    this.validateDateRange(dateRange);
     try {
       const { data } = await this.axios.get(
-        `/api/meta/campaigns/${campaignId}/adsets`,
+        `/meta/ads/campaigns/${campaignId}/adsets`,
         {
           params: {
             page_id: accountId,
@@ -63,20 +58,16 @@ export class MetaApiService {
           },
         }
       );
-
       return this.transformAdSetData(data.data || []);
     } catch (error: any) {
-      console.error(
-        "Error fetching ad sets:",
-        error.response?.data || error.message
-      );
+      this.logError("fetchAdSets", { accountId, campaignId, dateRange }, error);
       throw this.handleError(error);
     }
   }
 
   private handleError(error: any): Error {
     if (!error.response) {
-      return new Error("Network error occurred");
+      return new Error("Network error occurred. Please check your connection.");
     }
 
     const { status, data } = error.response;
@@ -84,38 +75,58 @@ export class MetaApiService {
 
     switch (status) {
       case 400:
-        return new Error(`Invalid request parameters: ${message}`);
+        return new Error(`Invalid request: ${message}`);
       case 401:
-        return new Error(
-          "Authentication failed. Please reconnect your Meta account"
-        );
+        return new Error("Authentication failed. Reconnect your Meta account.");
       case 403:
-        return new Error("Not authorized to access this data");
+        return new Error("You are not authorised to access this resource.");
       case 404:
-        return new Error("Requested resource not found");
+        return new Error("Requested resource not found.");
+      case 500:
+        return new Error("Internal server error. Try again later.");
       default:
-        return new Error(`Failed to fetch data: ${message}`);
+        return new Error(`Unexpected error (${status}): ${message}`);
     }
   }
 
-  private transformInsightsData(data: any): InsightsResponse {
-    // Handle both single object and array responses
-    const insights = Array.isArray(data) ? data[0] : data;
+  private validateParams(params: MetaInsightsParams): void {
+    if (!params.accountId || !params.start_date || !params.end_date) {
+      throw new Error(
+        "Missing required parameters: accountId, start_date, or end_date."
+      );
+    }
+  }
 
+  private validateDateRange(dateRange: DateRange): void {
+    if (!dateRange.startDate || !dateRange.endDate) {
+      throw new Error(
+        "Missing required date range parameters: startDate or endDate."
+      );
+    }
+  }
+
+  private logError(method: string, params: any, error: any): void {
+    console.error(`Error in ${method}:`, {
+      params,
+      error: error.response?.data || error.message,
+    });
+  }
+
+  private transformInsightsData(data: any): InsightsResponse {
+    const insights = Array.isArray(data) ? data[0] : data || {};
     return {
-      impressions: parseInt(insights?.impressions || "0", 10),
-      leads: this.extractLeads(insights?.actions),
+      impressions: parseInt(insights.impressions || "0", 10),
+      leads: this.extractLeads(insights.actions || []),
       costPerLead: this.calculateCostPerLead(
-        insights?.spend,
-        insights?.actions
+        insights.spend,
+        insights.actions || []
       ),
-      amountSpent: parseFloat(insights?.spend || "0"),
+      amountSpent: parseFloat(insights.spend || "0"),
     };
   }
 
   private extractLeads(actions: any[] = []): number {
     if (!Array.isArray(actions)) return 0;
-
     const leadAction = actions.find(
       (action) =>
         action.action_type === "lead" || action.action_type === "leadgen"
@@ -129,9 +140,8 @@ export class MetaApiService {
     return leads > 0 ? spendAmount / leads : 0;
   }
 
-  private transformCampaignData(campaigns: any[]) {
+  private transformCampaignData(campaigns: any[]): any[] {
     if (!Array.isArray(campaigns)) return [];
-
     return campaigns.map((campaign) => ({
       id: campaign.campaign_id,
       name: campaign.campaign_name,
@@ -146,9 +156,8 @@ export class MetaApiService {
     }));
   }
 
-  private transformAdSetData(adsets: any[]) {
+  private transformAdSetData(adsets: any[]): any[] {
     if (!Array.isArray(adsets)) return [];
-
     return adsets.map((adset) => ({
       id: adset.adset_id,
       name: adset.adset_name,
