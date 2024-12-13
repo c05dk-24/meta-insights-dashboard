@@ -1,13 +1,29 @@
 export const getApiUrl = () => {
-  // Remove /api from VITE_API_URL if present since we add it in the endpoints
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-  return baseUrl.replace(/\/api\/?$/, '');
+  return process.env.VITE_API_URL || 'https://meta-insights-dashboard-1.onrender.com/api';
 };
 
-export const API_CONFIG = {
+export const META_API_CONFIG = {
   ENDPOINTS: {
-    AUTH: '/api/auth',
-    BOARDS: '/api/boards',
-    HEALTH: '/api/health'
+    INSIGHTS: '/meta/insights',
+    CAMPAIGNS: '/meta/campaigns',
+    ADSETS: '/meta/adsets',
+    ADS: '/meta/ads'
+  },
+  FIELDS: {
+    INSIGHTS: [
+      'impressions',
+      'reach',
+      'actions',
+      'spend',
+      'date_start',
+      'date_stop'
+    ].join(','),
+    CAMPAIGNS: [
+      'campaign_id',
+      'campaign_name',
+      'objective',
+      'status',
+      'insights{impressions,reach,actions,spend}'
+    ].join(',')
   }
 } as const;

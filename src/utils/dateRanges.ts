@@ -5,7 +5,7 @@ export const DATE_RANGES = {
   THIS_WEEK: 'thisWeek',
   LAST_WEEK: 'lastWeek',
   THIS_MONTH: 'thisMonth',
-  LAST_30_DAYS: 'last30Days'
+  THIS_YEAR: 'thisYear'
 } as const;
 
 export const getDateRange = (range: string): DateRange => {
@@ -35,15 +35,13 @@ export const getDateRange = (range: string): DateRange => {
       endDate = today;
       break;
 
-    case DATE_RANGES.LAST_30_DAYS:
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - 30);
+    case DATE_RANGES.THIS_YEAR:
+      startDate = new Date(today.getFullYear(), 0, 1);
       endDate = today;
       break;
 
     default:
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - 30);
+      startDate = new Date(today.getFullYear(), today.getMonth(), 1);
       endDate = today;
   }
 

@@ -1,29 +1,23 @@
-import { MetaApiClient } from './MetaApiClient';
-import { META_API_ENDPOINTS } from './config/endpoints';
-import { META_API_FIELDS } from './config/fields';
+import { AxiosInstance } from 'axios';
 import { Campaign, DateRange } from '../../types/meta';
 import { transformCampaignData } from './transformers/campaignTransformer';
 
 export class MetaCampaignService {
-  constructor(private client: MetaApiClient) {}
+  constructor(private axios: AxiosInstance) {}
 
-  async getCampaigns(adAccountId: string, dateRange: DateRange): Promise<Campaign[]> {
+  async getCampaigns(accountId: string, dateRange: DateRange): Promise<Campaign[]> {
     try {
-      const data = await this.client.get(
-        META_API_ENDPOINTS.CAMPAIGNS,
-        {
-          account_id: adAccountId,
-          fields: META_API_FIELDS.CAMPAIGNS,
+      const { data } = await this.axios.get('/api/meta/campaigns', {
+        params: {
           start_date: dateRange.startDate,
-          end_date: dateRange.endDate,
-          limit: 500
+          end_date: dateRange.endDate
         }
-      );
+      });
 
       return transformCampaignData(data.data || []);
-    } catch (error) {
-      console.error('Failed to fetch Meta campaigns:', error);
-      throw new Error('Failed to fetch campaigns');
+    } catch (error: any) {
+      console.error('MetaCampaignService.getCampaigns error:', error.response?.data || error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch campaigns');
     }
   }
 }
