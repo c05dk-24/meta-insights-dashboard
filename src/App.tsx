@@ -1,12 +1,12 @@
 ```typescript
 import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { AppRoutes } from './routes/AppRoutes';
 import { queryClient } from './config/queryClient';
+import { AppRoutes } from './routes/AppRoutes';
 import { useThemeStore } from './store/themeStore';
 import { Toaster } from 'react-hot-toast';
 
-export default function App() {
+export const App = () => {
   const isDarkMode = useThemeStore((state) => state.isDarkMode);
 
   React.useEffect(() => {
@@ -36,5 +36,5 @@ export default function App() {
       </div>
     </QueryClientProvider>
   );
-}
+};
 ```
