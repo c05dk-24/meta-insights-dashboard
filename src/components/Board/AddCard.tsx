@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useBoardStore } from '../../store/boardStore';
-import { Card } from '../../types/meta';
 
 interface Props {
   listId: string;
@@ -15,16 +14,11 @@ export const AddCard: React.FC<Props> = ({ listId }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      const newCard: Omit<Card, 'id' | 'comments'> = {
+      addCard(listId, {
         title: title.trim(),
         description: '',
-        listId,
-        position: 0,
         labels: [],
-        createdAt: new Date().toISOString()
-      };
-      
-      addCard(listId, newCard);
+      });
       setTitle('');
       setIsAdding(false);
     }

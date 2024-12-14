@@ -1,86 +1,59 @@
-```typescript
-// Base interfaces
-export interface BaseEntity {
-  id: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-// Meta-related interfaces
 export interface DateRange {
-  from: Date;
-  to: Date;
+  startDate: string;
+  endDate: string;
 }
 
-export interface MetaAction {
-  action_type: string;
-  value: string;
-}
-
-export interface MetaInsight extends BaseEntity {
-  date: string;
-  date_start?: string;
-  impressions: number;
-  reach: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-  spend?: string;
-  actions?: MetaAction[];
-  pageId: string;
-  userId: string;
+export interface MetaInsightsParams {
+  accountId: string;
+  start_date: string;
+  end_date: string;
+  campaignId?: string;
+  level?: 'campaign' | 'adset' | 'ad';
 }
 
 export interface InsightsResponse {
   impressions: number;
-  reach: number;
   leads: number;
   costPerLead: number;
   amountSpent: number;
-  data?: MetaInsight[];
 }
 
-export interface Campaign extends BaseEntity {
+export interface MetaInsight {
+  id: string;
+  date: string;
+  impressions: number;
+  leads: number;
+  costPerLead: number;
+  amountSpent: number;
+}
+
+export interface Campaign {
+  id: string;
   name: string;
   impressions: number;
   reach: number;
   leads: number;
   costPerLead: number;
   amountSpent: number;
-  status?: string;
 }
 
 export interface AdSet extends Campaign {}
 
-// Board-related interfaces
-export interface Board extends BaseEntity {
+export interface MetricCard {
   title: string;
-  userId: string;
-  lists: List[];
+  value: string | number;
+  change: number;
+  icon: any;
 }
 
-export interface List extends BaseEntity {
-  title: string;
-  boardId: string;
-  position: number;
-  cards: Card[];
+export interface ChartData {
+  name: string;
+  leads: number;
+  amountSpent: number;
 }
 
-export interface Card extends BaseEntity {
-  title: string;
-  description?: string;
-  listId: string;
-  position: number;
-  labels: string[];
-  dueDate?: string;
-  assignee?: string;
-  comments: Comment[];
+export interface YearlyData {
+  month: string;
+  leads: number;
+  amountSpent: number;
 }
-
-export interface Comment extends BaseEntity {
-  text: string;
-  cardId: string;
-  userId: string;
-  author: string;
-}
-```

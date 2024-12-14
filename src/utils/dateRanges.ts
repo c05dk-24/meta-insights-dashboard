@@ -8,7 +8,7 @@ export const DATE_RANGES = {
   THIS_YEAR: 'thisYear'
 } as const;
 
-export const getDateRange = (range: string): { startDate: string; endDate: string } => {
+export const getDateRange = (range: string): DateRange => {
   const today = new Date();
   let startDate: Date, endDate: Date;
 
@@ -50,8 +50,3 @@ export const getDateRange = (range: string): { startDate: string; endDate: strin
     endDate: endDate.toISOString().split('T')[0]
   };
 };
-
-export const convertToDateRange = (startDate: string, endDate: string): DateRange => ({
-  from: new Date(startDate),
-  to: new Date(endDate)
-});

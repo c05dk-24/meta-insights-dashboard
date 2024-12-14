@@ -1,49 +1,62 @@
 import { useAuth } from '../useAuth';
 import { useAxios } from '../useAxios';
 import { getDateRange } from '../../utils/dateRanges';
-import { getApiUrl } from '../../utils/config';
-import { API_CONFIG } from '../../services/meta/config';
-import { InsightsResponse, Campaign, AdSet, DateRange } from '../../types/meta';
+import { getApiUrl, API_CONFIG } from '../../utils/config';
 
 export const useMetaService = () => {
   const { user } = useAuth();
   const axios = useAxios();
 
-  const validateUser = () => {
+  const getInsights = async (range: string) => {
     if (!user?.meta_page_id) {
       throw new Error('Meta page ID not found');
     }
-    return user.meta_page_id;
-  };
 
-  const getInsights = async (range: string): Promise<InsightsResponse> => {
-    const pageId = validateUser();
     const { startDate, endDate } = getDateRange(range);
     
+    console.log('Fetching Meta insights:', {
+      pageId: user.meta_page_id,
+      startDate,
+      endDate,
+      range
+    });
+
     try {
-      const { data } = await axios.get(`${getApiUrl()}/meta/insights`, {
+      const { data } = await axios.get(`${getApiUrl()}/${user.meta_page_id}/insights`, {
         params: {
-          page_id: pageId,
-          fields: API_CONFIG.FIELDS.INSIGHTS.join(','),
-          time_range: JSON.stringify({ since: startDate, until: endDate })
+          access_token: process.env.META_ACCESS_TOKEN,
+          fields: API_CONFIG.META.FIELDS.INSIGHTS,
+          time_range: JSON.stringify({
+            since: startDate,
+            until: endDate
+          })
         }
       });
 
+      console.log('Meta insights response:', data);
       return data;
-    } catch (error) {
-      console.error('Meta insights error:', error);
+    } catch (error: any) {
+      console.error('Meta insights error:', error.response?.data || error);
       throw error;
     }
   };
 
-  const getCampaigns = async (dateRange: DateRange): Promise<Campaign[]> => {
-    const pageId = validateUser();
+  const getCampaigns = async (dateRange: { from: Date; to: Date }) => {
+    if (!user?.meta_page_id) {
+      throw new Error('Meta page ID not found');
+    }
+
+    console.log('Fetching Meta campaigns:', {
+      pageId: user.meta_page_id,
+      startDate: dateRange.from,
+      endDate: dateRange.to
+    });
 
     try {
-      const { data } = await axios.get(`${getApiUrl()}/meta/campaigns`, {
+      const { data } = await axios.get(`${getApiUrl()}/act_${user.meta_page_id}/campaigns`, {
         params: {
-          page_id: pageId,
-          fields: API_CONFIG.FIELDS.CAMPAIGNS.join(','),
+          access_token: process.env.META_ACCESS_TOKEN,
+          fields: API_CONFIG.META.FIELDS.CAMPAIGNS,
           time_range: JSON.stringify({
             since: dateRange.from.toISOString().split('T')[0],
             until: dateRange.to.toISOString().split('T')[0]
@@ -51,31 +64,10 @@ export const useMetaService = () => {
         }
       });
 
-      return data.data || [];
-    } catch (error) {
-      console.error('Meta campaigns error:', error);
-      throw error;
-    }
-  };
-
-  const getAdSets = async (campaignId: string, dateRange: DateRange): Promise<AdSet[]> => {
-    const pageId = validateUser();
-
-    try {
-      const { data } = await axios.get(`${getApiUrl()}/meta/campaigns/${campaignId}/adsets`, {
-        params: {
-          page_id: pageId,
-          fields: API_CONFIG.FIELDS.ADSETS.join(','),
-          time_range: JSON.stringify({
-            since: dateRange.from.toISOString().split('T')[0],
-            until: dateRange.to.toISOString().split('T')[0]
-          })
-        }
-      });
-
-      return data.data || [];
-    } catch (error) {
-      console.error('Meta ad sets error:', error);
+      console.log('Meta campaigns response:', data);
+      return data;
+    } catch (error: any) {
+      console.error('Meta campaigns error:', error.response?.data || error);
       throw error;
     }
   };
@@ -83,7 +75,6 @@ export const useMetaService = () => {
   return {
     isEnabled: () => !!user?.id && !!user?.meta_page_id,
     getInsights,
-    getCampaigns,
-    getAdSets
+    getCampaigns
   };
 };
