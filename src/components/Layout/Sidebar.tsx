@@ -32,7 +32,6 @@ export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Mobile overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 lg:hidden z-20"
@@ -40,7 +39,6 @@ export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
         />
       )}
 
-      {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-30
         w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700

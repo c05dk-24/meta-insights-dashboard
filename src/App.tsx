@@ -6,7 +6,7 @@ import { AppRoutes } from './routes/AppRoutes';
 import { useThemeStore } from './store/themeStore';
 import { Toaster } from 'react-hot-toast';
 
-export const App = () => {
+export default function App() {
   const isDarkMode = useThemeStore((state) => state.isDarkMode);
 
   React.useEffect(() => {
@@ -36,5 +36,5 @@ export const App = () => {
       </div>
     </QueryClientProvider>
   );
-};
+}
 ```
