@@ -6,29 +6,27 @@ export interface BaseEntity {
 }
 
 // Meta-related interfaces
+export interface DateRange {
+  from: Date;
+  to: Date;
+}
+
 export interface MetaInsight extends BaseEntity {
   date: string;
+  date_start?: string;
   impressions: number;
   reach: number;
   leads: number;
   costPerLead: number;
   amountSpent: number;
+  spend?: string;
+  actions?: Array<{
+    action_type: string;
+    value: string;
+  }>;
   pageId: string;
   userId: string;
 }
-
-export interface Campaign extends BaseEntity {
-  name: string;
-  impressions: number;
-  reach: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-  objective?: string;
-  status?: string;
-}
-
-export interface AdSet extends Campaign {}
 
 export interface InsightsResponse {
   impressions: number;
@@ -64,15 +62,6 @@ export interface Card extends BaseEntity {
   comments: Comment[];
 }
 
-export interface BoardList extends BaseEntity {
-  title: string;
-  cards: BoardCard[];
-}
-
-export interface BoardCard extends Omit<Card, 'listId'> {
-  listId: string;
-}
-
 export interface Comment extends BaseEntity {
   text: string;
   cardId: string;
@@ -81,13 +70,6 @@ export interface Comment extends BaseEntity {
 }
 
 // API-related interfaces
-export interface DateRange {
-  from: Date;
-  to: Date;
-  startDate?: string;
-  endDate?: string;
-}
-
 export interface MetaInsightsParams {
   accountId: string;
   start_date: string;
@@ -95,14 +77,3 @@ export interface MetaInsightsParams {
   campaignId?: string;
   level?: 'campaign' | 'adset' | 'ad';
 }
-
-// API configuration
-export const API_CONFIG = {
-  META: {
-    FIELDS: {
-      INSIGHTS: ['impressions', 'reach', 'actions', 'spend'],
-      CAMPAIGNS: ['campaign_id', 'campaign_name', 'objective', 'status'],
-      ADSETS: ['adset_id', 'adset_name', 'status', 'targeting']
-    }
-  }
-} as const;

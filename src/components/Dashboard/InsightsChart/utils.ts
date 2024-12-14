@@ -1,15 +1,13 @@
 import { ChartData } from './types';
+import { MetaInsight } from '../../../types/meta';
 
-export const transformInsightsData = (data: any): ChartData[] => {
-  if (!Array.isArray(data)) {
-    console.warn('Invalid insights data:', data);
+export const transformInsightsData = (insights: MetaInsight[]): ChartData[] => {
+  if (!Array.isArray(insights)) {
+    console.warn('Invalid insights data:', insights);
     return [];
   }
 
-  console.log('Transforming insights data:', data);
-
-  // Group data by month
-  const monthlyData = data.reduce((acc: Record<string, ChartData>, item: any) => {
+  const monthlyData = insights.reduce<Record<string, ChartData>>((acc, item) => {
     const date = new Date(item.date_start || item.date);
     const month = date.toLocaleString('default', { month: 'short' });
     
@@ -17,30 +15,24 @@ export const transformInsightsData = (data: any): ChartData[] => {
       acc[month] = {
         month,
         leads: 0,
-        amountSpent: 0
+        amountSpent: 0,
+        impressions: 0,
+        reach: 0
       };
     }
 
-    // Extract leads from actions array
-    const leads = item.actions?.find((a: any) => 
-      a.action_type === 'lead' || 
-      a.action_type === 'leadgen' ||
-      a.action_type === 'onsite_conversion.lead_grouped'
-    )?.value || 0;
-
     // Add values to monthly totals
-    acc[month].leads += parseInt(leads, 10);
+    acc[month].leads += item.leads;
     acc[month].amountSpent += parseFloat(item.spend || '0');
+    acc[month].impressions += item.impressions;
+    acc[month].reach += item.reach;
 
     return acc;
   }, {});
 
-  // Convert to array and sort by month
+  // Sort by month
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const result = Object.values(monthlyData).sort((a, b) => 
+  return Object.values(monthlyData).sort((a, b) => 
     months.indexOf(a.month) - months.indexOf(b.month)
   );
-
-  console.log('Transformed insights data:', result);
-  return result;
 };
