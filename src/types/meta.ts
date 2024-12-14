@@ -1,59 +1,33 @@
-export interface DateRange {
-  startDate: string;
-  endDate: string;
-}
-
-export interface MetaInsightsParams {
-  accountId: string;
-  start_date: string;
-  end_date: string;
-  campaignId?: string;
-  level?: 'campaign' | 'adset' | 'ad';
-}
-
-export interface InsightsResponse {
-  impressions: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface MetaInsight {
+// Update the existing types file to include these interfaces if they don't exist
+export interface Board {
   id: string;
-  date: string;
-  impressions: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface Campaign {
-  id: string;
-  name: string;
-  impressions: number;
-  reach: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface AdSet extends Campaign {}
-
-export interface MetricCard {
   title: string;
-  value: string | number;
-  change: number;
-  icon: any;
+  lists: List[];
 }
 
-export interface ChartData {
-  name: string;
-  leads: number;
-  amountSpent: number;
+export interface List {
+  id: string;
+  title: string;
+  boardId: string;
+  position: number;
+  cards: Card[];
 }
 
-export interface YearlyData {
-  month: string;
-  leads: number;
-  amountSpent: number;
+export interface Card {
+  id: string;
+  title: string;
+  description?: string;
+  listId: string;
+  position: number;
+  labels: string[];
+  dueDate?: string;
+  assignee?: string;
+  comments: Comment[];
+}
+
+export interface Comment {
+  id: string;
+  text: string;
+  author: string;
+  createdAt: string;
 }
