@@ -19,18 +19,20 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-        <AppRoutes />
-        <Toaster 
-          position="top-right"
-          toastOptions={{
-            className: 'dark:bg-gray-800 dark:text-white',
-            style: {
-              background: isDarkMode ? '#1f2937' : '#fff',
-              color: isDarkMode ? '#fff' : '#000',
-            },
-          }}
-        />
+      <div className={isDarkMode ? 'dark' : ''}>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <AppRoutes />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              className: 'dark:bg-gray-800 dark:text-white',
+              style: {
+                background: isDarkMode ? '#1f2937' : '#fff',
+                color: isDarkMode ? '#fff' : '#000',
+              },
+            }}
+          />
+        </div>
       </div>
     </QueryClientProvider>
   );
