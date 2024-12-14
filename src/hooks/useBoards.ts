@@ -1,4 +1,3 @@
-```typescript
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "./useAxios";
 import { Board, List } from "../types/meta";
@@ -8,12 +7,12 @@ export const useBoards = () => {
   const queryClient = useQueryClient();
 
   const fetchBoards = async (): Promise<Board[]> => {
-    const { data } = await axios.get("/api/boards");
+    const { data } = await axios.get("/boards");
     return data || [];
   };
 
   const createBoard = async (title: string): Promise<Board> => {
-    const { data } = await axios.post("/api/boards", { title });
+    const { data } = await axios.post("/boards", { title });
     return data;
   };
 
@@ -24,7 +23,7 @@ export const useBoards = () => {
     boardId: string;
     title: string;
   }): Promise<List> => {
-    const { data } = await axios.post(`/api/boards/${boardId}/lists`, {
+    const { data } = await axios.post(`/boards/${boardId}/lists`, {
       title,
     });
     return data;
@@ -56,4 +55,3 @@ export const useBoards = () => {
       }),
   };
 };
-```

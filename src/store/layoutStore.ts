@@ -1,4 +1,3 @@
-```typescript
 import { create } from 'zustand';
 
 interface LayoutStore {
@@ -12,4 +11,3 @@ export const useLayoutStore = create<LayoutStore>((set) => ({
     isSidebarOpen: value !== undefined ? value : !state.isSidebarOpen 
   })),
 }));
-```

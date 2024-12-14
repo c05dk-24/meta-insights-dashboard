@@ -1,4 +1,3 @@
-```tsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -85,4 +84,3 @@ export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
     </>
   );
 };
-```
