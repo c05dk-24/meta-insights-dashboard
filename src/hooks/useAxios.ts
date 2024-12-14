@@ -18,11 +18,15 @@ export const useAxios = () => {
   // Add request interceptor for logging
   instance.interceptors.request.use(
     (config) => {
+      // Remove any duplicate /api segments
+      if (config.url?.startsWith('/api')) {
+        config.url = config.url.replace('/api', '');
+      }
+      
       console.log('API Request:', {
         method: config.method?.toUpperCase(),
         url: config.url,
         params: config.params,
-        headers: config.headers,
       });
       return config;
     },
