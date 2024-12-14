@@ -1,3 +1,4 @@
+```tsx
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "./useAxios";
 import { Board, List } from "../types/meta";
@@ -55,3 +56,4 @@ export const useBoards = () => {
       }),
   };
 };
+```
