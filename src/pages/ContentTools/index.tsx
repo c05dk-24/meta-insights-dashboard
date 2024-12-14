@@ -1,18 +1,7 @@
-```tsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ContentRemixer } from './components/ContentRemixer';
-import { BrandVoice } from './components/BrandVoice';
-import { CaseStudyGenerator } from './components/CaseStudyGenerator';
-import { ContentAgent } from './components/ContentAgent';
+import { ContentToolsGrid } from './components/ContentToolsGrid';
 
 export const ContentTools = () => {
-  const navigate = useNavigate();
-
-  const handleFeatureClick = (path: string) => {
-    navigate(`/content-tools/${path}`);
-  };
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
@@ -24,13 +13,7 @@ export const ContentTools = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ContentRemixer onClick={() => handleFeatureClick('remix')} />
-        <BrandVoice onClick={() => handleFeatureClick('brand-voice')} />
-        <CaseStudyGenerator onClick={() => handleFeatureClick('case-study')} />
-        <ContentAgent onClick={() => handleFeatureClick('agent')} />
-      </div>
+      <ContentToolsGrid />
     </div>
   );
 };
-```
