@@ -1,6 +1,7 @@
 export interface EducationItem {
   id: string;
   title: string;
+  description: string;
   thumbnail: string;
   duration: string;
   category: string;
