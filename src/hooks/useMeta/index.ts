@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMetaService } from './useMetaService';
-import { DateRange, InsightsResponse } from '../../types/meta';
+import { DateRange, InsightsResponse, Campaign, AdSet } from '../../types/meta';
 
 export const useMeta = () => {
   const metaService = useMetaService();
@@ -16,22 +16,16 @@ export const useMeta = () => {
       }),
 
     useCampaigns: (dateRange: DateRange) =>
-      useQuery({
+      useQuery<Campaign[], Error>({
         queryKey: ['meta-campaigns', dateRange],
-        queryFn: () => metaService.getCampaigns({
-          from: dateRange.from,
-          to: dateRange.to
-        }),
+        queryFn: () => metaService.getCampaigns(dateRange),
         enabled: metaService.isEnabled()
       }),
 
     useAdSets: (campaignId: string | null, dateRange: DateRange) =>
-      useQuery({
+      useQuery<AdSet[], Error>({
         queryKey: ['meta-adsets', campaignId, dateRange],
-        queryFn: () => metaService.getCampaigns({
-          from: dateRange.from,
-          to: dateRange.to
-        }),
+        queryFn: () => metaService.getAdSets(campaignId!, dateRange),
         enabled: metaService.isEnabled() && !!campaignId
       })
   };

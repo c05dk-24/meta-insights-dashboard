@@ -1,3 +1,4 @@
+```typescript
 // Base interfaces
 export interface BaseEntity {
   id: string;
@@ -11,6 +12,11 @@ export interface DateRange {
   to: Date;
 }
 
+export interface MetaAction {
+  action_type: string;
+  value: string;
+}
+
 export interface MetaInsight extends BaseEntity {
   date: string;
   date_start?: string;
@@ -20,10 +26,7 @@ export interface MetaInsight extends BaseEntity {
   costPerLead: number;
   amountSpent: number;
   spend?: string;
-  actions?: Array<{
-    action_type: string;
-    value: string;
-  }>;
+  actions?: MetaAction[];
   pageId: string;
   userId: string;
 }
@@ -36,6 +39,18 @@ export interface InsightsResponse {
   amountSpent: number;
   data?: MetaInsight[];
 }
+
+export interface Campaign extends BaseEntity {
+  name: string;
+  impressions: number;
+  reach: number;
+  leads: number;
+  costPerLead: number;
+  amountSpent: number;
+  status?: string;
+}
+
+export interface AdSet extends Campaign {}
 
 // Board-related interfaces
 export interface Board extends BaseEntity {
@@ -68,12 +83,4 @@ export interface Comment extends BaseEntity {
   userId: string;
   author: string;
 }
-
-// API-related interfaces
-export interface MetaInsightsParams {
-  accountId: string;
-  start_date: string;
-  end_date: string;
-  campaignId?: string;
-  level?: 'campaign' | 'adset' | 'ad';
-}
+```

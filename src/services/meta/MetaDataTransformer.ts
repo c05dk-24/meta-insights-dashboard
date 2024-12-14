@@ -1,4 +1,4 @@
-import { InsightsResponse, Campaign, AdSet } from '../../types/meta';
+import { InsightsResponse, MetaInsight, Campaign, AdSet } from '../../types/meta';
 import { extractLeads, calculateCostPerLead } from './utils/metrics';
 
 export class MetaDataTransformer {
@@ -7,6 +7,7 @@ export class MetaDataTransformer {
     
     return {
       impressions: parseInt(insights?.impressions || '0', 10),
+      reach: parseInt(insights?.reach || '0', 10),
       leads: extractLeads(insights?.actions),
       costPerLead: calculateCostPerLead(insights?.spend, insights?.actions),
       amountSpent: parseFloat(insights?.spend || '0')
