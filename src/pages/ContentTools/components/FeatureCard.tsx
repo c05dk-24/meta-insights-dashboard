@@ -19,7 +19,12 @@ export const FeatureCard: React.FC<Props> = ({
   return (
     <div
       onClick={onClick}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow relative group"
+      className={`
+        bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 
+        cursor-pointer hover:shadow-xl transition-all relative 
+        group border-2 border-transparent hover:border-blue-500
+        ${comingSoon ? 'opacity-75' : ''}
+      `}
     >
       <div className="flex items-start gap-4">
         <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -41,8 +46,6 @@ export const FeatureCard: React.FC<Props> = ({
           )}
         </div>
       </div>
-      
-      <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-500 rounded-lg transition-colors" />
     </div>
   );
 };
