@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Dashboard } from '../pages/Dashboard';
 import { Boards } from '../pages/Boards';
 import { AI } from '../pages/AI';
+import { Education } from '../pages/Education';
+import { BlogGenerator } from '../pages/BlogGenerator';
 import { Login } from '../pages/Login';
 import { Settings } from '../pages/Settings';
 import { PrivateRoute } from '../components/PrivateRoute';
@@ -26,6 +28,8 @@ export const AppRoutes = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/boards" element={<Boards />} />
         <Route path="/ai" element={<AI />} />
+        <Route path="/blog-generator" element={<BlogGenerator />} />
+        <Route path="/education" element={<Education />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
       
