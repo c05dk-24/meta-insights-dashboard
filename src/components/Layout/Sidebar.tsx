@@ -1,3 +1,4 @@
+```typescript
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -16,18 +17,18 @@ interface Props {
   onClose: () => void;
 }
 
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Boards', href: '/boards', icon: Trello },
-  { name: 'AI Post Generator', href: '/ai', icon: Wand2 },
-  { name: 'Blog Generator', href: '/blog-generator', icon: BookOpen },
-  { name: 'Content Tools', href: '/content-tools', icon: Sparkles },
-  { name: 'Education', href: '/education', icon: GraduationCap },
-  { name: 'Settings', href: '/settings', icon: Settings },
-];
-
 export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
   const location = useLocation();
+
+  const navigation = [
+    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Boards', href: '/boards', icon: Trello },
+    { name: 'AI Post Generator', href: '/ai', icon: Wand2 },
+    { name: 'Blog Generator', href: '/blog-generator', icon: BookOpen },
+    { name: 'Content Tools', href: '/content-tools', icon: Sparkles },
+    { name: 'Education', href: '/education', icon: GraduationCap },
+    { name: 'Settings', href: '/settings', icon: Settings },
+  ];
 
   return (
     <>
@@ -84,3 +85,4 @@ export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
     </>
   );
 };
+```
