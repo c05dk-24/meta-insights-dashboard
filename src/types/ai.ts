@@ -1,8 +1,10 @@
+export type ToneType = 'professional' | 'casual' | 'friendly' | 'humorous';
+
 export interface UserPreferences {
   id: string;
   userId: string;
   industry: string;
-  tone: 'professional' | 'casual' | 'friendly' | 'humorous';
+  tone: ToneType;
   ageRange: string;
   location: string;
   createdAt: string;
@@ -32,10 +34,10 @@ export const INDUSTRIES = [
 ] as const;
 
 export const TONES = [
-  { value: 'professional', label: 'Professional' },
-  { value: 'casual', label: 'Casual' },
-  { value: 'friendly', label: 'Friendly' },
-  { value: 'humorous', label: 'Humorous' },
+  { value: 'professional' as ToneType, label: 'Professional' },
+  { value: 'casual' as ToneType, label: 'Casual' },
+  { value: 'friendly' as ToneType, label: 'Friendly' },
+  { value: 'humorous' as ToneType, label: 'Humorous' },
 ] as const;
 
 export const AGE_RANGES = [

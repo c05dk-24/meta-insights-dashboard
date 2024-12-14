@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Home } from '../pages/Home';
 import { Dashboard } from '../pages/Dashboard';
 import { Boards } from '../pages/Boards';
 import { AI } from '../pages/AI';
@@ -26,7 +27,8 @@ export const AppRoutes = () => {
       
       {/* Protected Routes */}
       <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/boards" element={<Boards />} />
         <Route path="/ai" element={<AI />} />
         <Route path="/blog-generator" element={<BlogGenerator />} />

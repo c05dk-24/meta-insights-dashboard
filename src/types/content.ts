@@ -1,3 +1,4 @@
+```tsx
 export interface RemixOutput {
   socialPosts: string[];
   emailNewsletter: string;
@@ -5,11 +6,10 @@ export interface RemixOutput {
   linkedInArticle: string;
 }
 
-export interface ContentTool {
+export interface ContentFormat {
   id: string;
-  path: string;
-  title: string;
+  name: string;
   description: string;
-  icon: React.ElementType;
-  status: 'available' | 'coming-soon';
+  icon: string;
 }
+```
