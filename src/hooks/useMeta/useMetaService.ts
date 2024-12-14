@@ -1,4 +1,3 @@
-```typescript
 import { useAuth } from '../useAuth';
 import { useAxios } from '../useAxios';
 import { getDateRange } from '../../utils/dateRanges';
@@ -31,8 +30,8 @@ export const useMetaService = () => {
       });
 
       return data;
-    } catch (error: any) {
-      console.error('Meta insights error:', error.response?.data || error);
+    } catch (error) {
+      console.error('Meta insights error:', error);
       throw error;
     }
   };
@@ -53,8 +52,8 @@ export const useMetaService = () => {
       });
 
       return data.data || [];
-    } catch (error: any) {
-      console.error('Meta campaigns error:', error.response?.data || error);
+    } catch (error) {
+      console.error('Meta campaigns error:', error);
       throw error;
     }
   };
@@ -75,8 +74,8 @@ export const useMetaService = () => {
       });
 
       return data.data || [];
-    } catch (error: any) {
-      console.error('Meta ad sets error:', error.response?.data || error);
+    } catch (error) {
+      console.error('Meta ad sets error:', error);
       throw error;
     }
   };
@@ -88,4 +87,3 @@ export const useMetaService = () => {
     getAdSets
   };
 };
-```

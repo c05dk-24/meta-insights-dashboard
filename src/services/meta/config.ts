@@ -17,13 +17,15 @@ export const API_CONFIG = {
       'campaign_id',
       'campaign_name',
       'objective',
-      'status'
+      'status',
+      'insights'
     ],
     ADSETS: [
       'adset_id',
       'adset_name',
       'status',
-      'targeting'
+      'targeting',
+      'insights'
     ]
   }
 } as const;
