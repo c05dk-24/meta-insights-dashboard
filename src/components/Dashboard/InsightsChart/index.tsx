@@ -17,5 +17,5 @@ export const InsightsChart = () => {
     return <InsightsChartView.Empty />;
   }
 
-  return <InsightsChartView data={data} />;
+  return <InsightsChartView.Default data={data} />;
 };

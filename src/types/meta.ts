@@ -1,91 +1,26 @@
-export interface DateRange {
-  startDate: string;
-  endDate: string;
-}
-
-export interface MetaInsightsParams {
-  accountId: string;
-  start_date: string;
-  end_date: string;
-  campaignId?: string;
-  level?: 'campaign' | 'adset' | 'ad';
-}
-
+// Update InsightsResponse interface
 export interface InsightsResponse {
   impressions: number;
   reach: number;
   leads: number;
   costPerLead: number;
   amountSpent: number;
+  data?: any[]; // Add optional data property for API responses
 }
 
-export interface MetaInsight {
-  id: string;
-  date: string;
-  impressions: number;
-  reach: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface Campaign {
-  id: string;
-  name: string;
-  impressions: number;
-  reach: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface AdSet extends Campaign {}
-
-export interface Board {
-  id: string;
-  title: string;
-  lists: List[];
-}
-
+// Update List interface to match BoardList
 export interface List {
   id: string;
   title: string;
+  cards: Card[];
   boardId: string;
   position: number;
-  cards: Card[];
 }
 
-export interface Card {
-  id: string;
-  title: string;
-  description?: string;
-  listId: string;
-  position: number;
-  labels: string[];
-  dueDate?: string;
-  assignee?: string;
-  comments: Comment[];
-}
-
-export interface Comment {
-  id: string;
-  text: string;
-  author: string;
-  createdAt: string;
-}
-
-export interface BoardCard extends Card {
-  id: string;
-  title: string;
-  description?: string;
-  listId: string;
-  position: number;
-  labels: string[];
-  comments: Comment[];
-}
-
-export interface BoardList {
-  id: string;
-  title: string;
-  cards: BoardCard[];
+// Update DateRange interface
+export interface DateRange {
+  from: Date;
+  to: Date;
+  startDate?: string;
+  endDate?: string;
 }
