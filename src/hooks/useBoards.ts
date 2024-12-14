@@ -8,12 +8,12 @@ export const useBoards = () => {
   const queryClient = useQueryClient();
 
   const fetchBoards = async (): Promise<Board[]> => {
-    const { data } = await axios.get("/boards");
+    const { data } = await axios.get("/api/boards");
     return data || [];
   };
 
   const createBoard = async (title: string): Promise<Board> => {
-    const { data } = await axios.post("/boards", { title });
+    const { data } = await axios.post("/api/boards", { title });
     return data;
   };
 
@@ -24,7 +24,7 @@ export const useBoards = () => {
     boardId: string;
     title: string;
   }): Promise<List> => {
-    const { data } = await axios.post(`/boards/${boardId}/lists`, {
+    const { data } = await axios.post(`/api/boards/${boardId}/lists`, {
       title,
     });
     return data;
