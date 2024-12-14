@@ -1,8 +1,5 @@
 import React from 'react';
-import { ContentRemixer } from './components/ContentRemixer';
-import { BrandVoice } from './components/BrandVoice';
-import { CaseStudyGenerator } from './components/CaseStudyGenerator';
-import { ContentAgent } from './components/ContentAgent';
+import { ContentToolsGrid } from './components/ContentToolsGrid';
 
 export const ContentTools = () => {
   return (
@@ -16,12 +13,7 @@ export const ContentTools = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ContentRemixer />
-        <BrandVoice />
-        <CaseStudyGenerator />
-        <ContentAgent />
-      </div>
+      <ContentToolsGrid />
     </div>
   );
 };
