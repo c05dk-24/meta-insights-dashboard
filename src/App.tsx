@@ -1,10 +1,12 @@
+```typescript
 import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AppRoutes } from './routes/AppRoutes';
 import { queryClient } from './config/queryClient';
 import { useThemeStore } from './store/themeStore';
+import { Toaster } from 'react-hot-toast';
 
-export function App() {
+export default function App() {
   const isDarkMode = useThemeStore((state) => state.isDarkMode);
 
   React.useEffect(() => {
@@ -19,7 +21,18 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <AppRoutes />
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            className: 'dark:bg-gray-800 dark:text-white',
+            style: {
+              background: isDarkMode ? '#1f2937' : '#fff',
+              color: isDarkMode ? '#fff' : '#000',
+            },
+          }}
+        />
       </div>
     </QueryClientProvider>
   );
 }
+```

@@ -1,3 +1,4 @@
+```typescript
 import axios from 'axios';
 import { useAuth } from './useAuth';
 import { getApiUrl } from '../utils/config';
@@ -62,3 +63,4 @@ export const useAxios = () => {
 
   return instance;
 };
+```
