@@ -1,4 +1,3 @@
-```tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Dashboard } from '../pages/Dashboard';
@@ -7,10 +6,6 @@ import { AI } from '../pages/AI';
 import { Education } from '../pages/Education';
 import { BlogGenerator } from '../pages/BlogGenerator';
 import { ContentTools } from '../pages/ContentTools';
-import { ContentRemix } from '../pages/ContentTools/pages/ContentRemix';
-import { BrandVoice } from '../pages/ContentTools/pages/BrandVoice';
-import { CaseStudyGenerator } from '../pages/ContentTools/pages/CaseStudyGenerator';
-import { ContentAgent } from '../pages/ContentTools/pages/ContentAgent';
 import { Login } from '../pages/Login';
 import { Settings } from '../pages/Settings';
 import { PrivateRoute } from '../components/PrivateRoute';
@@ -37,10 +32,6 @@ export const AppRoutes = () => {
         <Route path="/blog-generator" element={<BlogGenerator />} />
         <Route path="/education" element={<Education />} />
         <Route path="/content-tools" element={<ContentTools />} />
-        <Route path="/content-tools/remix" element={<ContentRemix />} />
-        <Route path="/content-tools/brand-voice" element={<BrandVoice />} />
-        <Route path="/content-tools/case-study" element={<CaseStudyGenerator />} />
-        <Route path="/content-tools/agent" element={<ContentAgent />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
       
@@ -49,4 +40,3 @@ export const AppRoutes = () => {
     </Routes>
   );
 };
-```
