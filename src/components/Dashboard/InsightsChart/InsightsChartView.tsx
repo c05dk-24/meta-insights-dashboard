@@ -10,23 +10,19 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { formatCurrency, formatNumber } from '../../../utils/metrics';
-import { ChartData } from './types';
-
-interface Props {
-  data: ChartData[];
-}
+import { ChartData, ChartProps } from './types';
 
 export const InsightsChartView = {
   Loading: () => (
-    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96 animate-pulse">
-      <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-      <div className="h-full bg-gray-100 rounded"></div>
+    <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96 animate-pulse">
+      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+      <div className="h-full bg-gray-100 dark:bg-gray-700 rounded"></div>
     </div>
   ),
 
   Error: ({ error }: { error: Error }) => (
-    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
-      <div className="text-red-500 p-4 rounded-lg bg-red-50">
+    <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
+      <div className="text-red-500 p-4 rounded-lg bg-red-50 dark:bg-red-900/10">
         <p className="font-medium">Failed to load insights</p>
         <p className="text-sm mt-1">{error.message}</p>
       </div>
@@ -34,17 +30,17 @@ export const InsightsChartView = {
   ),
 
   Empty: () => (
-    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
-      <div className="text-gray-500 p-4 text-center">
+    <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
+      <div className="text-gray-500 dark:text-gray-400 p-4 text-center">
         <p className="font-medium">No data available</p>
         <p className="text-sm mt-1">Connect your Meta account to see insights</p>
       </div>
     </div>
   ),
 
-  Default: ({ data }: Props) => (
-    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
-      <h2 className="text-lg sm:text-xl font-semibold mb-4">
+  Default: ({ data }: ChartProps) => (
+    <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg h-72 sm:h-96">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4 dark:text-white">
         {new Date().getFullYear()} Performance
       </h2>
       <ResponsiveContainer width="100%" height="100%">
@@ -73,7 +69,7 @@ export const InsightsChartView = {
             }}
           />
           <Tooltip 
-            formatter={(value: any, name: string) => {
+            formatter={(value: number, name: string) => {
               if (name === 'amountSpent') return formatCurrency(value);
               return formatNumber(value);
             }}

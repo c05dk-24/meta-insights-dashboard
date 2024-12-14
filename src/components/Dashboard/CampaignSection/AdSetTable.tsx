@@ -1,6 +1,7 @@
 import React from 'react';
 import { useMeta } from '../../../hooks/useMeta';
 import { formatCurrency, formatNumber } from '../../../utils/metrics';
+import { AdSet } from '../../../types/meta';
 
 interface Props {
   dateRange: { from: Date; to: Date };
@@ -9,11 +10,11 @@ interface Props {
 
 export const AdSetTable: React.FC<Props> = ({ dateRange, campaignId }) => {
   const { useAdSets } = useMeta();
-  const { data: adSets, isLoading } = useAdSets(dateRange, campaignId);
+  const { data: adSets = [], isLoading } = useAdSets(campaignId, dateRange);
 
   if (!campaignId) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
         Please select a campaign to view its ad sets
       </div>
     );
@@ -22,19 +23,33 @@ export const AdSetTable: React.FC<Props> = ({ dateRange, campaignId }) => {
   if (isLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-10 bg-gray-100 rounded mb-4"></div>
+        <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded mb-4"></div>
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-16 bg-gray-50 rounded mb-2"></div>
+          <div key={i} className="h-16 bg-gray-50 dark:bg-gray-800/50 rounded mb-2"></div>
         ))}
       </div>
     );
   }
 
+  const totals = adSets.reduce((acc, adSet) => ({
+    impressions: acc.impressions + adSet.impressions,
+    reach: acc.reach + adSet.reach,
+    leads: acc.leads + adSet.leads,
+    amountSpent: acc.amountSpent + adSet.amountSpent
+  }), {
+    impressions: 0,
+    reach: 0,
+    leads: 0,
+    amountSpent: 0
+  });
+
+  const costPerLead = totals.leads > 0 ? totals.amountSpent / totals.leads : 0;
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b">
+          <tr className="border-b dark:border-gray-700">
             <th className="text-left py-3 px-4">Ad Set Name</th>
             <th className="text-right py-3 px-4">Impressions</th>
             <th className="text-right py-3 px-4">Reach</th>
@@ -44,8 +59,8 @@ export const AdSetTable: React.FC<Props> = ({ dateRange, campaignId }) => {
           </tr>
         </thead>
         <tbody>
-          {adSets?.map((adSet) => (
-            <tr key={adSet.id} className="border-b hover:bg-gray-50">
+          {adSets.map((adSet) => (
+            <tr key={adSet.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
               <td className="py-3 px-4">{adSet.name}</td>
               <td className="text-right py-3 px-4">{formatNumber(adSet.impressions)}</td>
               <td className="text-right py-3 px-4">{formatNumber(adSet.reach)}</td>
@@ -54,29 +69,14 @@ export const AdSetTable: React.FC<Props> = ({ dateRange, campaignId }) => {
               <td className="text-right py-3 px-4">{formatCurrency(adSet.amountSpent)}</td>
             </tr>
           ))}
-          {adSets && adSets.length > 0 && (
-            <tr className="font-semibold bg-gray-50">
-              <td className="py-3 px-4">Total</td>
-              <td className="text-right py-3 px-4">
-                {formatNumber(adSets.reduce((sum, a) => sum + a.impressions, 0))}
-              </td>
-              <td className="text-right py-3 px-4">
-                {formatNumber(adSets.reduce((sum, a) => sum + a.reach, 0))}
-              </td>
-              <td className="text-right py-3 px-4">
-                {formatNumber(adSets.reduce((sum, a) => sum + a.leads, 0))}
-              </td>
-              <td className="text-right py-3 px-4">
-                {formatCurrency(
-                  adSets.reduce((sum, a) => sum + a.amountSpent, 0) /
-                  adSets.reduce((sum, a) => sum + a.leads, 0)
-                )}
-              </td>
-              <td className="text-right py-3 px-4">
-                {formatCurrency(adSets.reduce((sum, a) => sum + a.amountSpent, 0))}
-              </td>
-            </tr>
-          )}
+          <tr className="font-semibold bg-gray-50 dark:bg-gray-800">
+            <td className="py-3 px-4">Total</td>
+            <td className="text-right py-3 px-4">{formatNumber(totals.impressions)}</td>
+            <td className="text-right py-3 px-4">{formatNumber(totals.reach)}</td>
+            <td className="text-right py-3 px-4">{formatNumber(totals.leads)}</td>
+            <td className="text-right py-3 px-4">{formatCurrency(costPerLead)}</td>
+            <td className="text-right py-3 px-4">{formatCurrency(totals.amountSpent)}</td>
+          </tr>
         </tbody>
       </table>
     </div>

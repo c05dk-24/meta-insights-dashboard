@@ -1,31 +1,26 @@
 import { useAuth } from '../useAuth';
 import { useAxios } from '../useAxios';
 import { getDateRange } from '../../utils/dateRanges';
-import { getApiUrl, API_CONFIG } from '../../utils/config';
+import { getApiUrl } from '../../utils/config';
+import { API_CONFIG } from '../../services/meta/config';
+import { InsightsResponse, Campaign, DateRange } from '../../types/meta';
 
 export const useMetaService = () => {
   const { user } = useAuth();
   const axios = useAxios();
 
-  const getInsights = async (range: string) => {
+  const getInsights = async (range: string): Promise<InsightsResponse> => {
     if (!user?.meta_page_id) {
       throw new Error('Meta page ID not found');
     }
 
     const { startDate, endDate } = getDateRange(range);
     
-    console.log('Fetching Meta insights:', {
-      pageId: user.meta_page_id,
-      startDate,
-      endDate,
-      range
-    });
-
     try {
-      const { data } = await axios.get(`${getApiUrl()}/${user.meta_page_id}/insights`, {
+      const { data } = await axios.get(`${getApiUrl()}/meta/insights`, {
         params: {
-          access_token: process.env.META_ACCESS_TOKEN,
-          fields: API_CONFIG.META.FIELDS.INSIGHTS,
+          page_id: user.meta_page_id,
+          fields: API_CONFIG.FIELDS.INSIGHTS.join(','),
           time_range: JSON.stringify({
             since: startDate,
             until: endDate
@@ -33,7 +28,6 @@ export const useMetaService = () => {
         }
       });
 
-      console.log('Meta insights response:', data);
       return data;
     } catch (error: any) {
       console.error('Meta insights error:', error.response?.data || error);
@@ -41,22 +35,16 @@ export const useMetaService = () => {
     }
   };
 
-  const getCampaigns = async (dateRange: { from: Date; to: Date }) => {
+  const getCampaigns = async (dateRange: DateRange): Promise<Campaign[]> => {
     if (!user?.meta_page_id) {
       throw new Error('Meta page ID not found');
     }
 
-    console.log('Fetching Meta campaigns:', {
-      pageId: user.meta_page_id,
-      startDate: dateRange.from,
-      endDate: dateRange.to
-    });
-
     try {
-      const { data } = await axios.get(`${getApiUrl()}/act_${user.meta_page_id}/campaigns`, {
+      const { data } = await axios.get(`${getApiUrl()}/meta/campaigns`, {
         params: {
-          access_token: process.env.META_ACCESS_TOKEN,
-          fields: API_CONFIG.META.FIELDS.CAMPAIGNS,
+          page_id: user.meta_page_id,
+          fields: API_CONFIG.FIELDS.CAMPAIGNS.join(','),
           time_range: JSON.stringify({
             since: dateRange.from.toISOString().split('T')[0],
             until: dateRange.to.toISOString().split('T')[0]
@@ -64,8 +52,7 @@ export const useMetaService = () => {
         }
       });
 
-      console.log('Meta campaigns response:', data);
-      return data;
+      return data.data || [];
     } catch (error: any) {
       console.error('Meta campaigns error:', error.response?.data || error);
       throw error;
