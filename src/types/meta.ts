@@ -1,4 +1,46 @@
-// Update the existing types file to include these interfaces if they don't exist
+export interface DateRange {
+  startDate: string;
+  endDate: string;
+}
+
+export interface MetaInsightsParams {
+  accountId: string;
+  start_date: string;
+  end_date: string;
+  campaignId?: string;
+  level?: 'campaign' | 'adset' | 'ad';
+}
+
+export interface InsightsResponse {
+  impressions: number;
+  reach: number;
+  leads: number;
+  costPerLead: number;
+  amountSpent: number;
+}
+
+export interface MetaInsight {
+  id: string;
+  date: string;
+  impressions: number;
+  reach: number;
+  leads: number;
+  costPerLead: number;
+  amountSpent: number;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  impressions: number;
+  reach: number;
+  leads: number;
+  costPerLead: number;
+  amountSpent: number;
+}
+
+export interface AdSet extends Campaign {}
+
 export interface Board {
   id: string;
   title: string;
@@ -30,4 +72,20 @@ export interface Comment {
   text: string;
   author: string;
   createdAt: string;
+}
+
+export interface BoardCard extends Card {
+  id: string;
+  title: string;
+  description?: string;
+  listId: string;
+  position: number;
+  labels: string[];
+  comments: Comment[];
+}
+
+export interface BoardList {
+  id: string;
+  title: string;
+  cards: BoardCard[];
 }

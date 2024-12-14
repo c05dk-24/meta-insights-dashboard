@@ -6,9 +6,17 @@ import { ToneSelector } from './PreferencesForm/ToneSelector';
 import { AgeRangeSelect } from './PreferencesForm/AgeRangeSelect';
 import { LocationInput } from './PreferencesForm/LocationInput';
 import { toast } from 'react-hot-toast';
+import { ToneType } from '../../types/ai';
+
+interface FormData {
+  industry: string;
+  tone: ToneType;
+  ageRange: string;
+  location: string;
+}
 
 export const PreferencesForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     industry: '',
     tone: 'professional',
     ageRange: '',
@@ -44,7 +52,7 @@ export const PreferencesForm = () => {
 
         <ToneSelector
           value={formData.tone}
-          onChange={(value) => setFormData({ ...formData, tone: value as any })}
+          onChange={(value) => setFormData({ ...formData, tone: value as ToneType })}
         />
 
         <AgeRangeSelect
