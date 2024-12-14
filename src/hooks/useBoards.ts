@@ -29,32 +29,6 @@ export const useBoards = () => {
     return data;
   };
 
-  const updateList = async ({
-    boardId,
-    listId,
-    updates,
-  }: {
-    boardId: string;
-    listId: string;
-    updates: Partial<List>;
-  }): Promise<List> => {
-    const { data } = await axios.put(
-      `/boards/${boardId}/lists/${listId}`,
-      updates
-    );
-    return data;
-  };
-
-  const deleteList = async ({
-    boardId,
-    listId,
-  }: {
-    boardId: string;
-    listId: string;
-  }): Promise<void> => {
-    await axios.delete(`/boards/${boardId}/lists/${listId}`);
-  };
-
   return {
     useBoards: () =>
       useQuery({
@@ -62,7 +36,6 @@ export const useBoards = () => {
         queryFn: fetchBoards,
         retry: 1,
         staleTime: 30000,
-        refetchOnWindowFocus: true,
       }),
 
     useCreateBoard: () =>
@@ -76,22 +49,6 @@ export const useBoards = () => {
     useCreateList: () =>
       useMutation({
         mutationFn: createList,
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["boards"] });
-        },
-      }),
-
-    useUpdateList: () =>
-      useMutation({
-        mutationFn: updateList,
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["boards"] });
-        },
-      }),
-
-    useDeleteList: () =>
-      useMutation({
-        mutationFn: deleteList,
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["boards"] });
         },

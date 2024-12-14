@@ -1,16 +1,13 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { AppRoutes } from './routes/AppRoutes';
+import { queryClient } from './config/queryClient';
 import { useThemeStore } from './store/themeStore';
-import { initializeQueryClient } from './config/queryClient';
 
-const queryClient = initializeQueryClient();
-
-export default function App() {
+export function App() {
   const isDarkMode = useThemeStore((state) => state.isDarkMode);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
