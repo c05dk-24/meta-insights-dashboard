@@ -1,13 +1,12 @@
-```typescript
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface ThemeState {
+interface ThemeStore {
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
 
-export const useThemeStore = create<ThemeState>()(
+export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
       isDarkMode: false,
@@ -18,4 +17,3 @@ export const useThemeStore = create<ThemeState>()(
     }
   )
 );
-```

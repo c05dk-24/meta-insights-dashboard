@@ -1,4 +1,3 @@
-```typescript
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -17,21 +16,22 @@ interface Props {
   onClose: () => void;
 }
 
+const navigation = [
+  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Boards', href: '/boards', icon: Trello },
+  { name: 'AI Post Generator', href: '/ai', icon: Wand2 },
+  { name: 'Blog Generator', href: '/blog-generator', icon: BookOpen },
+  { name: 'Content Tools', href: '/content-tools', icon: Sparkles },
+  { name: 'Education', href: '/education', icon: GraduationCap },
+  { name: 'Settings', href: '/settings', icon: Settings },
+];
+
 export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
   const location = useLocation();
 
-  const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Boards', href: '/boards', icon: Trello },
-    { name: 'AI Post Generator', href: '/ai', icon: Wand2 },
-    { name: 'Blog Generator', href: '/blog-generator', icon: BookOpen },
-    { name: 'Content Tools', href: '/content-tools', icon: Sparkles },
-    { name: 'Education', href: '/education', icon: GraduationCap },
-    { name: 'Settings', href: '/settings', icon: Settings },
-  ];
-
   return (
     <>
+      {/* Mobile overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 lg:hidden z-20"
@@ -39,6 +39,7 @@ export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
         />
       )}
 
+      {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-30
         w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
@@ -83,4 +84,3 @@ export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
     </>
   );
 };
-```
