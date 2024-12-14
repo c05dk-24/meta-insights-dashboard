@@ -1,5 +1,4 @@
-// Meta API configuration
-export const META_API_CONFIG = {
+export const API_CONFIG = {
   BASE_URL: 'https://graph.facebook.com/v18.0',
   ENDPOINTS: {
     INSIGHTS: '/insights',
