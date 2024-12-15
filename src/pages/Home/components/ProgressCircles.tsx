@@ -8,7 +8,7 @@ interface ProgressCircleProps {
 }
 
 const ProgressCircle: React.FC<ProgressCircleProps> = ({ percentage, label, color }) => {
-  const circumference = 2 * Math.PI * 40; // radius = 40
+  const circumference = 2 * Math.PI * 40;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
@@ -37,7 +37,7 @@ const ProgressCircle: React.FC<ProgressCircleProps> = ({ percentage, label, colo
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xl font-bold">{percentage}%</span>
+          <span className="text-xl font-bold dark:text-white">{percentage}%</span>
         </div>
       </div>
       <span className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-300">{label}</span>
@@ -47,8 +47,8 @@ const ProgressCircle: React.FC<ProgressCircleProps> = ({ percentage, label, colo
 
 export const ProgressCircles = () => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 backdrop-blur-lg bg-opacity-90">
-      <h2 className="text-2xl font-bold mb-8 text-center">Performance Metrics</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg backdrop-blur-lg bg-opacity-90">
+      <h2 className="text-2xl font-bold mb-8 text-center dark:text-white">Performance Metrics</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         <ProgressCircle percentage={85} label="Campaign Success" color="text-blue-500" />
         <ProgressCircle percentage={92} label="Engagement Rate" color="text-purple-500" />

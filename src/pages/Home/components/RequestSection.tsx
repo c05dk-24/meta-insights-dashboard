@@ -34,15 +34,15 @@ export const RequestSection = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 backdrop-blur-lg bg-opacity-90">
-      <h2 className="text-2xl font-bold mb-6">Support Requests</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg backdrop-blur-lg bg-opacity-90">
+      <h2 className="text-2xl font-bold mb-6 dark:text-white">Support Requests</h2>
       <div className="flex gap-4 mb-6">
         <input
           type="text"
           value={newRequest}
           onChange={(e) => setNewRequest(e.target.value)}
           placeholder="Submit a new request..."
-          className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 dark:text-white"
         />
         <button
           onClick={addRequest}
@@ -59,7 +59,7 @@ export const RequestSection = () => {
             className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex items-center justify-between"
           >
             <div>
-              <h3 className="font-medium">{request.title}</h3>
+              <h3 className="font-medium dark:text-white">{request.title}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {new Date(request.timestamp).toLocaleString()}
               </p>
