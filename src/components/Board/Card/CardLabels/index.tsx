@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Label } from '../../../../types/meta';
-import { LabelItem } from './LabelItem';
-import { LabelSelector } from './LabelSelector';
 
 interface Props {
   labels: Label[];
@@ -23,11 +21,13 @@ export const CardLabels: React.FC<Props> = ({
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
         {labels.map((label) => (
-          <LabelItem
+          <span
             key={label.id}
-            label={label}
-            onRemove={onRemoveLabel}
-          />
+            onClick={() => onRemoveLabel(label.id)}
+            className={"inline-flex items-center p-2 rounded text-white text-sm cursor-pointer " + label.color}
+          >
+            {label.name}
+          </span>
         ))}
         <button
           onClick={() => setShowSelector(!showSelector)}
@@ -38,11 +38,22 @@ export const CardLabels: React.FC<Props> = ({
       </div>
 
       {showSelector && (
-        <LabelSelector
-          availableLabels={availableLabels}
-          onSelect={onAddLabel}
-          onClose={() => setShowSelector(false)}
-        />
+        <div className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-lg border dark:border-gray-600">
+          <div className="space-y-1">
+            {availableLabels.map((label) => (
+              <div
+                key={label.id}
+                onClick={() => {
+                  onAddLabel(label.id);
+                  setShowSelector(false);
+                }}
+                className={"block w-full p-2 rounded text-white text-sm cursor-pointer " + label.color}
+              >
+                {label.name}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
