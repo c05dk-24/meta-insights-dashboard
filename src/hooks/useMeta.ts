@@ -13,19 +13,6 @@ export const useMeta = () => {
   const insightsService = new MetaInsightsService(axios);
 
   return {
-    useConnection: () => 
-      useQuery({
-        queryKey: ['meta-connection', user?.meta_page_id],
-        queryFn: () => connectionService.verifyConnection(user?.meta_page_id || ''),
-        enabled: !!user?.meta_page_id
-      }),
-
-    useAccounts: () =>
-      useQuery({
-        queryKey: ['meta-accounts'],
-        queryFn: () => connectionService.getConnectedAccounts()
-      }),
-
     useInsights: (range: string) => 
       useQuery({
         queryKey: ['meta-insights', range],
@@ -34,17 +21,13 @@ export const useMeta = () => {
             throw new Error('No Meta account connected');
           }
 
-          const isValid = await connectionService.verifyConnection(user.meta_page_id);
-          if (!isValid) {
-            throw new Error('Meta account connection is invalid. Please reconnect your account.');
-          }
-
           return insightsService.getInsights(
             user.meta_page_id,
             getDateRange(range)
           );
         },
-        enabled: !!user?.meta_page_id
+        enabled: !!user?.meta_page_id,
+        retry: 1
       })
   };
 };

@@ -1,25 +1,27 @@
 import { AxiosInstance } from 'axios';
+import { handleApiError } from './utils/errorHandler';
 
 export class MetaConnectionService {
   constructor(private axios: AxiosInstance) {}
 
   async verifyConnection(pageId: string): Promise<boolean> {
+    if (!pageId) return false;
+    
     try {
-      const { data } = await this.axios.get('/api/meta/verify', {
-        params: { page_id: pageId }
+      // Test the connection by making a simple insights request
+      const { data } = await this.axios.get(`/api/meta/insights`, {
+        params: {
+          page_id: pageId,
+          fields: 'impressions,spend',
+          limit: 1
+        }
       });
-      return data.isValid;
-    } catch (error) {
-      return false;
-    }
-  }
 
-  async getConnectedAccounts(): Promise<Array<{ id: string, name: string }>> {
-    try {
-      const { data } = await this.axios.get('/api/meta/accounts');
-      return data.accounts;
+      // If we get data back, the connection is valid
+      return Boolean(data && data.data && data.data.length > 0);
     } catch (error) {
-      return [];
+      console.error('Connection verification failed:', error);
+      return false;
     }
   }
 }
