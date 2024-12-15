@@ -15,7 +15,7 @@ export const Modal: React.FC<Props> = ({ isOpen, onClose, title, children }) => 
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onClose} />
-        <div className="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-6 shadow-xl">
+        <div className="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold dark:text-white">{title}</h3>
             <button
