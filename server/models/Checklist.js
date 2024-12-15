@@ -1,34 +1,38 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-const Label = sequelize.define('Label', {
+const Checklist = sequelize.define('Checklist', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
-  name: {
-    type: DataTypes.STRING(50),
+  text: {
+    type: DataTypes.STRING,
     allowNull: false
   },
-  color: {
-    type: DataTypes.STRING(20),
-    allowNull: false
+  completed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   },
-  board_id: {
+  card_id: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
-      model: 'Boards',
+      model: 'Cards',
       key: 'id'
     }
+  },
+  position: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
 }, {
-  tableName: 'Labels',
+  tableName: 'Checklists',
   timestamps: true,
   underscored: true,
   createdAt: 'created_at',
-  updatedAt: false // Labels don't need updated_at
+  updatedAt: 'updated_at'
 });
 
-export default Label;
+export default Checklist;
