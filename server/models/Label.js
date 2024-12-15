@@ -28,7 +28,7 @@ const Label = sequelize.define('Label', {
   timestamps: true,
   underscored: true,
   createdAt: 'created_at',
-  updatedAt: false // Labels don't need updated_at
+  updatedAt: false // Labels don't have updated_at
 });
 
 export default Label;
