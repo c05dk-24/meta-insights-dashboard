@@ -1,8 +1,6 @@
-```tsx
 import React from 'react';
 import { X, Calendar, Tag, MessageSquare, CheckSquare } from 'lucide-react';
-import { BoardCard } from '../../../types/meta';
-import { format } from 'date-fns';
+import { Card } from '../../../types/meta';
 import { CardDescription } from './CardDescription';
 import { CardChecklist } from './CardChecklist';
 import { CardComments } from './CardComments';
@@ -10,10 +8,10 @@ import { CardDueDate } from './CardDueDate';
 import { CardLabels } from './CardLabels';
 
 interface Props {
-  card: BoardCard;
+  card: Card;
   listId: string;
   onClose: () => void;
-  onUpdate: (updates: Partial<BoardCard>) => void;
+  onUpdate: (updates: Partial<Card>) => void;
 }
 
 export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) => {
@@ -31,26 +29,28 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
         </div>
 
         <div className="p-4 space-y-6">
-          {/* Description Section */}
           <CardDescription 
             description={card.description || ''} 
             onUpdate={(description) => onUpdate({ description })}
           />
 
-          {/* Labels Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Tag className="w-5 h-5" />
               <h3 className="font-medium">Labels</h3>
             </div>
             <CardLabels 
-              cardId={card.id} 
-              listId={listId}
-              onUpdate={onUpdate}
+              labels={card.Labels || []}
+              availableLabels={[]} // This should be populated from props or context
+              onAddLabel={(labelId) => {
+                // Handle adding label
+              }}
+              onRemoveLabel={(labelId) => {
+                // Handle removing label
+              }}
             />
           </div>
 
-          {/* Due Date Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Calendar className="w-5 h-5" />
@@ -62,7 +62,6 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
             />
           </div>
 
-          {/* Checklist Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <CheckSquare className="w-5 h-5" />
@@ -71,7 +70,6 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
             <CardChecklist cardId={card.id} />
           </div>
 
-          {/* Comments Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <MessageSquare className="w-5 h-5" />
@@ -84,4 +82,3 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
     </div>
   );
 };
-```
