@@ -5,7 +5,7 @@ import { Tag } from 'lucide-react';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (note: { text: string; tags: string[] }) => void;
+  onSubmit: (data: { text: string; tags: string[] }) => void;
 }
 
 export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
@@ -54,7 +54,7 @@ export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Tags
           </label>
-          <div className="flex gap-2 mb-2">
+          <div className="flex flex-wrap gap-2 mb-2">
             {tags.map((t) => (
               <span
                 key={t}
@@ -73,6 +73,7 @@ export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
               type="text"
               value={tag}
               onChange={(e) => setTag(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
               className="flex-1 px-3 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="Add a tag..."
             />
@@ -81,7 +82,7 @@ export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
               onClick={addTag}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
-              Add
+              Add Tag
             </button>
           </div>
         </div>

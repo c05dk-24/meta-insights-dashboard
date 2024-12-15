@@ -4,7 +4,7 @@ import { Modal } from '../../../components/ui/Modal';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (request: { title: string; description: string; priority: string }) => void;
+  onSubmit: (data: { title: string; description: string; priority: string }) => void;
 }
 
 export const RequestModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
@@ -15,7 +15,11 @@ export const RequestModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim() && description.trim()) {
-      onSubmit({ title: title.trim(), description: description.trim(), priority });
+      onSubmit({
+        title: title.trim(),
+        description: description.trim(),
+        priority
+      });
       setTitle('');
       setDescription('');
       setPriority('medium');

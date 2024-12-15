@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Tag } from 'lucide-react';
 import { NotesModal } from './NotesModal';
 
 interface Note {
@@ -51,7 +51,8 @@ export const NotesSection = () => {
             {note.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {note.tags.map((tag) => (
-                  <span key={tag} className="px-2 py-1 bg-white/20 rounded-full text-xs">
+                  <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-white/20 rounded-full text-xs">
+                    <Tag className="w-3 h-3" />
                     {tag}
                   </span>
                 ))}
