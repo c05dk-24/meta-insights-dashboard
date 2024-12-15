@@ -29,7 +29,7 @@ export const BoardList: React.FC<Props> = ({ list, index }) => {
             {...provided.droppableProps}
             className="flex-1 overflow-y-auto space-y-2 min-h-[50px] py-2"
           >
-            {list.Cards?.map((card, cardIndex) => (
+            {list.cards?.map((card, cardIndex) => (
               <BoardCard
                 key={card.id}
                 card={card}

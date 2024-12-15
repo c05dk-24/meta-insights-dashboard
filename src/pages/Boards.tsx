@@ -4,7 +4,6 @@ import { BoardList } from '../components/Board/BoardList';
 import { AddList } from '../components/Board/AddList';
 import { useBoards } from '../hooks/useBoards';
 import { Plus } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 
 export const Boards = () => {
   const { useBoards: useBoardsQuery, useCreateBoard } = useBoards();
@@ -40,7 +39,6 @@ export const Boards = () => {
     );
   }
 
-  // Get the most recently created board
   const activeBoard = boards[0];
 
   if (!activeBoard) {
@@ -62,14 +60,12 @@ export const Boards = () => {
     );
   }
 
-  console.log('Active board:', activeBoard);
-
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <h1 className="text-xl sm:text-2xl font-bold mb-6 lg:mb-8">{activeBoard.title}</h1>
       <DragDropContext onDragEnd={() => {}}>
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {activeBoard.Lists?.map((list, index) => (
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 overflow-x-auto pb-4">
+          {activeBoard.lists?.map((list, index) => (
             <BoardList key={list.id} list={list} index={index} />
           ))}
           <AddList boardId={activeBoard.id} />
