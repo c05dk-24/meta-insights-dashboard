@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
-import { useBoardStore } from '../../store/boardStore';
+import { useCards } from '../../hooks/useCards';
+import { toast } from 'react-hot-toast';
 
 interface Props {
   listId: string;
@@ -9,18 +10,22 @@ interface Props {
 export const AddCard: React.FC<Props> = ({ listId }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState('');
-  const addCard = useBoardStore(state => state.addCard);
+  const { useAddCard } = useCards();
+  const addCard = useAddCard();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim()) {
-      addCard(listId, {
-        title: title.trim(),
-        description: '',
-        labels: [],
+    if (!title.trim()) return;
+
+    try {
+      await addCard.mutateAsync({
+        listId,
+        title: title.trim()
       });
       setTitle('');
       setIsAdding(false);
+    } catch (error) {
+      toast.error('Failed to add card');
     }
   };
 
@@ -28,9 +33,9 @@ export const AddCard: React.FC<Props> = ({ listId }) => {
     return (
       <button
         onClick={() => setIsAdding(true)}
-        className="w-full text-left px-2 py-1 text-gray-600 hover:bg-gray-100 rounded"
+        className="w-full text-left px-2 py-1 text-gray-600 hover:bg-gray-100 rounded flex items-center gap-1"
       >
-        <Plus size={16} className="inline mr-1" />
+        <Plus size={16} />
         Add Card
       </button>
     );
@@ -43,14 +48,16 @@ export const AddCard: React.FC<Props> = ({ listId }) => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Enter card title..."
-        className="w-full p-2 border rounded mb-2 min-h-[60px]"
+        className="w-full p-2 border rounded mb-2 min-h-[60px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        disabled={addCard.isPending}
       />
       <div className="flex gap-2">
         <button
           type="submit"
-          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+          disabled={addCard.isPending || !title.trim()}
+          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:bg-blue-300"
         >
-          Add Card
+          {addCard.isPending ? 'Adding...' : 'Add Card'}
         </button>
         <button
           type="button"
