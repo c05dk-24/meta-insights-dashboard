@@ -1,6 +1,5 @@
 import React from 'react';
 import { Label } from '../../../../types/meta';
-import { labelStyles } from './styles';
 
 interface Props {
   availableLabels: Label[];
@@ -10,8 +9,8 @@ interface Props {
 
 export const LabelSelector: React.FC<Props> = ({ availableLabels, onSelect, onClose }) => {
   return (
-    <div className={labelStyles.selector.container}>
-      <div className={labelStyles.selector.list}>
+    <div className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-lg border dark:border-gray-600">
+      <div className="space-y-1">
         {availableLabels.map((label) => (
           <div
             key={label.id}
@@ -19,7 +18,7 @@ export const LabelSelector: React.FC<Props> = ({ availableLabels, onSelect, onCl
               onSelect(label.id);
               onClose();
             }}
-            className={labelStyles.selector.item(label.color)}
+            className={`px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
           >
             {label.name}
           </div>
