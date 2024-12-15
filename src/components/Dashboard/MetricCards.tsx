@@ -1,26 +1,30 @@
 import React from 'react';
 import { Target, PoundSterling, Users, TrendingUp } from 'lucide-react';
 import { InsightCard } from './InsightCard';
+import { ConnectionError } from './ConnectionError';
 import { MetaInsight } from '../../types/meta';
 import { formatNumber, formatCurrency } from '../../utils/metrics';
+import { useMeta } from '../../hooks/useMeta';
 
 interface Props {
   insights: MetaInsight | null;
   isLoading: boolean;
+  error?: Error | null;
 }
 
-export const MetricCards: React.FC<Props> = ({ insights, isLoading }) => {
-  if (!insights && !isLoading) {
+export const MetricCards: React.FC<Props> = ({ insights, isLoading, error }) => {
+  const { useConnection } = useMeta();
+  const { data: isValidConnection } = useConnection();
+
+  if (error) {
+    return <ConnectionError message={error.message} />;
+  }
+
+  if (!isValidConnection && !isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-        <p className="text-center text-gray-600 dark:text-gray-400">
-          Connect your Meta account to view insights.
-          <br />
-          <a href="/settings" className="text-blue-500 hover:text-blue-600">
-            Go to Settings
-          </a>
-        </p>
-      </div>
+      <ConnectionError 
+        message="Your Meta account connection needs to be refreshed. Please reconnect your account in settings."
+      />
     );
   }
 
