@@ -1,12 +1,14 @@
 import { InsightsResponse } from '../../../types/meta';
+import { extractLeads, calculateCostPerLead } from '../utils/metrics';
 
 export const transformInsightsData = (data: any): InsightsResponse => {
-  // Handle the actual response format we're getting from the API
+  const insights = Array.isArray(data) ? data[0] : data;
+  
   return {
-    impressions: parseInt(data.impressions || '0', 10),
-    reach: parseInt(data.reach || '0', 10),
-    leads: 0, // Since we're not getting this in the current response
-    costPerLead: 0, // Calculate if we have leads data
-    amountSpent: parseFloat(data.spend || '0')
+    impressions: parseInt(insights?.impressions || '0', 10),
+    reach: parseInt(insights?.reach || '0', 10),
+    leads: extractLeads(insights?.actions),
+    costPerLead: calculateCostPerLead(insights?.spend, insights?.actions),
+    amountSpent: parseFloat(insights?.spend || '0')
   };
 };

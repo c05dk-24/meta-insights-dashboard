@@ -1,6 +1,6 @@
+// Meta API configuration
 export const META_API_CONFIG = {
-  VERSION: 'v21.0',
-  BASE_URL: 'https://graph.facebook.com/v21.0',
+  BASE_URL: 'https://graph.facebook.com/v18.0',
   ENDPOINTS: {
     INSIGHTS: '/insights',
     CAMPAIGNS: '/campaigns',
@@ -18,15 +18,13 @@ export const META_API_CONFIG = {
       'campaign_id',
       'campaign_name',
       'objective',
-      'status',
-      'insights'
+      'status'
     ],
     ADSETS: [
       'adset_id',
       'adset_name',
       'status',
-      'targeting',
-      'insights'
+      'targeting'
     ]
   }
 } as const;

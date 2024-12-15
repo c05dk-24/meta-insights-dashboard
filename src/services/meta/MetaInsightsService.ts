@@ -7,23 +7,29 @@ export class MetaInsightsService {
 
   async getInsights(accountId: string, dateRange: DateRange): Promise<InsightsResponse> {
     try {
+      // Check if Meta account is connected
+      if (!accountId) {
+        throw new Error('Meta account not connected. Please connect your Meta account in settings.');
+      }
+
       const { data } = await this.axios.get('/api/meta/insights', {
         params: {
+          access_token: process.env.META_ACCESS_TOKEN,
           page_id: accountId,
           start_date: dateRange.startDate,
           end_date: dateRange.endDate,
-          fields: 'impressions,spend'
+          fields: 'impressions,reach,actions,spend'
         }
       });
 
-      // Check if we have valid data
-      if (!data || !data.data || !data.data.length) {
-        throw new Error('No insights data available');
-      }
-
-      return transformInsightsData(data.data[0]);
+      return transformInsightsData(data);
     } catch (error: any) {
-      console.error('Failed to fetch insights:', error);
+      // Handle specific Meta API errors
+      if (error.response?.data?.error?.code === 100) {
+        throw new Error('Meta account not found or insufficient permissions. Please check your connection.');
+      }
+      
+      console.error('MetaInsightsService.getInsights error:', error.response?.data || error);
       throw new Error(error.response?.data?.message || 'Failed to fetch Meta insights');
     }
   }
