@@ -11,18 +11,31 @@ export const LabelSelector: React.FC<Props> = ({ availableLabels, onSelect, onCl
   return (
     <div className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-lg border dark:border-gray-600">
       <div className="space-y-1">
-        {availableLabels.map((label) => (
-          <div
-            key={label.id}
-            onClick={() => {
-              onSelect(label.id);
-              onClose();
-            }}
-            className={`px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
-          >
-            {label.name}
-          </div>
-        ))}
+        {availableLabels.map((label) => {
+          const labelClasses = [
+            'rounded',
+            'text-white',
+            'text-sm',
+            'cursor-pointer',
+            'p-2',
+            'block',
+            'w-full',
+            label.color
+          ].join(' ');
+
+          return (
+            <div
+              key={label.id}
+              onClick={() => {
+                onSelect(label.id);
+                onClose();
+              }}
+              className={labelClasses}
+            >
+              {label.name}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

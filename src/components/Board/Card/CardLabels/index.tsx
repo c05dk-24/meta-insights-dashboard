@@ -31,7 +31,7 @@ export const CardLabels: React.FC<Props> = ({
         ))}
         <button
           onClick={() => setShowSelector(!showSelector)}
-          className="inline-flex items-center px-2 py-1 border dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="inline-flex items-center border dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 p-2"
         >
           <Plus className="w-4 h-4" />
         </button>
