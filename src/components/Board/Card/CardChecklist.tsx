@@ -1,4 +1,3 @@
-```tsx
 import React, { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { useCardChecklist } from '../../../hooks/useCardChecklist';
@@ -47,7 +46,7 @@ export const CardChecklist: React.FC<Props> = ({ cardId }) => {
               onChange={() => toggleItem(item.id)}
               className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
             />
-            <span className={`flex-1 ${item.completed ? 'line-through text-gray-500' : ''}`}>
+            <span className={item.completed ? 'flex-1 line-through text-gray-500' : 'flex-1'}>
               {item.text}
             </span>
             <button
@@ -62,4 +61,3 @@ export const CardChecklist: React.FC<Props> = ({ cardId }) => {
     </div>
   );
 };
-```
