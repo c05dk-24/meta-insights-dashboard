@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { Label } from '../../../../types/meta';
 import { LabelItem } from './LabelItem';
 import { LabelSelector } from './LabelSelector';
+import { labelStyles } from './styles';
 
 interface Props {
   labels: Label[];
@@ -20,8 +21,8 @@ export const CardLabels: React.FC<Props> = ({
   const [showSelector, setShowSelector] = useState(false);
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-2">
+    <div className={labelStyles.container}>
+      <div className={labelStyles.labelList}>
         {labels.map((label) => (
           <LabelItem
             key={label.id}
@@ -31,7 +32,7 @@ export const CardLabels: React.FC<Props> = ({
         ))}
         <button
           onClick={() => setShowSelector(!showSelector)}
-          className="inline-flex items-center px-2 py-1 border dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+          className={labelStyles.addButton}
         >
           <Plus className="w-4 h-4" />
         </button>
