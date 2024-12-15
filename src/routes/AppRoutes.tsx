@@ -7,7 +7,7 @@ import { AI } from '../pages/AI';
 import { Education } from '../pages/Education';
 import { BlogGenerator } from '../pages/BlogGenerator';
 import { ContentTools } from '../pages/ContentTools';
-import { ContentRemix } from '../pages/ContentTools/components/ContentRemixer';
+import { ContentRemix } from '../pages/ContentRemix';
 import { Login } from '../pages/Login';
 import { Settings } from '../pages/Settings';
 import { PrivateRoute } from '../components/PrivateRoute';

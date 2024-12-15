@@ -1,15 +1,14 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { SidebarHeader } from './SidebarHeader';
 import { NavigationList } from './NavigationList';
 import { MobileOverlay } from './MobileOverlay';
 
-interface SidebarProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <>
       <MobileOverlay isOpen={isOpen} onClick={onClose} />
