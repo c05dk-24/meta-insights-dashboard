@@ -3,7 +3,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import { Calendar, Tag, Pencil, Trash, MessageSquare } from 'lucide-react';
 import { BoardCard as BoardCardType } from '../../types/meta';
 import { useBoardStore } from '../../store/boardStore';
-import { CardModal } from './Card/CardModal';
+import { CardModal } from './Card';
 import { toast } from 'react-hot-toast';
 
 interface Props {
