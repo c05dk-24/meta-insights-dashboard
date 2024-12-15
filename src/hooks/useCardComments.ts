@@ -1,36 +1,38 @@
-```typescript
-import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { useAuth } from './useAuth';
-
-interface Comment {
-  id: string;
-  text: string;
-  author: string;
-  created_at: string;
-}
+import { useState, useEffect } from 'react';
+import { apiClient } from '../services/api/config';
+import { Comment } from '../types/meta';
+import { toast } from 'react-hot-toast';
 
 interface AddCommentParams {
   text: string;
-  userId: string;
   cardId: string;
 }
 
 export const useCardComments = (cardId: string) => {
   const [comments, setComments] = useState<Comment[]>([]);
-  const { user } = useAuth();
 
-  const addComment = ({ text }: AddCommentParams) => {
-    if (!user) return;
-
-    const newComment: Comment = {
-      id: uuidv4(),
-      text,
-      author: user.name,
-      created_at: new Date().toISOString()
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const { data } = await apiClient.get<Comment[]>(`/cards/${cardId}/comments`);
+        setComments(data);
+      } catch (error) {
+        toast.error('Failed to load comments');
+      }
     };
 
-    setComments([newComment, ...comments]);
+    fetchComments();
+  }, [cardId]);
+
+  const addComment = async ({ text, cardId }: AddCommentParams) => {
+    try {
+      const { data } = await apiClient.post<Comment>(`/cards/${cardId}/comments`, {
+        text
+      });
+      setComments([data, ...comments]);
+    } catch (error) {
+      toast.error('Failed to add comment');
+    }
   };
 
   return {
@@ -38,4 +40,3 @@ export const useCardComments = (cardId: string) => {
     addComment
   };
 };
-```
