@@ -6,11 +6,11 @@ export const HeroSection = () => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-12">
       <div className="text-center">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-          Transform Your Meta Marketing
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+          Welcome to Meta Insights
         </h1>
-        <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-          Powerful insights and AI-driven tools to optimize your Meta campaigns and drive better results.
+        <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+          Your all-in-one platform for Meta marketing optimization and analytics.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
