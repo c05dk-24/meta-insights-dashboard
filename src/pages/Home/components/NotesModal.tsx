@@ -34,6 +34,13 @@ export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
     setTags(tags.filter(t => t !== tagToRemove));
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add New Note">
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -62,7 +69,11 @@ export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
               >
                 <Tag className="w-3 h-3" />
                 {t}
-                <button type="button" onClick={() => removeTag(t)} className="ml-1">
+                <button 
+                  type="button" 
+                  onClick={() => removeTag(t)}
+                  className="ml-1 hover:text-blue-600 dark:hover:text-blue-300"
+                >
                   ×
                 </button>
               </span>
@@ -73,14 +84,14 @@ export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
               type="text"
               value={tag}
               onChange={(e) => setTag(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+              onKeyPress={handleKeyPress}
               className="flex-1 px-3 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="Add a tag..."
             />
             <button
               type="button"
               onClick={addTag}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               Add Tag
             </button>
@@ -91,13 +102,13 @@ export const NotesModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Save Note
           </button>
