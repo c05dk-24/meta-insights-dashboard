@@ -1,19 +1,24 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
 import { toast } from 'react-hot-toast';
+import { useAuth } from './useAuth';
 
 export const useCards = () => {
   const axios = useAxios();
   const queryClient = useQueryClient();
-
-  console.log('useCards hook initialized');
+  const { user } = useAuth();
 
   return {
     useAddCard: () =>
       useMutation({
         mutationFn: async ({ listId, title }: { listId: string; title: string }) => {
+          if (!user) throw new Error('User not authenticated');
+          
           console.log('Adding card:', { listId, title });
-          const { data } = await axios.post(`/api/lists/${listId}/cards`, { title });
+          const { data } = await axios.post(`/api/lists/${listId}/cards`, { 
+            title,
+            user_id: user.id
+          });
           console.log('Card creation response:', data);
           return data;
         },
@@ -31,6 +36,8 @@ export const useCards = () => {
     useUpdateCard: () =>
       useMutation({
         mutationFn: async ({ cardId, updates }: { cardId: string; updates: any }) => {
+          if (!user) throw new Error('User not authenticated');
+          
           console.log('Updating card:', { cardId, updates });
           const { data } = await axios.put(`/api/cards/${cardId}`, updates);
           console.log('Card update response:', data);
