@@ -13,13 +13,9 @@ export const AddCard: React.FC<Props> = ({ listId }) => {
   const { useAddCard } = useCards();
   const addCard = useAddCard();
 
-  console.log('AddCard component rendered:', { listId });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-
-    console.log('Submitting new card:', { listId, title });
 
     try {
       await addCard.mutateAsync({
@@ -28,9 +24,7 @@ export const AddCard: React.FC<Props> = ({ listId }) => {
       });
       setTitle('');
       setIsAdding(false);
-      console.log('Card added successfully');
     } catch (error) {
-      console.error('Failed to add card:', error);
       toast.error('Failed to add card');
     }
   };
