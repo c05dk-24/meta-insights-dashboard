@@ -8,6 +8,7 @@ import { BlogGenerator } from '../pages/BlogGenerator';
 import { ContentTools } from '../pages/ContentTools';
 import { Login } from '../pages/Login';
 import { Settings } from '../pages/Settings';
+import { Home } from '../pages/Home';
 import { PrivateRoute } from '../components/PrivateRoute';
 import { MainLayout } from '../components/Layout/MainLayout';
 import { useAuth } from '../hooks/useAuth';
@@ -17,16 +18,14 @@ export const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route 
-        path="/login" 
-        element={
-          isAuthenticated ? <Navigate to="/" replace /> : <Login />
-        } 
-      />
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
+      
+      {/* Public Home Page */}
+      <Route path="/" element={<Home />} />
       
       {/* Protected Routes */}
       <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/boards" element={<Boards />} />
         <Route path="/ai" element={<AI />} />
         <Route path="/blog-generator" element={<BlogGenerator />} />
