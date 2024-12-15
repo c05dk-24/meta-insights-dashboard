@@ -1,4 +1,3 @@
-```tsx
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useCardLabels } from '../../../hooks/useCardLabels';
@@ -20,14 +19,14 @@ export const CardLabels: React.FC<Props> = ({ cardId, listId, onUpdate }) => {
           <span
             key={label.id}
             onClick={() => removeLabel(label.id)}
-            className={`px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
+            className={`inline-block px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
           >
             {label.name}
           </span>
         ))}
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="px-2 py-1 border dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="inline-flex items-center px-2 py-1 border dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -54,4 +53,3 @@ export const CardLabels: React.FC<Props> = ({ cardId, listId, onUpdate }) => {
     </div>
   );
 };
-```

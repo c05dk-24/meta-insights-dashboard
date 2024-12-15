@@ -1,40 +1,57 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { boardsApi } from '../services/api/boards';
-import { toast } from 'react-hot-toast';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxios } from "./useAxios";
+import { Board, List } from "../types/meta";
 
 export const useBoards = () => {
+  const axios = useAxios();
   const queryClient = useQueryClient();
 
+  const fetchBoards = async (): Promise<Board[]> => {
+    const { data } = await axios.get("/boards");
+    return data || [];
+  };
+
+  const createBoard = async (title: string): Promise<Board> => {
+    const { data } = await axios.post("/boards", { title });
+    return data;
+  };
+
+  const createList = async ({
+    boardId,
+    title,
+  }: {
+    boardId: string;
+    title: string;
+  }): Promise<List> => {
+    const { data } = await axios.post(`/boards/${boardId}/lists`, {
+      title,
+    });
+    return data;
+  };
+
   return {
-    useGetBoards: () => 
+    useBoards: () =>
       useQuery({
-        queryKey: ['boards'],
-        queryFn: boardsApi.getBoards
+        queryKey: ["boards"],
+        queryFn: fetchBoards,
+        retry: 1,
+        staleTime: 30000,
       }),
 
     useCreateBoard: () =>
       useMutation({
-        mutationFn: boardsApi.createBoard,
+        mutationFn: createBoard,
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['boards'] });
-          toast.success('Board created successfully');
+          queryClient.invalidateQueries({ queryKey: ["boards"] });
         },
-        onError: () => {
-          toast.error('Failed to create board');
-        }
       }),
 
     useCreateList: () =>
       useMutation({
-        mutationFn: ({ boardId, title, position }: { boardId: string; title: string; position: number }) =>
-          boardsApi.createList(boardId, title, position),
+        mutationFn: createList,
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['boards'] });
-          toast.success('List created successfully');
+          queryClient.invalidateQueries({ queryKey: ["boards"] });
         },
-        onError: () => {
-          toast.error('Failed to create list');
-        }
-      })
+      }),
   };
 };

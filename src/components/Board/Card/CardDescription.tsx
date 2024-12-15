@@ -1,3 +1,4 @@
+```tsx
 import React, { useState } from 'react';
 import { AlignLeft } from 'lucide-react';
 
@@ -64,3 +65,4 @@ export const CardDescription: React.FC<Props> = ({ description, onUpdate }) => {
     </div>
   );
 };
+```

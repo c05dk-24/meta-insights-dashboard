@@ -1,15 +1,15 @@
 import { CardModal } from './CardModal';
+import { CardDescription } from './CardDescription';
 import { CardChecklist } from './CardChecklist';
 import { CardComments } from './CardComments';
-import { CardLabels } from './CardLabels';
 import { CardDueDate } from './CardDueDate';
-import { CardDescription } from './CardDescription';
+import { CardLabels } from './CardLabels';
 
 export {
   CardModal,
+  CardDescription,
   CardChecklist,
   CardComments,
-  CardLabels,
   CardDueDate,
-  CardDescription
+  CardLabels
 };
