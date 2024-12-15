@@ -7,6 +7,7 @@ import { AI } from '../pages/AI';
 import { Education } from '../pages/Education';
 import { BlogGenerator } from '../pages/BlogGenerator';
 import { ContentTools } from '../pages/ContentTools';
+import { ContentRemix } from '../pages/ContentTools/components/ContentRemixer';
 import { Login } from '../pages/Login';
 import { Settings } from '../pages/Settings';
 import { PrivateRoute } from '../components/PrivateRoute';
@@ -32,8 +33,9 @@ export const AppRoutes = () => {
         <Route path="/boards" element={<Boards />} />
         <Route path="/ai" element={<AI />} />
         <Route path="/blog-generator" element={<BlogGenerator />} />
-        <Route path="/education" element={<Education />} />
         <Route path="/content-tools" element={<ContentTools />} />
+        <Route path="/content-tools/remix" element={<ContentRemix />} />
+        <Route path="/education" element={<Education />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
       
