@@ -20,7 +20,7 @@ export const CardLabels: React.FC<Props> = ({ cardId, listId, onUpdate }) => {
           <span
             key={label.id}
             onClick={() => removeLabel(label.id)}
-            className={`px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
+            className={` py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
           >
             {label.name}
           </span>
@@ -43,7 +43,7 @@ export const CardLabels: React.FC<Props> = ({ cardId, listId, onUpdate }) => {
                   addLabel(label.id);
                   setShowAdd(false);
                 }}
-                className={`px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
+                className={` py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
               >
                 {label.name}
               </div>
