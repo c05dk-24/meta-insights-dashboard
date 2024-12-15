@@ -10,6 +10,20 @@ interface Props {
 }
 
 export const MetricCards: React.FC<Props> = ({ insights, isLoading }) => {
+  if (!insights && !isLoading) {
+    return (
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <p className="text-center text-gray-600 dark:text-gray-400">
+          Connect your Meta account to view insights.
+          <br />
+          <a href="/settings" className="text-blue-500 hover:text-blue-600">
+            Go to Settings
+          </a>
+        </p>
+      </div>
+    );
+  }
+
   const metrics = [
     {
       title: 'Total Leads',
@@ -43,9 +57,9 @@ export const MetricCards: React.FC<Props> = ({ insights, isLoading }) => {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {metrics.map((metric, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-lg animate-pulse">
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+          <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg animate-pulse">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
           </div>
         ))}
       </div>
