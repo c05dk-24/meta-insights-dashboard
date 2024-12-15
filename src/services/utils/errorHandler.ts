@@ -16,14 +16,14 @@ export const handleApiError = (error: any): Error => {
     case 400:
       return new Error(`Invalid request: ${message}`);
     case 401:
-      return new Error('Authentication failed. Reconnect your Meta account.');
+      return new Error('Your session has expired. Please log in again.');
     case 403:
-      return new Error('You are not authorised to access this resource.');
+      return new Error('You do not have permission to perform this action.');
     case 404:
-      return new Error('Requested resource not found.');
+      return new Error('The requested resource could not be found.');
     case 500:
-      return new Error('Internal server error. Try again later.');
+      return new Error('Server error. Please try again later.');
     default:
-      return new Error(`Unexpected error (${status}): ${message}`);
+      return new Error(`An error occurred: ${message}`);
   }
 };
