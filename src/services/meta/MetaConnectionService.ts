@@ -1,23 +1,33 @@
 import { AxiosInstance } from 'axios';
-import { handleApiError } from './utils/errorHandler';
+import { META_API_ENDPOINTS } from './config/endpoints';
+import { isValidAccountId } from './utils/accountId';
 
 export class MetaConnectionService {
   constructor(private axios: AxiosInstance) {}
 
-  async verifyConnection(pageId: string): Promise<boolean> {
-    if (!pageId) return false;
+  async verifyConnection(accountId: string): Promise<boolean> {
+    if (!isValidAccountId(accountId)) {
+      console.warn('Invalid Meta account ID format:', accountId);
+      return false;
+    }
     
     try {
-      // Test the connection by making a simple insights request
-      const { data } = await this.axios.get(`/api/meta/insights`, {
+      const formattedId = accountId.replace('act_', '');
+      const endpoint = META_API_ENDPOINTS.INSIGHTS(formattedId);
+
+      console.log('Verifying connection:', {
+        endpoint,
+        accountId: formattedId
+      });
+
+      const { data } = await this.axios.get(endpoint, {
         params: {
-          page_id: pageId,
-          fields: 'impressions,spend',
-          limit: 1
+          fields: 'impressions',
+          limit: 1,
+          access_token: process.env.META_ACCESS_TOKEN
         }
       });
 
-      // If we get data back, the connection is valid
       return Boolean(data && data.data && data.data.length > 0);
     } catch (error) {
       console.error('Connection verification failed:', error);
