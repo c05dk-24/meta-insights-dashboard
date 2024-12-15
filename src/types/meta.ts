@@ -1,59 +1,31 @@
-export interface DateRange {
-  startDate: string;
-  endDate: string;
-}
-
-export interface MetaInsightsParams {
-  accountId: string;
-  start_date: string;
-  end_date: string;
-  campaignId?: string;
-  level?: 'campaign' | 'adset' | 'ad';
-}
-
-export interface InsightsResponse {
-  impressions: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface MetaInsight {
+export interface BoardList {
   id: string;
-  date: string;
-  impressions: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface Campaign {
-  id: string;
-  name: string;
-  impressions: number;
-  reach: number;
-  leads: number;
-  costPerLead: number;
-  amountSpent: number;
-}
-
-export interface AdSet extends Campaign {}
-
-export interface MetricCard {
   title: string;
-  value: string | number;
-  change: number;
-  icon: any;
+  board_id: string;
+  position: number;
+  Cards?: BoardCard[];
+  created_at: string;
+  updated_at: string;
 }
 
-export interface ChartData {
-  name: string;
-  leads: number;
-  amountSpent: number;
+export interface BoardCard {
+  id: string;
+  title: string;
+  description?: string;
+  list_id: string;
+  position: number;
+  due_date?: string;
+  assignee_id?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface YearlyData {
-  month: string;
-  leads: number;
-  amountSpent: number;
+export interface Board {
+  id: string;
+  title: string;
+  user_id: string;
+  company_id: string;
+  Lists?: BoardList[];
+  created_at: string;
+  updated_at: string;
 }
