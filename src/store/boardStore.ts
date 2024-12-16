@@ -15,7 +15,7 @@ interface BoardStore {
   deleteList: (listId: string) => void;
 }
 
-export const useBoardStore = create<BoardStore>((set) => ({
+export const useBoardStore = create<BoardStore>((set, get) => ({
   boards: [],
   activeBoard: null,
   setActiveBoard: (board) => set({ activeBoard: board }),
@@ -29,7 +29,7 @@ export const useBoardStore = create<BoardStore>((set) => ({
         if (list.id === sourceListId) {
           return {
             ...list,
-            cards: list.Cards?.filter(card => card.id !== cardId) || []
+            Cards: list.Cards?.filter(card => card.id !== cardId) || []
           };
         }
         // Add to destination list
@@ -40,7 +40,7 @@ export const useBoardStore = create<BoardStore>((set) => ({
           
           if (card) {
             const newCards = [...(list.Cards || [])];
-            newCards.splice(destinationIndex, 0, card);
+            newCards.splice(destinationIndex, 0, { ...card, list_id: destinationListId });
             return {
               ...list,
               Cards: newCards
@@ -61,39 +61,11 @@ export const useBoardStore = create<BoardStore>((set) => ({
   },
 
   moveCardToList: (cardId, sourceListId, destinationListId) => {
-    set((state) => {
-      if (!state.activeBoard) return state;
-      
-      const newLists = state.activeBoard.lists.map(list => {
-        if (list.id === sourceListId) {
-          return {
-            ...list,
-            Cards: list.Cards?.filter(card => card.id !== cardId) || []
-          };
-        }
-        if (list.id === destinationListId) {
-          const card = state.activeBoard?.lists
-            .find(l => l.id === sourceListId)
-            ?.Cards?.find(c => c.id === cardId);
-          
-          if (card) {
-            return {
-              ...list,
-              Cards: [...(list.Cards || []), { ...card, list_id: destinationListId }]
-            };
-          }
-        }
-        return list;
-      });
-
-      return {
-        ...state,
-        activeBoard: {
-          ...state.activeBoard,
-          lists: newLists,
-        },
-      };
-    });
+    const { moveCard } = get();
+    const destinationList = get().activeBoard?.lists.find(l => l.id === destinationListId);
+    if (destinationList) {
+      moveCard(cardId, sourceListId, destinationListId, (destinationList.Cards?.length || 0));
+    }
   },
 
   // ... rest of the store methods remain the same
