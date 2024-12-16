@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { Calendar, Tag, Pencil, Trash, MessageSquare } from 'lucide-react';
+import { Calendar, Tag, Pencil, Trash, MessageSquare, MoveRight } from 'lucide-react';
 import { BoardCard as BoardCardType } from '../../types/meta';
 import { useBoardStore } from '../../store/boardStore';
 import { CardModal } from './Card';
+import { ListSelector } from './ListSelector';
 import { toast } from 'react-hot-toast';
 
 interface Props {
@@ -14,7 +15,8 @@ interface Props {
 
 export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
   const [showModal, setShowModal] = useState(false);
-  const { updateCard, deleteCard } = useBoardStore();
+  const [showListSelector, setShowListSelector] = useState(false);
+  const { updateCard, deleteCard, moveCardToList } = useBoardStore();
 
   const handleCardUpdate = (updates: Partial<BoardCardType>) => {
     try {
@@ -35,6 +37,14 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
     }
   };
 
+  const handleMoveCard = (targetListId: string) => {
+    if (targetListId !== listId) {
+      moveCardToList(listId, targetListId, card.id);
+      toast.success('Card moved successfully');
+    }
+    setShowListSelector(false);
+  };
+
   return (
     <>
       <Draggable draggableId={card.id} index={index}>
@@ -47,8 +57,18 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
             onClick={() => setShowModal(true)}
           >
             <div className="flex justify-between items-start mb-2">
-              <h4 className="font-medium dark:text-white">{card.title}</h4>
+              <h4 className="font-medium text-gray-900 dark:text-white">{card.title}</h4>
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowListSelector(!showListSelector);
+                  }}
+                  className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                  title="Move card"
+                >
+                  <MoveRight size={16} />
+                </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -81,6 +101,12 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
                     {card.Labels.length}
                   </span>
                 )}
+                {card.comments?.length > 0 && (
+                  <span className="flex items-center text-gray-500 dark:text-gray-400">
+                    <MessageSquare className="w-3 h-3 mr-1" />
+                    {card.comments.length}
+                  </span>
+                )}
               </div>
               {card.due_date && (
                 <span className="flex items-center text-gray-500 dark:text-gray-400">
@@ -89,6 +115,16 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
                 </span>
               )}
             </div>
+
+            {showListSelector && (
+              <div className="absolute z-20 mt-2 right-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700">
+                <ListSelector
+                  currentListId={listId}
+                  onSelect={handleMoveCard}
+                  onClose={() => setShowListSelector(false)}
+                />
+              </div>
+            )}
           </div>
         )}
       </Draggable>
