@@ -2,14 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAxios } from './useAxios';
 import { Board, List } from '../types/meta';
 import { useAuth } from './useAuth';
-import { useBoardStore } from '../store/boardStore';
 import { toast } from 'react-hot-toast';
 
 export const useBoards = () => {
   const axios = useAxios();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const setActiveBoard = useBoardStore((state) => state.setActiveBoard);
 
   const fetchBoards = async (): Promise<Board[]> => {
     if (!user) throw new Error('User not authenticated');
@@ -49,20 +47,13 @@ export const useBoards = () => {
         enabled: !!user,
         retry: 1,
         staleTime: 30000,
-        onSuccess: (data) => {
-          // Set first board as active if there is no active board
-          if (data.length > 0) {
-            setActiveBoard(data[0]);
-          }
-        }
       }),
 
     useCreateBoard: () =>
       useMutation({
         mutationFn: createBoard,
-        onSuccess: (newBoard) => {
+        onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['boards'] });
-          setActiveBoard(newBoard);
           toast.success('Board created successfully');
         },
         onError: (error: any) => {

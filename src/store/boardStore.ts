@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { Board, BoardList, BoardCard } from '../types/meta';
+import { v4 as uuidv4 } from 'uuid';
 
 interface BoardStore {
   boards: Board[];
   activeBoard: Board | null;
   setActiveBoard: (board: Board) => void;
-  moveCard: (cardId: string, sourceListId: string, destinationListId: string, destinationIndex: number) => void;
-  moveCardToList: (cardId: string, sourceListId: string, destinationListId: string) => void;
+  moveCard: (source: any, destination: any) => void;
   addList: (title: string) => void;
   addCard: (listId: string, card: Omit<BoardCard, 'id' | 'comments'>) => void;
   updateCard: (listId: string, cardId: string, updates: Partial<BoardCard>) => void;
@@ -15,76 +15,53 @@ interface BoardStore {
   deleteList: (listId: string) => void;
 }
 
-export const useBoardStore = create<BoardStore>((set, get) => ({
-  boards: [],
-  activeBoard: null,
+export const useBoardStore = create<BoardStore>((set) => ({
+  boards: [{
+    id: '1',
+    title: 'Main Board',
+    lists: []
+  }],
+  activeBoard: {
+    id: '1',
+    title: 'Main Board',
+    lists: []
+  },
   setActiveBoard: (board) => set({ activeBoard: board }),
   
-  moveCard: (cardId, sourceListId, destinationListId, destinationIndex) => {
+  moveCard: (source, destination) => {
     set((state) => {
       if (!state.activeBoard) return state;
       
-      const newLists = state.activeBoard.Lists?.map(list => {
-        // Remove from source list
-        if (list.id === sourceListId) {
-          return {
-            ...list,
-            Cards: list.Cards?.filter(card => card.id !== cardId) || []
-          };
-        }
-        // Add to destination list
-        if (list.id === destinationListId) {
-          const card = state.activeBoard?.Lists
-            ?.find(l => l.id === sourceListId)
-            ?.Cards?.find(c => c.id === cardId);
-          
-          if (card) {
-            const newCards = [...(list.Cards || [])];
-            newCards.splice(destinationIndex, 0, { ...card, list_id: destinationListId });
-            return {
-              ...list,
-              Cards: newCards
-            };
-          }
-        }
-        return list;
-      }) || [];
-
+      const newLists = [...state.activeBoard.lists];
+      const sourceList = newLists[parseInt(source.droppableId)];
+      const destList = newLists[parseInt(destination.droppableId)];
+      
+      const [movedCard] = sourceList.cards.splice(source.index, 1);
+      destList.cards.splice(destination.index, 0, movedCard);
+      
       return {
         ...state,
         activeBoard: {
           ...state.activeBoard,
-          Lists: newLists,
+          lists: newLists,
         },
       };
     });
-  },
-
-  moveCardToList: (cardId, sourceListId, destinationListId) => {
-    const { moveCard } = get();
-    const destinationList = get().activeBoard?.Lists?.find(l => l.id === destinationListId);
-    if (destinationList) {
-      moveCard(cardId, sourceListId, destinationListId, (destinationList.Cards?.length || 0));
-    }
   },
 
   addList: (title) => {
     set((state) => {
       if (!state.activeBoard) return state;
       const newList: BoardList = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         title,
-        board_id: state.activeBoard.id,
-        position: state.activeBoard.Lists?.length || 0,
-        Cards: [],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        cards: []
       };
       return {
         ...state,
         activeBoard: {
           ...state.activeBoard,
-          Lists: [...(state.activeBoard.Lists || []), newList]
+          lists: [...state.activeBoard.lists, newList]
         }
       };
     });
@@ -93,23 +70,66 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
   addCard: (listId, card) => {
     set((state) => {
       if (!state.activeBoard) return state;
-      const newCard: BoardCard = {
-        id: crypto.randomUUID(),
-        ...card,
-        list_id: listId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      const newLists = state.activeBoard.Lists?.map(list =>
-        list.id === listId
-          ? { ...list, Cards: [...(list.Cards || []), newCard] }
-          : list
-      ) || [];
+      const newLists = state.activeBoard.lists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            cards: [...list.cards, { ...card, id: uuidv4(), comments: [] }]
+          };
+        }
+        return list;
+      });
       return {
         ...state,
         activeBoard: {
           ...state.activeBoard,
-          Lists: newLists
+          lists: newLists
+        }
+      };
+    });
+  },
+
+  updateCard: (listId, cardId, updates) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      const newLists = state.activeBoard.lists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            cards: list.cards.map(card => 
+              card.id === cardId ? { ...card, ...updates } : card
+            )
+          };
+        }
+        return list;
+      });
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          lists: newLists
+        }
+      };
+    });
+  },
+
+  deleteCard: (listId, cardId) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      const newLists = state.activeBoard.lists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            cards: list.cards.filter(card => card.id !== cardId)
+          };
+        }
+        return list;
+      });
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          lists: newLists
         }
       };
     });
@@ -118,14 +138,14 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
   updateListTitle: (listId, title) => {
     set((state) => {
       if (!state.activeBoard) return state;
-      const newLists = state.activeBoard.Lists?.map(list =>
+      const newLists = state.activeBoard.lists.map(list =>
         list.id === listId ? { ...list, title } : list
-      ) || [];
+      );
       return {
         ...state,
         activeBoard: {
           ...state.activeBoard,
-          Lists: newLists
+          lists: newLists
         }
       };
     });
@@ -138,51 +158,7 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
         ...state,
         activeBoard: {
           ...state.activeBoard,
-          Lists: state.activeBoard.Lists?.filter(list => list.id !== listId) || []
-        }
-      };
-    });
-  },
-
-  updateCard: (listId, cardId, updates) => {
-    set((state) => {
-      if (!state.activeBoard) return state;
-      const newLists = state.activeBoard.Lists?.map(list =>
-        list.id === listId
-          ? {
-              ...list,
-              Cards: list.Cards?.map(card =>
-                card.id === cardId ? { ...card, ...updates } : card
-              )
-            }
-          : list
-      ) || [];
-      return {
-        ...state,
-        activeBoard: {
-          ...state.activeBoard,
-          Lists: newLists
-        }
-      };
-    });
-  },
-
-  deleteCard: (listId, cardId) => {
-    set((state) => {
-      if (!state.activeBoard) return state;
-      const newLists = state.activeBoard.Lists?.map(list =>
-        list.id === listId
-          ? {
-              ...list,
-              Cards: list.Cards?.filter(card => card.id !== cardId)
-            }
-          : list
-      ) || [];
-      return {
-        ...state,
-        activeBoard: {
-          ...state.activeBoard,
-          Lists: newLists
+          lists: state.activeBoard.lists.filter(list => list.id !== listId)
         }
       };
     });

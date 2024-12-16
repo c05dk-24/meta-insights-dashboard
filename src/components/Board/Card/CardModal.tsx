@@ -6,9 +6,6 @@ import { CardChecklist } from './CardChecklist';
 import { CardComments } from './CardComments';
 import { CardDueDate } from './CardDueDate';
 import { CardLabels } from './CardLabels';
-import { ListSelector } from './ListSelector';
-import { useBoardStore } from '../../../store/boardStore';
-import { toast } from 'react-hot-toast';
 
 interface Props {
   card: BoardCard;
@@ -18,16 +15,6 @@ interface Props {
 }
 
 export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) => {
-  const lists = useBoardStore((state) => state.activeBoard?.lists || []);
-  const moveCardToList = useBoardStore((state) => state.moveCardToList);
-
-  const handleListChange = (newListId: string) => {
-    if (newListId !== listId) {
-      moveCardToList(card.id, listId, newListId);
-      toast.success('Card moved successfully');
-    }
-  };
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -42,12 +29,6 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
         </div>
 
         <div className="p-4 space-y-6">
-          <ListSelector
-            currentListId={listId}
-            lists={lists}
-            onListChange={handleListChange}
-          />
-
           <CardDescription 
             description={card.description || ''} 
             onUpdate={(description) => onUpdate({ description })}
