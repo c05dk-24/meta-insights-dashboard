@@ -24,7 +24,7 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
     set((state) => {
       if (!state.activeBoard) return state;
       
-      const newLists = state.activeBoard.lists.map(list => {
+      const newLists = state.activeBoard.Lists?.map(list => {
         // Remove from source list
         if (list.id === sourceListId) {
           return {
@@ -34,8 +34,8 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
         }
         // Add to destination list
         if (list.id === destinationListId) {
-          const card = state.activeBoard?.lists
-            .find(l => l.id === sourceListId)
+          const card = state.activeBoard?.Lists
+            ?.find(l => l.id === sourceListId)
             ?.Cards?.find(c => c.id === cardId);
           
           if (card) {
@@ -48,13 +48,13 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
           }
         }
         return list;
-      });
+      }) || [];
 
       return {
         ...state,
         activeBoard: {
           ...state.activeBoard,
-          lists: newLists,
+          Lists: newLists,
         },
       };
     });
@@ -62,11 +62,129 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
 
   moveCardToList: (cardId, sourceListId, destinationListId) => {
     const { moveCard } = get();
-    const destinationList = get().activeBoard?.lists.find(l => l.id === destinationListId);
+    const destinationList = get().activeBoard?.Lists?.find(l => l.id === destinationListId);
     if (destinationList) {
       moveCard(cardId, sourceListId, destinationListId, (destinationList.Cards?.length || 0));
     }
   },
 
-  // ... rest of the store methods remain the same
+  addList: (title) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      const newList: BoardList = {
+        id: crypto.randomUUID(),
+        title,
+        board_id: state.activeBoard.id,
+        position: state.activeBoard.Lists?.length || 0,
+        Cards: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          Lists: [...(state.activeBoard.Lists || []), newList]
+        }
+      };
+    });
+  },
+
+  addCard: (listId, card) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      const newCard: BoardCard = {
+        id: crypto.randomUUID(),
+        ...card,
+        list_id: listId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      const newLists = state.activeBoard.Lists?.map(list =>
+        list.id === listId
+          ? { ...list, Cards: [...(list.Cards || []), newCard] }
+          : list
+      ) || [];
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          Lists: newLists
+        }
+      };
+    });
+  },
+
+  updateListTitle: (listId, title) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      const newLists = state.activeBoard.Lists?.map(list =>
+        list.id === listId ? { ...list, title } : list
+      ) || [];
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          Lists: newLists
+        }
+      };
+    });
+  },
+
+  deleteList: (listId) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          Lists: state.activeBoard.Lists?.filter(list => list.id !== listId) || []
+        }
+      };
+    });
+  },
+
+  updateCard: (listId, cardId, updates) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      const newLists = state.activeBoard.Lists?.map(list =>
+        list.id === listId
+          ? {
+              ...list,
+              Cards: list.Cards?.map(card =>
+                card.id === cardId ? { ...card, ...updates } : card
+              )
+            }
+          : list
+      ) || [];
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          Lists: newLists
+        }
+      };
+    });
+  },
+
+  deleteCard: (listId, cardId) => {
+    set((state) => {
+      if (!state.activeBoard) return state;
+      const newLists = state.activeBoard.Lists?.map(list =>
+        list.id === listId
+          ? {
+              ...list,
+              Cards: list.Cards?.filter(card => card.id !== cardId)
+            }
+          : list
+      ) || [];
+      return {
+        ...state,
+        activeBoard: {
+          ...state.activeBoard,
+          Lists: newLists
+        }
+      };
+    });
+  },
 }));
