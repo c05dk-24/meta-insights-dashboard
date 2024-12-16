@@ -1,15 +1,6 @@
-import { CardModal } from './CardModal';
-import { CardDescription } from './CardDescription';
-import { CardChecklist } from './CardChecklist';
-import { CardComments } from './CardComments';
-import { CardDueDate } from './CardDueDate';
-import { CardLabels } from './CardLabels';
-
-export {
-  CardModal,
-  CardDescription,
-  CardChecklist,
-  CardComments,
-  CardDueDate,
-  CardLabels
-};
+export { CardModal } from './CardModal';
+export { CardDescription } from './CardDescription';
+export { CardChecklist } from './CardChecklist';
+export { CardComments } from './CardComments';
+export { CardDueDate } from './CardDueDate';
+export { CardLabels } from './CardLabels';

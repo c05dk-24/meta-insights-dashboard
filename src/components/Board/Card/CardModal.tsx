@@ -1,8 +1,6 @@
-```tsx
 import React from 'react';
 import { X, Calendar, Tag, MessageSquare, CheckSquare } from 'lucide-react';
 import { BoardCard } from '../../../types/meta';
-import { format } from 'date-fns';
 import { CardDescription } from './CardDescription';
 import { CardChecklist } from './CardChecklist';
 import { CardComments } from './CardComments';
@@ -31,13 +29,11 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
         </div>
 
         <div className="p-4 space-y-6">
-          {/* Description Section */}
           <CardDescription 
             description={card.description || ''} 
             onUpdate={(description) => onUpdate({ description })}
           />
 
-          {/* Labels Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Tag className="w-5 h-5" />
@@ -50,7 +46,6 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
             />
           </div>
 
-          {/* Due Date Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Calendar className="w-5 h-5" />
@@ -62,7 +57,6 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
             />
           </div>
 
-          {/* Checklist Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <CheckSquare className="w-5 h-5" />
@@ -71,7 +65,6 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
             <CardChecklist cardId={card.id} />
           </div>
 
-          {/* Comments Section */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <MessageSquare className="w-5 h-5" />
@@ -84,4 +77,3 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
     </div>
   );
 };
-```

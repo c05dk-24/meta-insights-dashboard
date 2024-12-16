@@ -81,12 +81,6 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
                     {card.Labels.length}
                   </span>
                 )}
-                {card.Comments?.length > 0 && (
-                  <span className="flex items-center text-gray-500 dark:text-gray-400">
-                    <MessageSquare className="w-3 h-3 mr-1" />
-                    {card.Comments.length}
-                  </span>
-                )}
               </div>
               {card.due_date && (
                 <span className="flex items-center text-gray-500 dark:text-gray-400">
