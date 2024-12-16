@@ -7,6 +7,7 @@ import { CardComments } from './CardComments';
 import { CardDueDate } from './CardDueDate';
 import { CardLabels } from './CardLabels';
 import { useBoardStore } from '../../../store/boardStore';
+import { toast } from 'react-hot-toast';
 
 interface Props {
   card: BoardCard;
@@ -21,7 +22,12 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
   const handleListChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const targetListId = e.target.value;
     if (targetListId !== listId) {
-      moveCardToList(listId, targetListId, card.id);
+      try {
+        moveCardToList(listId, targetListId, card.id);
+        toast.success('Card moved successfully');
+      } catch (error) {
+        toast.error('Failed to move card');
+      }
     }
   };
 
@@ -39,14 +45,15 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
         </div>
 
         <div className="p-4 space-y-6">
+          {/* List Selection Dropdown */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Move to List
+              List
             </label>
             <select
               value={listId}
               onChange={handleListChange}
-              className="w-full px-3 py-2 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
+              className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
             >
               {activeBoard?.lists?.map((list) => (
                 <option key={list.id} value={list.id}>
