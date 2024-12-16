@@ -7,7 +7,6 @@ import { CardComments } from './CardComments';
 import { CardDueDate } from './CardDueDate';
 import { CardLabels } from './CardLabels';
 import { useBoardStore } from '../../../store/boardStore';
-import { toast } from 'react-hot-toast';
 
 interface Props {
   card: BoardCard;
@@ -17,17 +16,14 @@ interface Props {
 }
 
 export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) => {
-  const { activeBoard, moveCardToList } = useBoardStore();
+  const activeBoard = useBoardStore((state) => state.activeBoard);
+  const lists = activeBoard?.Lists || [];
 
   const handleListChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const targetListId = e.target.value;
     if (targetListId !== listId) {
-      try {
-        moveCardToList(listId, targetListId, card.id);
-        toast.success('Card moved successfully');
-      } catch (error) {
-        toast.error('Failed to move card');
-      }
+      const moveCardToList = useBoardStore((state) => state.moveCardToList);
+      moveCardToList(listId, targetListId, card.id);
     }
   };
 
@@ -55,7 +51,7 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
               onChange={handleListChange}
               className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
             >
-              {activeBoard?.lists?.map((list) => (
+              {lists.map((list) => (
                 <option key={list.id} value={list.id}>
                   {list.title}
                 </option>
