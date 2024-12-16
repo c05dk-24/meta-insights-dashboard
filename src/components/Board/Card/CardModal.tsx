@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { X, Calendar, Tag, MessageSquare, CheckSquare, ListMinus } from 'lucide-react';
-import { BoardCard, BoardList } from '../../../types/meta';
+import React from 'react';
+import { X, Calendar, Tag, MessageSquare, CheckSquare } from 'lucide-react';
+import { BoardCard } from '../../../types/meta';
 import { CardDescription } from './CardDescription';
 import { CardChecklist } from './CardChecklist';
 import { CardComments } from './CardComments';
 import { CardDueDate } from './CardDueDate';
 import { CardLabels } from './CardLabels';
+import { ListSelector } from './ListSelector';
 import { useBoardStore } from '../../../store/boardStore';
+import { toast } from 'react-hot-toast';
 
 interface Props {
   card: BoardCard;
@@ -22,6 +24,7 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
   const handleListChange = (newListId: string) => {
     if (newListId !== listId) {
       moveCardToList(card.id, listId, newListId);
+      toast.success('Card moved successfully');
     }
   };
 
@@ -39,24 +42,11 @@ export const CardModal: React.FC<Props> = ({ card, listId, onClose, onUpdate }) 
         </div>
 
         <div className="p-4 space-y-6">
-          {/* List Selection */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-              <ListMinus className="w-5 h-5" />
-              <h3 className="font-medium">List</h3>
-            </div>
-            <select
-              value={listId}
-              onChange={(e) => handleListChange(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:text-white"
-            >
-              {lists.map((list) => (
-                <option key={list.id} value={list.id}>
-                  {list.title}
-                </option>
-              ))}
-            </select>
-          </div>
+          <ListSelector
+            currentListId={listId}
+            lists={lists}
+            onListChange={handleListChange}
+          />
 
           <CardDescription 
             description={card.description || ''} 
