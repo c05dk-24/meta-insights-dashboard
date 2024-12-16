@@ -8,8 +8,8 @@ export const useListSelector = () => {
   const lists: BoardList[] = activeBoard?.Lists || [];
   
   // Debug logging
-  console.log('Active board:', activeBoard?.id);
-  console.log('Available lists:', lists.map(l => ({ id: l.id, title: l.title })));
+  console.log('useListSelector - Active board:', activeBoard);
+  console.log('useListSelector - Lists:', lists);
 
   return {
     lists,
