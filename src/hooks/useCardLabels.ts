@@ -1,11 +1,5 @@
-```typescript
 import { useState } from 'react';
-
-interface Label {
-  id: string;
-  name: string;
-  color: string;
-}
+import { Label } from '../types/meta';
 
 const DEFAULT_LABELS: Label[] = [
   { id: '1', name: 'High Priority', color: 'bg-red-500' },
@@ -40,4 +34,3 @@ export const useCardLabels = (cardId: string) => {
     removeLabel
   };
 };
-```

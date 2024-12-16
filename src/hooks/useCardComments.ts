@@ -1,31 +1,20 @@
-```typescript
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from './useAuth';
-
-interface Comment {
-  id: string;
-  text: string;
-  author: string;
-  created_at: string;
-}
-
-interface AddCommentParams {
-  text: string;
-  userId: string;
-  cardId: string;
-}
+import { CardComment } from '../types/meta';
 
 export const useCardComments = (cardId: string) => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<CardComment[]>([]);
   const { user } = useAuth();
 
-  const addComment = ({ text }: AddCommentParams) => {
+  const addComment = ({ text }: { text: string; userId: string; cardId: string }) => {
     if (!user) return;
 
-    const newComment: Comment = {
+    const newComment: CardComment = {
       id: uuidv4(),
       text,
+      user_id: user.id,
+      card_id: cardId,
       author: user.name,
       created_at: new Date().toISOString()
     };
@@ -38,4 +27,3 @@ export const useCardComments = (cardId: string) => {
     addComment
   };
 };
-```

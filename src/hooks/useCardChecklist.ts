@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-
-interface ChecklistItem {
-  id: string;
-  text: string;
-  completed: boolean;
-}
+import { CardChecklist } from '../types/meta';
 
 export const useCardChecklist = (cardId: string) => {
-  const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
+  const [checklist, setChecklist] = useState<CardChecklist[]>([]);
 
   const addItem = (text: string) => {
     setChecklist([
@@ -16,7 +11,9 @@ export const useCardChecklist = (cardId: string) => {
       {
         id: uuidv4(),
         text,
-        completed: false
+        completed: false,
+        card_id: cardId,
+        position: checklist.length
       }
     ]);
   };
