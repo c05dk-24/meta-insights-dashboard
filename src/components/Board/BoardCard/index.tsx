@@ -7,6 +7,7 @@ import { CardFooter } from './CardFooter';
 import { ListSelector } from '../ListSelector';
 import { CardModal } from '../Card';
 import { useCardActions } from './hooks/useCardActions';
+import { useBoardStore } from '../../../store/boardStore';
 
 interface Props {
   card: BoardCardType;
@@ -18,6 +19,7 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
   const [showModal, setShowModal] = useState(false);
   const [showListSelector, setShowListSelector] = useState(false);
   const { handleUpdate, handleDelete, handleMove } = useCardActions(listId, card.id);
+  const activeBoard = useBoardStore((state) => state.activeBoard);
 
   return (
     <>
