@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { useCardLabels } from '../../../hooks/useCardLabels';
+import { useCardStore } from '../../../store/cardStore';
 
 interface Props {
   cardId: string;
@@ -10,7 +10,14 @@ interface Props {
 
 export const CardLabels: React.FC<Props> = ({ cardId, listId, onUpdate }) => {
   const [showAdd, setShowAdd] = useState(false);
-  const { labels, availableLabels, addLabel, removeLabel } = useCardLabels(cardId);
+  const { labels, availableLabels, addLabel, removeLabel } = useCardStore(
+    (state) => ({
+      labels: state.labels[cardId] || [],
+      availableLabels: state.availableLabels,
+      addLabel: state.addLabel,
+      removeLabel: state.removeLabel,
+    })
+  );
 
   return (
     <div className="space-y-2">
@@ -18,7 +25,7 @@ export const CardLabels: React.FC<Props> = ({ cardId, listId, onUpdate }) => {
         {labels.map((label) => (
           <span
             key={label.id}
-            onClick={() => removeLabel(label.id)}
+            onClick={() => removeLabel(cardId, label.id)}
             className={`inline-block px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}
           >
             {label.name}
@@ -39,7 +46,7 @@ export const CardLabels: React.FC<Props> = ({ cardId, listId, onUpdate }) => {
               <div
                 key={label.id}
                 onClick={() => {
-                  addLabel(label.id);
+                  addLabel(cardId, label);
                   setShowAdd(false);
                 }}
                 className={`px-2 py-1 rounded text-white text-sm cursor-pointer ${label.color}`}

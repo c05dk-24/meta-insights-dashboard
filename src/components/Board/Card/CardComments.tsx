@@ -1,7 +1,6 @@
-```tsx
 import React, { useState } from 'react';
-import { useCardComments } from '../../../hooks/useCardComments';
 import { format } from 'date-fns';
+import { useCardStore } from '../../../store/cardStore';
 import { useAuth } from '../../../hooks/useAuth';
 
 interface Props {
@@ -10,16 +9,21 @@ interface Props {
 
 export const CardComments: React.FC<Props> = ({ cardId }) => {
   const [comment, setComment] = useState('');
-  const { comments, addComment } = useCardComments(cardId);
   const { user } = useAuth();
+  const { comments, addComment } = useCardStore(
+    (state) => ({
+      comments: state.comments[cardId] || [],
+      addComment: state.addComment,
+    })
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim() && user) {
-      addComment({
+      addComment(cardId, {
         text: comment.trim(),
         userId: user.id,
-        cardId
+        author: user.name,
       });
       setComment('');
     }
@@ -59,4 +63,3 @@ export const CardComments: React.FC<Props> = ({ cardId }) => {
     </div>
   );
 };
-```

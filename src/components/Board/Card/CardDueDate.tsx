@@ -1,4 +1,3 @@
-```tsx
 import React from 'react';
 
 interface Props {
@@ -16,4 +15,3 @@ export const CardDueDate: React.FC<Props> = ({ dueDate, onUpdate }) => {
     />
   );
 };
-```

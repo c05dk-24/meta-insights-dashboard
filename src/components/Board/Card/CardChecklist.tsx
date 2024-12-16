@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { useCardChecklist } from '../../../hooks/useCardChecklist';
+import { useCardStore } from '../../../store/cardStore';
 
 interface Props {
   cardId: string;
@@ -8,12 +8,19 @@ interface Props {
 
 export const CardChecklist: React.FC<Props> = ({ cardId }) => {
   const [newItem, setNewItem] = useState('');
-  const { checklist, addItem, toggleItem, removeItem } = useCardChecklist(cardId);
+  const { checklist, addChecklistItem, toggleChecklistItem, removeChecklistItem } = useCardStore(
+    (state) => ({
+      checklist: state.checklists[cardId] || [],
+      addChecklistItem: state.addChecklistItem,
+      toggleChecklistItem: state.toggleChecklistItem,
+      removeChecklistItem: state.removeChecklistItem,
+    })
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newItem.trim()) {
-      addItem(newItem.trim());
+      addChecklistItem(cardId, newItem.trim());
       setNewItem('');
     }
   };
@@ -43,14 +50,14 @@ export const CardChecklist: React.FC<Props> = ({ cardId }) => {
             <input
               type="checkbox"
               checked={item.completed}
-              onChange={() => toggleItem(item.id)}
+              onChange={() => toggleChecklistItem(cardId, item.id)}
               className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
             />
             <span className={item.completed ? 'flex-1 line-through text-gray-500' : 'flex-1'}>
               {item.text}
             </span>
             <button
-              onClick={() => removeItem(item.id)}
+              onClick={() => removeChecklistItem(cardId, item.id)}
               className="p-1 text-gray-400 hover:text-red-500"
             >
               <Trash2 className="w-4 h-4" />
