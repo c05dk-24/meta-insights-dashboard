@@ -29,13 +29,13 @@ export const ListHeader: React.FC<Props> = ({ title, onTitleChange, onDelete }) 
             type="text"
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
-            className="w-full p-1 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full p-1 border rounded"
             onBlur={handleTitleSubmit}
           />
         </form>
       ) : (
         <h3
-          className="font-semibold cursor-pointer text-gray-900 dark:text-white"
+          className="font-semibold cursor-pointer"
           onClick={() => setIsEditing(true)}
         >
           {title}
@@ -44,19 +44,19 @@ export const ListHeader: React.FC<Props> = ({ title, onTitleChange, onDelete }) 
       
       <button
         onClick={() => setShowMenu(!showMenu)}
-        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-600 dark:text-gray-300"
+        className="p-1 hover:bg-gray-200 rounded"
       >
         <MoreHorizontal size={16} />
       </button>
       
       {showMenu && (
-        <div className="absolute right-0 top-8 bg-white dark:bg-gray-700 rounded shadow-lg py-2 z-10 min-w-[120px]">
+        <div className="absolute right-0 top-8 bg-white rounded shadow-lg py-2 z-10">
           <button
             onClick={() => {
               setIsEditing(true);
               setShowMenu(false);
             }}
-            className="w-full text-left px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
+            className="w-full text-left px-4 py-1 hover:bg-gray-100"
           >
             Edit Title
           </button>
@@ -65,7 +65,7 @@ export const ListHeader: React.FC<Props> = ({ title, onTitleChange, onDelete }) 
               onDelete();
               setShowMenu(false);
             }}
-            className="w-full text-left px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-600 dark:text-red-400"
+            className="w-full text-left px-4 py-1 hover:bg-gray-100 text-red-600"
           >
             Delete List
           </button>
