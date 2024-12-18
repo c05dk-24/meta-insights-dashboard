@@ -9,7 +9,7 @@ export const useBoardDragDrop = () => {
   const moveCardMutation = useMoveCard();
 
   const handleDragEnd = async (result: DropResult) => {
-    const { source, destination, draggableId: cardId, type } = result;
+    const { source, destination, draggableId: cardId } = result;
 
     // Dropped outside the list or no movement
     if (!destination || 
@@ -18,17 +18,12 @@ export const useBoardDragDrop = () => {
       return;
     }
 
-    // Only handle card movements
-    if (type !== 'CARD') {
-      return;
-    }
-
     console.log('Card drag ended:', {
       cardId,
-      source: source.droppableId,
-      destination: destination.droppableId,
+      sourceList: source.droppableId,
+      destinationList: destination.droppableId,
       sourceIndex: source.index,
-      destIndex: destination.index
+      destinationIndex: destination.index
     });
 
     try {
@@ -44,12 +39,12 @@ export const useBoardDragDrop = () => {
       await moveCardMutation.mutateAsync({
         cardId,
         sourceListId: source.droppableId,
-        destinationListId: destination.droppableId
+        destinationListId: destination.droppableId,
+        position: destination.index
       });
 
-      toast.success('Card moved successfully');
     } catch (error) {
-      // Revert on failure
+      // Revert optimistic update on failure
       updateCardPosition(
         cardId,
         destination.droppableId,

@@ -2,9 +2,9 @@ import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import { BoardList as BoardListType } from '../../types/meta';
 import { useBoardStore } from '../../store/boardStore';
-import { AddCard } from './AddCard';
 import { ListHeader } from './ListHeader';
 import { BoardCard } from './BoardCard';
+import { AddCard } from './AddCard';
 
 interface Props {
   list: BoardListType;

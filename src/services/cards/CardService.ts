@@ -7,14 +7,21 @@ export class CardService {
   async moveCard(
     cardId: string, 
     sourceListId: string, 
-    destinationListId: string
+    destinationListId: string,
+    position: number
   ): Promise<BoardCard> {
-    console.log('CardService.moveCard:', { cardId, sourceListId, destinationListId });
+    console.log('CardService.moveCard:', { 
+      cardId, 
+      sourceListId, 
+      destinationListId,
+      position 
+    });
     
     try {
       const { data } = await this.axios.put(`/api/cards/${cardId}/move`, {
         source_list_id: sourceListId,
-        destination_list_id: destinationListId
+        destination_list_id: destinationListId,
+        position
       });
       
       return data;
