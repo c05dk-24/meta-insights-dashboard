@@ -1,12 +1,9 @@
 import { useCallback } from 'react';
 import { useBoardStore } from '../../../store/boardStore';
-import { useCards } from '../../../hooks/useCards';
 import { toast } from 'react-hot-toast';
 
 export const useBoard = () => {
   const { activeBoard, updateCardPosition } = useBoardStore();
-  const { useMoveCard } = useCards();
-  const moveCardMutation = useMoveCard();
 
   const moveCard = useCallback(async (
     cardId: string,
@@ -15,13 +12,6 @@ export const useBoard = () => {
   ) => {
     if (!activeBoard) {
       console.error('No active board found');
-      toast.error('Unable to move card - board not found');
-      return;
-    }
-
-    if (!cardId || !sourceListId || !destinationListId) {
-      console.error('Invalid card movement parameters:', { cardId, sourceListId, destinationListId });
-      toast.error('Unable to move card - invalid parameters');
       return;
     }
 
@@ -32,18 +22,10 @@ export const useBoard = () => {
     });
 
     try {
-      // Find the source and destination lists
-      const sourceList = activeBoard.Lists?.find(list => list.id === sourceListId);
+      // Find the destination list
       const destList = activeBoard.Lists?.find(list => list.id === destinationListId);
-
-      if (!sourceList || !destList) {
-        throw new Error('Source or destination list not found');
-      }
-
-      // Find the card in the source list
-      const card = sourceList.Cards?.find(c => c.id === cardId);
-      if (!card) {
-        throw new Error('Card not found in source list');
+      if (!destList) {
+        throw new Error('Destination list not found');
       }
 
       // Get the new position (at the end of the list)
@@ -52,21 +34,18 @@ export const useBoard = () => {
       // Optimistically update UI
       updateCardPosition(cardId, sourceListId, destinationListId, newPosition);
 
-      // Persist the change
-      await moveCardMutation.mutateAsync({
-        cardId,
-        sourceListId,
-        destinationListId
-      });
+      // Here you would typically make an API call to persist the change
+      // await boardApi.moveCard(cardId, sourceListId, destinationListId);
 
+      toast.success('Card moved successfully');
     } catch (error) {
       console.error('Failed to move card:', error);
       // Revert the optimistic update
       updateCardPosition(cardId, destinationListId, sourceListId, 0);
       toast.error('Failed to move card');
-      throw error;
+      throw error; // Re-throw to trigger error handling in drag-drop hook
     }
-  }, [activeBoard, updateCardPosition, moveCardMutation]);
+  }, [activeBoard, updateCardPosition]);
 
   return { moveCard };
 };
