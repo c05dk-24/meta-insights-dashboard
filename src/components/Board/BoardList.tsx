@@ -9,11 +9,10 @@ import { BoardCard } from './BoardCard';
 interface Props {
   list: BoardListType;
   index: number;
-  lists: { id: string; title: string }[];
-  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>;
+  lists: BoardListType[];
 }
 
-export const BoardList: React.FC<Props> = ({ list, index, lists, onMoveCard }) => {
+export const BoardList: React.FC<Props> = ({ list, index, lists }) => {
   const { updateListTitle, deleteList } = useBoardStore();
 
   return (
@@ -42,7 +41,6 @@ export const BoardList: React.FC<Props> = ({ list, index, lists, onMoveCard }) =
                 index={cardIndex}
                 listId={list.id}
                 lists={lists}
-                onMoveCard={onMoveCard}
               />
             ))}
             {provided.placeholder}

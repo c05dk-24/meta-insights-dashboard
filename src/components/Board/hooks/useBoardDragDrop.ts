@@ -1,11 +1,12 @@
 import { DropResult } from 'react-beautiful-dnd';
-import { toast } from 'react-hot-toast';
 import { useBoardStore } from '../../../store/boardStore';
+import { useCards } from '../../../hooks/useCards';
+import { toast } from 'react-hot-toast';
 
-export const useBoardDragDrop = (
-  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>
-) => {
+export const useBoardDragDrop = () => {
   const { updateCardPosition } = useBoardStore();
+  const { useMoveCard } = useCards();
+  const moveCardMutation = useMoveCard();
 
   const handleDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId: cardId, type } = result;
@@ -39,12 +40,12 @@ export const useBoardDragDrop = (
         destination.index
       );
       
-      // Make API call
-      await onMoveCard(
+      // Make API call to persist the change
+      await moveCardMutation.mutateAsync({
         cardId,
-        source.droppableId,
-        destination.droppableId
-      );
+        sourceListId: source.droppableId,
+        destinationListId: destination.droppableId
+      });
 
       toast.success('Card moved successfully');
     } catch (error) {

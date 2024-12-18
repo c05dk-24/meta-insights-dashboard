@@ -10,17 +10,10 @@ interface Props {
   index: number;
   listId: string;
   lists: { id: string; title: string }[];
-  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>;
 }
 
-export const BoardCard: React.FC<Props> = ({ card, index, listId, lists, onMoveCard }) => {
+export const BoardCard: React.FC<Props> = ({ card, index, listId, lists }) => {
   const [showModal, setShowModal] = React.useState(false);
-
-  const handleMoveCard = async (destinationListId: string) => {
-    if (destinationListId === listId) return;
-    console.log('Moving card:', { cardId: card.id, from: listId, to: destinationListId });
-    await onMoveCard(card.id, listId, destinationListId);
-  };
 
   return (
     <>
@@ -87,7 +80,6 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId, lists, onMoveC
           listId={listId}
           lists={lists}
           onClose={() => setShowModal(false)}
-          onMoveCard={handleMoveCard}
         />
       )}
     </>
