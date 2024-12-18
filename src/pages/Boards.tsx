@@ -4,15 +4,17 @@ import { BoardList } from '../components/Board/BoardList';
 import { AddList } from '../components/Board/AddList';
 import { useBoards } from '../hooks/useBoards';
 import { Plus } from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '../hooks/useAuth';
+import { useBoard } from '../components/Board/hooks/useBoard';
 import { useBoardDragDrop } from '../components/Board/hooks/useBoardDragDrop';
+import { useAuth } from '../hooks/useAuth';
 
 export const Boards = () => {
   const { user } = useAuth();
   const { useBoards: useBoardsQuery, useCreateBoard } = useBoards();
   const { data: boards = [], isLoading, error } = useBoardsQuery();
   const createBoard = useCreateBoard();
+  const { moveCard } = useBoard();
+  const { handleDragEnd } = useBoardDragDrop(moveCard);
 
   const handleCreateBoard = () => {
     if (!user) {
@@ -21,19 +23,6 @@ export const Boards = () => {
     }
     createBoard.mutate('New Board');
   };
-
-  const handleMoveCard = async (cardId: string, sourceListId: string, destinationListId: string) => {
-    try {
-      // Here you would typically call your API to update the card's list
-      // For now, we'll just show a success message
-      toast.success('Card moved successfully');
-    } catch (error) {
-      toast.error('Failed to move card');
-      console.error('Error moving card:', error);
-    }
-  };
-
-  const { handleDragEnd } = useBoardDragDrop(handleMoveCard);
 
   if (isLoading) {
     return (
@@ -99,7 +88,7 @@ export const Boards = () => {
               list={list} 
               index={index}
               lists={listsForDropdown}
-              onMoveCard={handleMoveCard}
+              onMoveCard={moveCard}
             />
           ))}
           <AddList boardId={activeBoard.id} />
