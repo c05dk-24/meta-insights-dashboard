@@ -6,6 +6,7 @@ import { useBoards } from '../hooks/useBoards';
 import { Plus } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth';
+import { useBoardDragDrop } from '../components/Board/hooks/useBoardDragDrop';
 
 export const Boards = () => {
   const { user } = useAuth();
@@ -31,6 +32,8 @@ export const Boards = () => {
       console.error('Error moving card:', error);
     }
   };
+
+  const { handleDragEnd } = useBoardDragDrop(handleMoveCard);
 
   if (isLoading) {
     return (
