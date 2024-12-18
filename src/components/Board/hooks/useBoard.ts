@@ -1,9 +1,12 @@
 import { useCallback } from 'react';
 import { useBoardStore } from '../../../store/boardStore';
+import { useCards } from '../../../hooks/useCards';
 import { toast } from 'react-hot-toast';
 
 export const useBoard = () => {
   const { activeBoard, updateCardPosition } = useBoardStore();
+  const { useMoveCard } = useCards();
+  const moveCardMutation = useMoveCard();
 
   const moveCard = useCallback(async (
     cardId: string,
@@ -49,10 +52,13 @@ export const useBoard = () => {
       // Optimistically update UI
       updateCardPosition(cardId, sourceListId, destinationListId, newPosition);
 
-      // Here you would typically make an API call to persist the change
-      // await boardApi.moveCard(cardId, sourceListId, destinationListId);
+      // Persist the change
+      await moveCardMutation.mutateAsync({
+        cardId,
+        sourceListId,
+        destinationListId
+      });
 
-      toast.success('Card moved successfully');
     } catch (error) {
       console.error('Failed to move card:', error);
       // Revert the optimistic update
@@ -60,7 +66,7 @@ export const useBoard = () => {
       toast.error('Failed to move card');
       throw error;
     }
-  }, [activeBoard, updateCardPosition]);
+  }, [activeBoard, updateCardPosition, moveCardMutation]);
 
   return { moveCard };
 };
