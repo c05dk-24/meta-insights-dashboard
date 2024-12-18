@@ -10,10 +10,17 @@ interface Props {
   index: number;
   listId: string;
   lists: { id: string; title: string }[];
+  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>;
 }
 
-export const BoardCard: React.FC<Props> = ({ card, index, listId, lists }) => {
+export const BoardCard: React.FC<Props> = ({ card, index, listId, lists, onMoveCard }) => {
   const [showModal, setShowModal] = React.useState(false);
+
+  const handleMoveCard = async (destinationListId: string) => {
+    if (destinationListId === listId) return;
+    console.log('Moving card:', { cardId: card.id, from: listId, to: destinationListId });
+    await onMoveCard(card.id, listId, destinationListId);
+  };
 
   return (
     <>
@@ -29,6 +36,7 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId, lists }) => {
             `}
           >
             <div className="flex items-start gap-2">
+              {/* Grip Handle */}
               <div
                 {...provided.dragHandleProps}
                 className="mt-1 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 cursor-grab active:cursor-grabbing"
@@ -36,6 +44,7 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId, lists }) => {
                 <GripVertical className="w-4 h-4 text-gray-400" />
               </div>
 
+              {/* Card Content */}
               <div 
                 className="flex-1 cursor-pointer" 
                 onClick={() => setShowModal(true)}
@@ -47,6 +56,7 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId, lists }) => {
                   </p>
                 )}
                 
+                {/* Card Footer */}
                 {(card.due_date || card.Labels?.length > 0) && (
                   <div className="mt-3 flex items-center gap-3 text-xs">
                     {card.due_date && (
@@ -77,6 +87,7 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId, lists }) => {
           listId={listId}
           lists={lists}
           onClose={() => setShowModal(false)}
+          onMoveCard={handleMoveCard}
         />
       )}
     </>
