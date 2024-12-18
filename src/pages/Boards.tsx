@@ -21,6 +21,17 @@ export const Boards = () => {
     createBoard.mutate('New Board');
   };
 
+  const handleMoveCard = async (cardId: string, sourceListId: string, destinationListId: string) => {
+    try {
+      // Here you would typically call your API to update the card's list
+      // For now, we'll just show a success message
+      toast.success('Card moved successfully');
+    } catch (error) {
+      toast.error('Failed to move card');
+      console.error('Error moving card:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
@@ -68,10 +79,11 @@ export const Boards = () => {
     );
   }
 
-  const handleDragEnd = (result: any) => {
-    // Implement drag and drop logic here
-    console.log('Drag ended:', result);
-  };
+  // Transform lists for the dropdown
+  const listsForDropdown = activeBoard.Lists?.map(list => ({
+    id: list.id,
+    title: list.title
+  })) || [];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -79,7 +91,13 @@ export const Boards = () => {
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {activeBoard.Lists?.map((list, index) => (
-            <BoardList key={list.id} list={list} index={index} />
+            <BoardList 
+              key={list.id} 
+              list={list} 
+              index={index}
+              lists={listsForDropdown}
+              onMoveCard={handleMoveCard}
+            />
           ))}
           <AddList boardId={activeBoard.id} />
         </div>

@@ -10,9 +10,11 @@ interface Props {
   card: BoardCardType;
   index: number;
   listId: string;
+  lists: { id: string; title: string }[];
+  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>;
 }
 
-export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
+export const BoardCard: React.FC<Props> = ({ card, index, listId, lists, onMoveCard }) => {
   const [showModal, setShowModal] = useState(false);
   const { updateCard, deleteCard } = useBoardStore();
 
@@ -35,6 +37,12 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
     }
   };
 
+  const handleMoveCard = async (newListId: string) => {
+    if (newListId !== listId) {
+      await onMoveCard(card.id, listId, newListId);
+    }
+  };
+
   return (
     <>
       <Draggable draggableId={card.id} index={index}>
@@ -47,7 +55,7 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
             onClick={() => setShowModal(true)}
           >
             <div className="flex justify-between items-start mb-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">{card.title}</h4>
+              <h4 className="font-medium dark:text-white">{card.title}</h4>
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={(e) => {
@@ -81,12 +89,6 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
                     {card.Labels.length}
                   </span>
                 )}
-                {card.comments?.length > 0 && (
-                  <span className="flex items-center text-gray-500 dark:text-gray-400">
-                    <MessageSquare className="w-3 h-3 mr-1" />
-                    {card.comments.length}
-                  </span>
-                )}
               </div>
               {card.due_date && (
                 <span className="flex items-center text-gray-500 dark:text-gray-400">
@@ -103,8 +105,10 @@ export const BoardCard: React.FC<Props> = ({ card, index, listId }) => {
         <CardModal
           card={card}
           listId={listId}
+          lists={lists}
           onClose={() => setShowModal(false)}
           onUpdate={handleCardUpdate}
+          onMoveCard={handleMoveCard}
         />
       )}
     </>

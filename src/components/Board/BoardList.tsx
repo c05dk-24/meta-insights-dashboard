@@ -9,13 +9,15 @@ import { BoardCard } from './BoardCard';
 interface Props {
   list: BoardListType;
   index: number;
+  lists: { id: string; title: string }[];
+  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>;
 }
 
-export const BoardList: React.FC<Props> = ({ list, index }) => {
+export const BoardList: React.FC<Props> = ({ list, index, lists, onMoveCard }) => {
   const { updateListTitle, deleteList } = useBoardStore();
 
   return (
-    <div className="bg-gray-100 rounded-lg p-3 sm:p-4 w-full sm:w-80 flex-shrink-0 max-h-full flex flex-col">
+    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 sm:p-4 w-full sm:w-80 flex-shrink-0 max-h-full flex flex-col">
       <ListHeader
         title={list.title}
         onTitleChange={(newTitle) => updateListTitle(list.id, newTitle)}
@@ -35,6 +37,8 @@ export const BoardList: React.FC<Props> = ({ list, index }) => {
                 card={card}
                 index={cardIndex}
                 listId={list.id}
+                lists={lists}
+                onMoveCard={onMoveCard}
               />
             ))}
             {provided.placeholder}
@@ -42,7 +46,7 @@ export const BoardList: React.FC<Props> = ({ list, index }) => {
         )}
       </Droppable>
 
-      <div className="mt-2 pt-2 border-t">
+      <div className="mt-2 pt-2 border-t dark:border-gray-700">
         <AddCard listId={list.id} />
       </div>
     </div>

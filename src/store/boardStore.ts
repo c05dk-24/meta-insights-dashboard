@@ -7,7 +7,6 @@ interface BoardStore {
   activeBoard: Board | null;
   setActiveBoard: (board: Board) => void;
   moveCard: (source: any, destination: any) => void;
-  moveCardToList: (sourceListId: string, targetListId: string, cardId: string) => void;
   addList: (title: string) => void;
   addCard: (listId: string, card: Omit<BoardCard, 'id' | 'comments'>) => void;
   updateCard: (listId: string, cardId: string, updates: Partial<BoardCard>) => void;
@@ -50,57 +49,19 @@ export const useBoardStore = create<BoardStore>((set) => ({
     });
   },
 
-  moveCardToList: (sourceListId, targetListId, cardId) => {
-    set((state) => {
-      if (!state.activeBoard) return state;
-      
-      const newLists = state.activeBoard.lists.map(list => {
-        if (list.id === sourceListId) {
-          return {
-            ...list,
-            cards: list.cards.filter(card => card.id !== cardId)
-          };
-        }
-        if (list.id === targetListId) {
-          const cardToMove = state.activeBoard?.lists
-            .find(l => l.id === sourceListId)?.cards
-            .find(c => c.id === cardId);
-            
-          if (cardToMove) {
-            return {
-              ...list,
-              cards: [...list.cards, { ...cardToMove, list_id: targetListId }]
-            };
-          }
-        }
-        return list;
-      });
-
-      return {
-        ...state,
-        activeBoard: {
-          ...state.activeBoard,
-          lists: newLists
-        }
-      };
-    });
-  },
-
   addList: (title) => {
     set((state) => {
       if (!state.activeBoard) return state;
+      const newList: BoardList = {
+        id: uuidv4(),
+        title,
+        cards: []
+      };
       return {
         ...state,
         activeBoard: {
           ...state.activeBoard,
-          lists: [
-            ...state.activeBoard.lists,
-            {
-              id: uuidv4(),
-              title,
-              cards: []
-            }
-          ]
+          lists: [...state.activeBoard.lists, newList]
         }
       };
     });
