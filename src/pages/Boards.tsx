@@ -3,11 +3,15 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { BoardList } from '../components/Board/BoardList';
 import { AddList } from '../components/Board/AddList';
 import { useBoards } from '../hooks/useBoards';
-import { Plus } from 'lucide-react';
 import { BoardProvider } from '../components/Board/providers/BoardProvider';
 import { BoardErrorBoundary } from '../components/Board/ErrorBoundary';
 import { useBoardDragDrop } from '../components/Board/hooks/useBoardDragDrop';
 import { useAuth } from '../hooks/useAuth';
+import { 
+  BoardLoadingState, 
+  BoardErrorState, 
+  EmptyBoardState 
+} from '../components/Board/states';
 
 export const Boards = () => {
   const { user } = useAuth();
@@ -65,5 +69,3 @@ export const Boards = () => {
     </BoardErrorBoundary>
   );
 };
-
-// ... Rest of the component remains the same
