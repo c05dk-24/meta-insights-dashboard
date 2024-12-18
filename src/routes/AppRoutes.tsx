@@ -14,20 +14,13 @@ import { Settings } from '../pages/Settings';
 import { PrivateRoute } from '../components/PrivateRoute';
 import { MainLayout } from '../components/Layout/MainLayout';
 import { useAuth } from '../hooks/useAuth';
-
-// Configure future flags for React Router v7
-const router = {
-  future: {
-    v7_startTransition: true,
-    v7_relativeSplatPath: true
-  }
-};
+import { routerConfig } from './config';
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <Routes {...router}>
+    <Routes {...routerConfig}>
       <Route 
         path="/login" 
         element={
