@@ -9,7 +9,7 @@ export const ListSelector: React.FC<ListSelectorProps> = ({
   onSelect,
   disabled = false 
 }) => {
-  const { sortedLists, handleListChange } = useListSelector(lists, onSelect);
+  const { sortedLists, handleListChange } = useListSelector(lists, onSelect, currentListId);
 
   if (!lists || lists.length === 0) {
     return (

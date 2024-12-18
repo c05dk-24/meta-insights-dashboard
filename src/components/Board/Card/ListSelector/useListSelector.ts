@@ -13,7 +13,7 @@ export const useListSelector = (
 
   const handleListChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     const newListId = e.target.value;
-    console.log('List selected:', newListId);
+    console.log('List selected:', { newListId, currentListId });
     
     if (newListId && newListId !== currentListId) {
       onSelect(newListId);
