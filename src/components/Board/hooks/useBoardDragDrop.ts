@@ -1,16 +1,28 @@
 import { DropResult } from 'react-beautiful-dnd';
 import { toast } from 'react-hot-toast';
 
-export const useBoardDragDrop = (onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>) => {
+export const useBoardDragDrop = (
+  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>
+) => {
   const handleDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result;
 
-    // Dropped outside the list or no movement
-    if (!destination || 
-        (source.droppableId === destination.droppableId && 
-         source.index === destination.index)) {
+    // Dropped outside the list
+    if (!destination) {
       return;
     }
+
+    // No movement
+    if (source.droppableId === destination.droppableId && 
+        source.index === destination.index) {
+      return;
+    }
+
+    console.log('Moving card:', {
+      cardId: draggableId,
+      from: source.droppableId,
+      to: destination.droppableId
+    });
 
     try {
       await onMoveCard(

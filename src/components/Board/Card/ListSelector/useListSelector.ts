@@ -1,16 +1,23 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { List } from './types';
 
-export const useListSelector = (lists: { id: string; title: string }[], currentListId: string) => {
+export const useListSelector = (
+  lists: List[],
+  onSelect: (listId: string) => void
+) => {
   const sortedLists = useMemo(() => {
     return [...lists].sort((a, b) => a.title.localeCompare(b.title));
   }, [lists]);
 
-  const currentList = useMemo(() => {
-    return lists.find(list => list.id === currentListId);
-  }, [lists, currentListId]);
+  const handleListChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newListId = e.target.value;
+    if (newListId && newListId !== '') {
+      onSelect(newListId);
+    }
+  }, [onSelect]);
 
   return {
     sortedLists,
-    currentList
+    handleListChange
   };
 };

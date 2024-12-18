@@ -10,6 +10,8 @@ export const useCardMove = (onMoveCard: (newListId: string) => Promise<void>) =>
       return;
     }
 
+    console.log('Moving card to list:', newListId);
+    
     try {
       setIsMoving(true);
       await onMoveCard(newListId);

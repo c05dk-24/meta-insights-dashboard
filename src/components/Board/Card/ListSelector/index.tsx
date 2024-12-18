@@ -1,7 +1,6 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useListSelector } from './useListSelector';
-import { ListOption } from './ListOption';
 import { ListSelectorProps } from './types';
 
 export const ListSelector: React.FC<ListSelectorProps> = ({ 
@@ -10,7 +9,7 @@ export const ListSelector: React.FC<ListSelectorProps> = ({
   onSelect,
   disabled = false 
 }) => {
-  const { sortedLists, currentList } = useListSelector(lists, currentListId);
+  const { sortedLists, handleListChange } = useListSelector(lists, onSelect);
 
   if (!lists || lists.length === 0) {
     return (
@@ -32,7 +31,7 @@ export const ListSelector: React.FC<ListSelectorProps> = ({
         <select
           id="list-selector"
           value={currentListId}
-          onChange={(e) => onSelect(e.target.value)}
+          onChange={handleListChange}
           disabled={disabled}
           className={`
             w-full pl-3 pr-10 py-2 text-base border dark:border-gray-600 rounded-lg 
@@ -41,14 +40,15 @@ export const ListSelector: React.FC<ListSelectorProps> = ({
             appearance-none cursor-pointer
             ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           `}
-          aria-label="Select list to move card to"
         >
           {sortedLists.map((list) => (
-            <ListOption 
+            <option 
               key={list.id} 
-              list={list} 
-              isCurrentList={list.id === currentListId} 
-            />
+              value={list.id}
+              disabled={list.id === currentListId}
+            >
+              {list.title} {list.id === currentListId ? '(Current)' : ''}
+            </option>
           ))}
         </select>
         <ChevronDown 
@@ -59,11 +59,6 @@ export const ListSelector: React.FC<ListSelectorProps> = ({
           `} 
         />
       </div>
-      {currentList && (
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Currently in: {currentList.title}
-        </p>
-      )}
     </div>
   );
 };
