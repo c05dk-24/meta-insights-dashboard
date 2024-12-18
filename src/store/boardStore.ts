@@ -19,7 +19,7 @@ interface BoardState {
   deleteList: (listId: string) => void;
 }
 
-export const useBoardStore = create<BoardState>((set, get) => ({
+export const useBoardStore = create<BoardState>((set) => ({
   boards: [],
   activeBoard: null,
   
@@ -29,15 +29,22 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     set((state) => {
       if (!state.activeBoard) return state;
 
+      console.log('Updating card position:', {
+        cardId,
+        sourceListId,
+        destinationListId,
+        newIndex
+      });
+      
       const newBoard = { ...state.activeBoard };
-      const newLists = [...newBoard.Lists || []];
+      const newLists = [...(newBoard.Lists || [])];
 
       // Find source and destination lists
       const sourceList = newLists.find(list => list.id === sourceListId);
       const destList = newLists.find(list => list.id === destinationListId);
 
       if (!sourceList || !destList) {
-        console.error('Source or destination list not found:', { sourceListId, destinationListId });
+        console.error('Source or destination list not found');
         return state;
       }
 
@@ -48,7 +55,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       // Find and remove card from source list
       const cardIndex = sourceList.Cards.findIndex(card => card.id === cardId);
       if (cardIndex === -1) {
-        console.error('Card not found in source list:', cardId);
+        console.error('Card not found in source list');
         return state;
       }
 
@@ -64,12 +71,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       // Update board with new lists
       newBoard.Lists = newLists;
 
-      console.log('Card moved:', {
-        cardId,
-        from: sourceListId,
-        to: destinationListId,
-        newIndex
-      });
+      console.log('Card position updated successfully');
 
       return {
         ...state,
@@ -78,5 +80,5 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     });
   },
 
-  // ... rest of the store implementation
+  // ... rest of the store implementation remains the same
 }));

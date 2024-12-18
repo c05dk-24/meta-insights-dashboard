@@ -18,7 +18,6 @@ export const Boards = () => {
 
   const handleCreateBoard = () => {
     if (!user) {
-      toast.error('You must be logged in to create a board');
       return;
     }
     createBoard.mutate('New Board');
@@ -49,7 +48,6 @@ export const Boards = () => {
     );
   }
 
-  // Get the most recently created board
   const activeBoard = boards[0];
 
   if (!activeBoard) {
@@ -71,7 +69,6 @@ export const Boards = () => {
     );
   }
 
-  // Transform lists for the dropdown
   const listsForDropdown = activeBoard.Lists?.map(list => ({
     id: list.id,
     title: list.title

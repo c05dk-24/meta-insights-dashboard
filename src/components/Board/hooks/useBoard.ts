@@ -10,10 +10,26 @@ export const useBoard = () => {
     sourceListId: string,
     destinationListId: string
   ) => {
+    if (!activeBoard) {
+      console.error('No active board found');
+      return;
+    }
+
+    console.log('Moving card:', {
+      cardId,
+      sourceListId,
+      destinationListId
+    });
+
     try {
-      // Find the destination list and get the last position
-      const destList = activeBoard?.Lists?.find(list => list.id === destinationListId);
-      const newPosition = destList?.Cards?.length || 0;
+      // Find the destination list
+      const destList = activeBoard.Lists?.find(list => list.id === destinationListId);
+      if (!destList) {
+        throw new Error('Destination list not found');
+      }
+
+      // Get the new position (at the end of the list)
+      const newPosition = destList.Cards?.length || 0;
 
       // Optimistically update UI
       updateCardPosition(cardId, sourceListId, destinationListId, newPosition);
@@ -27,6 +43,7 @@ export const useBoard = () => {
       // Revert the optimistic update
       updateCardPosition(cardId, destinationListId, sourceListId, 0);
       toast.error('Failed to move card');
+      throw error; // Re-throw to trigger error handling in drag-drop hook
     }
   }, [activeBoard, updateCardPosition]);
 
