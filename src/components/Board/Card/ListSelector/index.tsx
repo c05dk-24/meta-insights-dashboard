@@ -5,7 +5,7 @@ import { ListSelectorProps } from './types';
 
 export const ListSelector: React.FC<ListSelectorProps> = ({ 
   currentListId, 
-  lists, 
+  lists = [], // Provide default empty array
   onSelect,
   disabled = false 
 }) => {

@@ -16,23 +16,15 @@ interface Props {
   listId: string;
   lists: { id: string; title: string }[];
   onClose: () => void;
-  onUpdate: (updates: Partial<BoardCard>) => void;
-  onMoveCard: (newListId: string) => Promise<void>;
 }
 
 export const CardModal: React.FC<Props> = ({ 
   card, 
   listId, 
-  lists, 
-  onClose, 
-  onUpdate,
-  onMoveCard 
+  lists = [], // Provide default empty array
+  onClose
 }) => {
-  const { isMoving, handleMoveCard } = useCardMove(onMoveCard);
-
-  if (!lists || lists.length === 0) {
-    console.warn('No lists provided to CardModal');
-  }
+  const { isMoving, handleMoveCard } = useCardMove();
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -40,34 +32,28 @@ export const CardModal: React.FC<Props> = ({
         <CardHeader title={card.title} onClose={onClose} />
 
         <div className="p-4 space-y-6">
-          <CardSection icon={MoveRight} title="Move Card">
-            <ListSelector
-              currentListId={listId}
-              lists={lists}
-              onSelect={handleMoveCard}
-              disabled={isMoving}
-            />
-          </CardSection>
+          {lists.length > 0 && (
+            <CardSection icon={MoveRight} title="Move Card">
+              <ListSelector
+                currentListId={listId}
+                lists={lists}
+                onSelect={handleMoveCard}
+                disabled={isMoving}
+              />
+            </CardSection>
+          )}
 
           <CardSection icon={Tag} title="Description">
             <CardDescription 
               description={card.description || ''} 
-              onUpdate={(description) => onUpdate({ description })}
-            />
-          </CardSection>
-
-          <CardSection icon={Tag} title="Labels">
-            <CardLabels 
-              cardId={card.id} 
-              listId={listId}
-              onUpdate={onUpdate}
+              onUpdate={() => {}} // Add proper update handler
             />
           </CardSection>
 
           <CardSection icon={Calendar} title="Due Date">
             <CardDueDate 
               dueDate={card.due_date} 
-              onUpdate={(due_date) => onUpdate({ due_date })}
+              onUpdate={() => {}} // Add proper update handler
             />
           </CardSection>
 
