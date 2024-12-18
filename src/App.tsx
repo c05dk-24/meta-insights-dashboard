@@ -1,7 +1,6 @@
-```tsx
 import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { AppRoutes } from './routes';
+import { AppRoutes } from './routes/AppRoutes';
 import { queryClient } from './config/queryClient';
 import { useThemeStore } from './store/themeStore';
 
@@ -24,4 +23,3 @@ export function App() {
     </QueryClientProvider>
   );
 }
-```

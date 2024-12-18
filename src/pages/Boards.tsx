@@ -1,4 +1,3 @@
-```typescript
 import React from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { BoardList } from '../components/Board/BoardList';
@@ -70,4 +69,3 @@ export const Boards = () => {
     </BoardErrorBoundary>
   );
 };
-```
