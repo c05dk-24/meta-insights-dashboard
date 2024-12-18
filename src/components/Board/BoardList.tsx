@@ -2,17 +2,18 @@ import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import { BoardList as BoardListType } from '../../types/meta';
 import { useBoardStore } from '../../store/boardStore';
+import { AddCard } from './AddCard';
 import { ListHeader } from './ListHeader';
 import { BoardCard } from './BoardCard';
-import { AddCard } from './AddCard';
 
 interface Props {
   list: BoardListType;
   index: number;
-  lists: BoardListType[];
+  lists: { id: string; title: string }[];
+  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>;
 }
 
-export const BoardList: React.FC<Props> = ({ list, index, lists }) => {
+export const BoardList: React.FC<Props> = ({ list, index, lists, onMoveCard }) => {
   const { updateListTitle, deleteList } = useBoardStore();
 
   return (
@@ -41,6 +42,7 @@ export const BoardList: React.FC<Props> = ({ list, index, lists }) => {
                 index={cardIndex}
                 listId={list.id}
                 lists={lists}
+                onMoveCard={onMoveCard}
               />
             ))}
             {provided.placeholder}

@@ -1,15 +1,14 @@
 import { DropResult } from 'react-beautiful-dnd';
-import { useBoardStore } from '../../../store/boardStore';
-import { useCards } from '../../../hooks/useCards';
 import { toast } from 'react-hot-toast';
+import { useBoardStore } from '../../../store/boardStore';
 
-export const useBoardDragDrop = () => {
+export const useBoardDragDrop = (
+  onMoveCard: (cardId: string, sourceListId: string, destinationListId: string) => Promise<void>
+) => {
   const { updateCardPosition } = useBoardStore();
-  const { useMoveCard } = useCards();
-  const moveCardMutation = useMoveCard();
 
   const handleDragEnd = async (result: DropResult) => {
-    const { source, destination, draggableId: cardId } = result;
+    const { source, destination, draggableId: cardId, type } = result;
 
     // Dropped outside the list or no movement
     if (!destination || 
@@ -18,12 +17,17 @@ export const useBoardDragDrop = () => {
       return;
     }
 
+    // Only handle card movements
+    if (type !== 'CARD') {
+      return;
+    }
+
     console.log('Card drag ended:', {
       cardId,
-      sourceList: source.droppableId,
-      destinationList: destination.droppableId,
+      source: source.droppableId,
+      destination: destination.droppableId,
       sourceIndex: source.index,
-      destinationIndex: destination.index
+      destIndex: destination.index
     });
 
     try {
@@ -35,16 +39,16 @@ export const useBoardDragDrop = () => {
         destination.index
       );
       
-      // Make API call to persist the change
-      await moveCardMutation.mutateAsync({
+      // Make API call
+      await onMoveCard(
         cardId,
-        sourceListId: source.droppableId,
-        destinationListId: destination.droppableId,
-        position: destination.index
-      });
+        source.droppableId,
+        destination.droppableId
+      );
 
+      toast.success('Card moved successfully');
     } catch (error) {
-      // Revert optimistic update on failure
+      // Revert on failure
       updateCardPosition(
         cardId,
         destination.droppableId,

@@ -14,19 +14,16 @@ export const useCards = () => {
         mutationFn: async ({ 
           cardId, 
           sourceListId, 
-          destinationListId,
-          position 
+          destinationListId 
         }: { 
           cardId: string; 
           sourceListId: string; 
-          destinationListId: string;
-          position: number;
+          destinationListId: string; 
         }) => {
-          return cardService.moveCard(cardId, sourceListId, destinationListId, position);
+          return cardService.moveCard(cardId, sourceListId, destinationListId);
         },
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['boards'] });
-          toast.success('Card moved successfully');
         },
         onError: (error: any) => {
           console.error('Failed to move card:', error);
