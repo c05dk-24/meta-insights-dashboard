@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { Board } from '../../../types/meta';
 import { useBoardStore } from '../../../store/boardStore';
+import { BoardLoadingState } from '../states';
 
 interface BoardContextValue {
   board: Board | null;
@@ -28,29 +29,28 @@ export const BoardProvider: React.FC<Props> = ({
   const [initialized, setInitialized] = React.useState(false);
 
   useEffect(() => {
-    const initializeBoard = async () => {
-      try {
-        if (board?.id) {
-          console.log('Initializing board:', board.id);
-          await setActiveBoard(board);
-          setInitialized(true);
-        }
-      } catch (err) {
-        console.error('Failed to initialize board:', err);
-      }
-    };
+    if (!board?.id) {
+      console.warn('No board ID available for initialization');
+      return;
+    }
 
-    initializeBoard();
+    console.log('Initializing board:', board.id);
+    
+    try {
+      setActiveBoard(board);
+      setInitialized(true);
+    } catch (err) {
+      console.error('Failed to initialize board:', err);
+    }
   }, [board, setActiveBoard]);
 
-  const value = {
+  const value = React.useMemo(() => ({
     board: board || null,
     isLoading,
     error,
     initialized
-  };
+  }), [board, isLoading, error, initialized]);
 
-  // Don't render children until board is initialized
   if (!initialized && !error) {
     return <BoardLoadingState />;
   }
@@ -69,12 +69,3 @@ export const useBoard = () => {
   }
   return context;
 };
-
-const BoardLoadingState = () => (
-  <div className="p-4">
-    <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-gray-200 rounded w-48"></div>
-      <div className="h-32 bg-gray-100 rounded"></div>
-    </div>
-  </div>
-);
