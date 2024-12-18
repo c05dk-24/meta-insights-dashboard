@@ -24,12 +24,16 @@ export const BoardList: React.FC<Props> = ({ list, index, lists, onMoveCard }) =
         onDelete={() => deleteList(list.id)}
       />
 
-      <Droppable droppableId={list.id}>
-        {(provided) => (
+      <Droppable droppableId={list.id} type="CARD">
+        {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className="flex-1 overflow-y-auto space-y-2 min-h-[50px] py-2"
+            className={`
+              flex-1 overflow-y-auto space-y-2 min-h-[50px] py-2
+              ${snapshot.isDraggingOver ? 'bg-gray-200 dark:bg-gray-700' : ''}
+              transition-colors duration-200
+            `}
           >
             {list.Cards?.map((card, cardIndex) => (
               <BoardCard
