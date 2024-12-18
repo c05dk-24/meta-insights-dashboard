@@ -1,3 +1,5 @@
+```typescript
+import { useCallback } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 import { useBoardStore } from '../../../store/boardStore';
 import { useCards } from '../../../hooks/useCards';
@@ -8,7 +10,7 @@ export const useBoardDragDrop = () => {
   const { useMoveCard } = useCards();
   const moveCardMutation = useMoveCard();
 
-  const handleDragEnd = async (result: DropResult) => {
+  const handleDragEnd = useCallback(async (result: DropResult) => {
     const { source, destination, draggableId: cardId } = result;
 
     // Dropped outside the list or no movement
@@ -54,7 +56,8 @@ export const useBoardDragDrop = () => {
       console.error('Failed to move card:', error);
       toast.error('Failed to move card');
     }
-  };
+  }, [updateCardPosition, moveCardMutation]);
 
   return { handleDragEnd };
 };
+```

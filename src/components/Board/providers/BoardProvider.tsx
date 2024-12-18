@@ -1,16 +1,9 @@
-import React, { createContext, useContext, useEffect } from 'react';
+```typescript
+import React, { useEffect } from 'react';
 import { Board } from '../../../types/meta';
+import { BoardContext } from './BoardContext';
 import { useBoardStore } from '../../../store/boardStore';
 import { BoardLoadingState } from '../states';
-
-interface BoardContextValue {
-  board: Board | null;
-  isLoading: boolean;
-  error: Error | null;
-  initialized: boolean;
-}
-
-const BoardContext = createContext<BoardContextValue | undefined>(undefined);
 
 interface Props {
   children: React.ReactNode;
@@ -29,19 +22,22 @@ export const BoardProvider: React.FC<Props> = ({
   const [initialized, setInitialized] = React.useState(false);
 
   useEffect(() => {
-    if (!board?.id) {
-      console.warn('No board ID available for initialization');
-      return;
-    }
+    const initializeBoard = async () => {
+      if (!board?.id) {
+        console.warn('No board ID available for initialization');
+        return;
+      }
 
-    console.log('Initializing board:', board.id);
-    
-    try {
-      setActiveBoard(board);
-      setInitialized(true);
-    } catch (err) {
-      console.error('Failed to initialize board:', err);
-    }
+      try {
+        console.log('Initializing board:', board.id);
+        await setActiveBoard(board);
+        setInitialized(true);
+      } catch (err) {
+        console.error('Board initialization failed:', err);
+      }
+    };
+
+    initializeBoard();
   }, [board, setActiveBoard]);
 
   const value = React.useMemo(() => ({
@@ -61,11 +57,4 @@ export const BoardProvider: React.FC<Props> = ({
     </BoardContext.Provider>
   );
 };
-
-export const useBoard = () => {
-  const context = useContext(BoardContext);
-  if (!context) {
-    throw new Error('useBoard must be used within a BoardProvider');
-  }
-  return context;
-};
+```
