@@ -12,6 +12,13 @@ export const useBoard = () => {
   ) => {
     if (!activeBoard) {
       console.error('No active board found');
+      toast.error('Unable to move card - board not found');
+      return;
+    }
+
+    if (!cardId || !sourceListId || !destinationListId) {
+      console.error('Invalid card movement parameters:', { cardId, sourceListId, destinationListId });
+      toast.error('Unable to move card - invalid parameters');
       return;
     }
 
@@ -22,10 +29,18 @@ export const useBoard = () => {
     });
 
     try {
-      // Find the destination list
+      // Find the source and destination lists
+      const sourceList = activeBoard.Lists?.find(list => list.id === sourceListId);
       const destList = activeBoard.Lists?.find(list => list.id === destinationListId);
-      if (!destList) {
-        throw new Error('Destination list not found');
+
+      if (!sourceList || !destList) {
+        throw new Error('Source or destination list not found');
+      }
+
+      // Find the card in the source list
+      const card = sourceList.Cards?.find(c => c.id === cardId);
+      if (!card) {
+        throw new Error('Card not found in source list');
       }
 
       // Get the new position (at the end of the list)
@@ -43,7 +58,7 @@ export const useBoard = () => {
       // Revert the optimistic update
       updateCardPosition(cardId, destinationListId, sourceListId, 0);
       toast.error('Failed to move card');
-      throw error; // Re-throw to trigger error handling in drag-drop hook
+      throw error;
     }
   }, [activeBoard, updateCardPosition]);
 

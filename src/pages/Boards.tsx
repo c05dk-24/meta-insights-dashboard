@@ -6,6 +6,7 @@ import { useBoards } from '../hooks/useBoards';
 import { Plus } from 'lucide-react';
 import { useBoard } from '../components/Board/hooks/useBoard';
 import { useBoardDragDrop } from '../components/Board/hooks/useBoardDragDrop';
+import { useBoardState } from '../components/Board/hooks/useBoardState';
 import { useAuth } from '../hooks/useAuth';
 
 export const Boards = () => {
@@ -15,11 +16,13 @@ export const Boards = () => {
   const createBoard = useCreateBoard();
   const { moveCard } = useBoard();
   const { handleDragEnd } = useBoardDragDrop(moveCard);
+  
+  // Initialize active board
+  const currentBoard = boards[0];
+  useBoardState(currentBoard);
 
   const handleCreateBoard = () => {
-    if (!user) {
-      return;
-    }
+    if (!user) return;
     createBoard.mutate('New Board');
   };
 
@@ -48,9 +51,7 @@ export const Boards = () => {
     );
   }
 
-  const activeBoard = boards[0];
-
-  if (!activeBoard) {
+  if (!currentBoard) {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="text-center">
@@ -69,17 +70,17 @@ export const Boards = () => {
     );
   }
 
-  const listsForDropdown = activeBoard.Lists?.map(list => ({
+  const listsForDropdown = currentBoard.Lists?.map(list => ({
     id: list.id,
     title: list.title
   })) || [];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <h1 className="text-xl sm:text-2xl font-bold mb-6 lg:mb-8">{activeBoard.title}</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-6 lg:mb-8">{currentBoard.title}</h1>
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {activeBoard.Lists?.map((list, index) => (
+          {currentBoard.Lists?.map((list, index) => (
             <BoardList 
               key={list.id} 
               list={list} 
@@ -88,7 +89,7 @@ export const Boards = () => {
               onMoveCard={moveCard}
             />
           ))}
-          <AddList boardId={activeBoard.id} />
+          <AddList boardId={currentBoard.id} />
         </div>
       </DragDropContext>
     </div>
