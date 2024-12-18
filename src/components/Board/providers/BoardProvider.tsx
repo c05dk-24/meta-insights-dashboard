@@ -1,5 +1,5 @@
-```typescript
-import React, { useEffect } from 'react';
+```tsx
+import React from 'react';
 import { Board } from '../../../types/meta';
 import { BoardContext } from './BoardContext';
 import { useBoardStore } from '../../../store/boardStore';
@@ -21,15 +21,10 @@ export const BoardProvider: React.FC<Props> = ({
   const { setActiveBoard } = useBoardStore();
   const [initialized, setInitialized] = React.useState(false);
 
-  useEffect(() => {
-    const initializeBoard = async () => {
-      if (!board?.id) {
-        console.warn('No board ID available for initialization');
-        return;
-      }
-
+  React.useEffect(() => {
+    const initBoard = async () => {
+      if (!board?.id) return;
       try {
-        console.log('Initializing board:', board.id);
         await setActiveBoard(board);
         setInitialized(true);
       } catch (err) {
@@ -37,7 +32,7 @@ export const BoardProvider: React.FC<Props> = ({
       }
     };
 
-    initializeBoard();
+    initBoard();
   }, [board, setActiveBoard]);
 
   const value = React.useMemo(() => ({

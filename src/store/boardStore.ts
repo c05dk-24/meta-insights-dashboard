@@ -1,3 +1,4 @@
+```tsx
 import { create } from 'zustand';
 import { Board, BoardList, BoardCard } from '../types/meta';
 
@@ -19,7 +20,7 @@ interface BoardState {
   deleteList: (listId: string) => void;
 }
 
-export const useBoardStore = create<BoardState>((set) => ({
+export const useBoardStore = create<BoardState>()((set) => ({
   boards: [],
   activeBoard: null,
   
@@ -29,49 +30,27 @@ export const useBoardStore = create<BoardState>((set) => ({
     set((state) => {
       if (!state.activeBoard) return state;
 
-      console.log('Updating card position:', {
-        cardId,
-        sourceListId,
-        destinationListId,
-        newIndex
-      });
-      
       const newBoard = { ...state.activeBoard };
       const newLists = [...(newBoard.Lists || [])];
 
-      // Find source and destination lists
       const sourceList = newLists.find(list => list.id === sourceListId);
       const destList = newLists.find(list => list.id === destinationListId);
 
-      if (!sourceList || !destList) {
-        console.error('Source or destination list not found');
-        return state;
-      }
+      if (!sourceList || !destList) return state;
 
-      // Ensure Cards arrays exist
       sourceList.Cards = sourceList.Cards || [];
       destList.Cards = destList.Cards || [];
 
-      // Find and remove card from source list
       const cardIndex = sourceList.Cards.findIndex(card => card.id === cardId);
-      if (cardIndex === -1) {
-        console.error('Card not found in source list');
-        return state;
-      }
+      if (cardIndex === -1) return state;
 
-      // Remove card from source list
       const [movedCard] = sourceList.Cards.splice(cardIndex, 1);
-
-      // Insert card into destination list
       destList.Cards.splice(newIndex, 0, {
         ...movedCard,
         list_id: destinationListId
       });
 
-      // Update board with new lists
       newBoard.Lists = newLists;
-
-      console.log('Card position updated successfully');
 
       return {
         ...state,
@@ -80,5 +59,25 @@ export const useBoardStore = create<BoardState>((set) => ({
     });
   },
 
-  // ... rest of the store implementation remains the same
+  addList: (title) => set((state) => {
+    if (!state.activeBoard) return state;
+    return {
+      ...state,
+      activeBoard: {
+        ...state.activeBoard,
+        Lists: [
+          ...(state.activeBoard.Lists || []),
+          {
+            id: crypto.randomUUID(),
+            title,
+            Cards: [],
+            position: state.activeBoard.Lists?.length || 0
+          }
+        ]
+      }
+    };
+  }),
+
+  // ... rest of the implementation
 }));
+```
