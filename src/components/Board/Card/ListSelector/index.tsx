@@ -2,21 +2,23 @@ import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useListSelector } from './useListSelector';
 import { ListOption } from './ListOption';
+import { ListSelectorProps } from './types';
 
-interface Props {
-  currentListId: string;
-  lists: { id: string; title: string }[];
-  onSelect: (listId: string) => void;
-  disabled?: boolean;
-}
-
-export const ListSelector: React.FC<Props> = ({ 
+export const ListSelector: React.FC<ListSelectorProps> = ({ 
   currentListId, 
   lists, 
   onSelect,
   disabled = false 
 }) => {
   const { sortedLists, currentList } = useListSelector(lists, currentListId);
+
+  if (!lists || lists.length === 0) {
+    return (
+      <div className="text-gray-500 dark:text-gray-400 text-sm">
+        No lists available
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex-1">

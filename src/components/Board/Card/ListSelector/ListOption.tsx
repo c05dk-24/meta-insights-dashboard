@@ -1,14 +1,7 @@
 import React from 'react';
+import { ListOptionProps } from './types';
 
-interface Props {
-  list: {
-    id: string;
-    title: string;
-  };
-  isCurrentList: boolean;
-}
-
-export const ListOption: React.FC<Props> = ({ list, isCurrentList }) => {
+export const ListOption: React.FC<ListOptionProps> = ({ list, isCurrentList }) => {
   return (
     <option 
       value={list.id}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Tag, MessageSquare, CheckSquare, ListMoveIcon } from 'lucide-react';
+import { Calendar, Tag, MessageSquare, CheckSquare, MoveRight } from 'lucide-react';
 import { BoardCard } from '../../../types/meta';
 import { CardHeader } from './components/CardHeader';
 import { CardSection } from './components/CardSection';
@@ -40,7 +40,7 @@ export const CardModal: React.FC<Props> = ({
         <CardHeader title={card.title} onClose={onClose} />
 
         <div className="p-4 space-y-6">
-          <CardSection icon={ListMoveIcon} title="Move Card">
+          <CardSection icon={MoveRight} title="Move Card">
             <ListSelector
               currentListId={listId}
               lists={lists}
