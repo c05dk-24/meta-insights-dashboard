@@ -1,29 +1,46 @@
-import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { useAuth } from './useAuth';
-import { CardComment } from '../types/meta';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAxios } from './useAxios';
+import { CommentService } from '../services/cards/CommentService';
+import { toast } from 'react-hot-toast';
 
 export const useCardComments = (cardId: string) => {
-  const [comments, setComments] = useState<CardComment[]>([]);
-  const { user } = useAuth();
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  const commentService = new CommentService(axios);
 
-  const addComment = ({ text }: { text: string; userId: string; cardId: string }) => {
-    if (!user) return;
+  const { data: comments = [], isLoading } = useQuery({
+    queryKey: ['card-comments', cardId],
+    queryFn: () => commentService.getComments(cardId),
+    enabled: !!cardId
+  });
 
-    const newComment: CardComment = {
-      id: uuidv4(),
-      text,
-      user_id: user.id,
-      card_id: cardId,
-      author: user.name,
-      created_at: new Date().toISOString()
-    };
+  const addComment = useMutation({
+    mutationFn: ({ text, userId }: { text: string; userId: string }) =>
+      commentService.addComment(cardId, text, userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['card-comments', cardId]);
+      toast.success('Comment added successfully');
+    },
+    onError: () => {
+      toast.error('Failed to add comment');
+    }
+  });
 
-    setComments([newComment, ...comments]);
-  };
+  const deleteComment = useMutation({
+    mutationFn: (commentId: string) => commentService.deleteComment(commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['card-comments', cardId]);
+      toast.success('Comment deleted successfully');
+    },
+    onError: () => {
+      toast.error('Failed to delete comment');
+    }
+  });
 
   return {
     comments,
-    addComment
+    isLoading,
+    addComment,
+    deleteComment
   };
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { useCardStore } from '../../../store/cardStore';
+import { useCardChecklist } from '../../../hooks/useCardChecklist';
 
 interface Props {
   cardId: string;
@@ -8,22 +8,19 @@ interface Props {
 
 export const CardChecklist: React.FC<Props> = ({ cardId }) => {
   const [newItem, setNewItem] = useState('');
-  const { checklist, addChecklistItem, toggleChecklistItem, removeChecklistItem } = useCardStore(
-    (state) => ({
-      checklist: state.checklists[cardId] || [],
-      addChecklistItem: state.addChecklistItem,
-      toggleChecklistItem: state.toggleChecklistItem,
-      removeChecklistItem: state.removeChecklistItem,
-    })
-  );
+  const { checklist, addItem, toggleItem, removeItem, isLoading } = useCardChecklist(cardId);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newItem.trim()) {
-      addChecklistItem(cardId, newItem.trim());
+      await addItem.mutateAsync(newItem.trim());
       setNewItem('');
     }
   };
+
+  if (isLoading) {
+    return <div className="animate-pulse">Loading checklist...</div>;
+  }
 
   return (
     <div className="space-y-3">
@@ -37,7 +34,7 @@ export const CardChecklist: React.FC<Props> = ({ cardId }) => {
         />
         <button
           type="submit"
-          disabled={!newItem.trim()}
+          disabled={!newItem.trim() || addItem.isPending}
           className="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300"
         >
           <Plus className="w-4 h-4" />
@@ -50,14 +47,14 @@ export const CardChecklist: React.FC<Props> = ({ cardId }) => {
             <input
               type="checkbox"
               checked={item.completed}
-              onChange={() => toggleChecklistItem(cardId, item.id)}
+              onChange={() => toggleItem.mutate(item.id)}
               className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
             />
             <span className={item.completed ? 'flex-1 line-through text-gray-500' : 'flex-1'}>
               {item.text}
             </span>
             <button
-              onClick={() => removeChecklistItem(cardId, item.id)}
+              onClick={() => removeItem.mutate(item.id)}
               className="p-1 text-gray-400 hover:text-red-500"
             >
               <Trash2 className="w-4 h-4" />

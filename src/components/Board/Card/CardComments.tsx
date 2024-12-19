@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { useCardStore } from '../../../store/cardStore';
+import { useCardComments } from '../../../hooks/useCardComments';
 import { useAuth } from '../../../hooks/useAuth';
 
 interface Props {
@@ -10,24 +10,22 @@ interface Props {
 export const CardComments: React.FC<Props> = ({ cardId }) => {
   const [comment, setComment] = useState('');
   const { user } = useAuth();
-  const { comments, addComment } = useCardStore(
-    (state) => ({
-      comments: state.comments[cardId] || [],
-      addComment: state.addComment,
-    })
-  );
+  const { comments, addComment, isLoading } = useCardComments(cardId);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim() && user) {
-      addComment(cardId, {
+      await addComment.mutateAsync({
         text: comment.trim(),
-        userId: user.id,
-        author: user.name,
+        userId: user.id
       });
       setComment('');
     }
   };
+
+  if (isLoading) {
+    return <div className="animate-pulse">Loading comments...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -40,10 +38,10 @@ export const CardComments: React.FC<Props> = ({ cardId }) => {
         />
         <button
           type="submit"
-          disabled={!comment.trim()}
+          disabled={!comment.trim() || addComment.isPending}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300"
         >
-          Add Comment
+          {addComment.isPending ? 'Adding...' : 'Add Comment'}
         </button>
       </form>
 

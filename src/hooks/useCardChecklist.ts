@@ -1,39 +1,54 @@
-import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { CardChecklist } from '../types/meta';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAxios } from './useAxios';
+import { ChecklistService } from '../services/cards/ChecklistService';
+import { toast } from 'react-hot-toast';
 
 export const useCardChecklist = (cardId: string) => {
-  const [checklist, setChecklist] = useState<CardChecklist[]>([]);
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  const checklistService = new ChecklistService(axios);
 
-  const addItem = (text: string) => {
-    setChecklist([
-      ...checklist,
-      {
-        id: uuidv4(),
-        text,
-        completed: false,
-        card_id: cardId,
-        position: checklist.length
-      }
-    ]);
-  };
+  const { data: checklist = [], isLoading } = useQuery({
+    queryKey: ['card-checklist', cardId],
+    queryFn: () => checklistService.getChecklists(cardId),
+    enabled: !!cardId
+  });
 
-  const toggleItem = (itemId: string) => {
-    setChecklist(
-      checklist.map(item =>
-        item.id === itemId
-          ? { ...item, completed: !item.completed }
-          : item
-      )
-    );
-  };
+  const addItem = useMutation({
+    mutationFn: (text: string) => checklistService.addItem(cardId, text),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['card-checklist', cardId]);
+      toast.success('Checklist item added');
+    },
+    onError: () => {
+      toast.error('Failed to add checklist item');
+    }
+  });
 
-  const removeItem = (itemId: string) => {
-    setChecklist(checklist.filter(item => item.id !== itemId));
-  };
+  const toggleItem = useMutation({
+    mutationFn: (itemId: string) => checklistService.toggleItem(cardId, itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['card-checklist', cardId]);
+    },
+    onError: () => {
+      toast.error('Failed to update checklist item');
+    }
+  });
+
+  const removeItem = useMutation({
+    mutationFn: (itemId: string) => checklistService.deleteItem(itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['card-checklist', cardId]);
+      toast.success('Checklist item removed');
+    },
+    onError: () => {
+      toast.error('Failed to remove checklist item');
+    }
+  });
 
   return {
     checklist,
+    isLoading,
     addItem,
     toggleItem,
     removeItem
