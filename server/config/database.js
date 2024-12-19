@@ -7,14 +7,12 @@ dotenv.config();
 const config = {
   dialect: 'postgres',
   logging: (msg) => dbLogger.log(msg),
-  dialectOptions: process.env.NODE_ENV === 'production' 
-    ? {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      }
-    : {},
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
   pool: {
     max: 5,
     min: 0,
