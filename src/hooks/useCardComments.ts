@@ -1,22 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAxios } from './useAxios';
-import { CommentService } from '../services/cards/CommentService';
+import { useSupabase } from './useSupabase';
+import { CardService } from '../services/supabase/CardService';
 import { toast } from 'react-hot-toast';
 
 export const useCardComments = (cardId: string) => {
-  const axios = useAxios();
+  const { supabase, isReady } = useSupabase();
   const queryClient = useQueryClient();
-  const commentService = new CommentService(axios);
+  const cardService = new CardService(supabase);
 
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['card-comments', cardId],
-    queryFn: () => commentService.getComments(cardId),
-    enabled: !!cardId
+    queryFn: () => cardService.getComments(cardId),
+    enabled: isReady && !!cardId
   });
 
   const addComment = useMutation({
     mutationFn: ({ text, userId }: { text: string; userId: string }) =>
-      commentService.addComment(cardId, text, userId),
+      cardService.addComment(cardId, text, userId),
     onSuccess: () => {
       queryClient.invalidateQueries(['card-comments', cardId]);
       toast.success('Comment added successfully');
@@ -26,21 +26,9 @@ export const useCardComments = (cardId: string) => {
     }
   });
 
-  const deleteComment = useMutation({
-    mutationFn: (commentId: string) => commentService.deleteComment(commentId),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['card-comments', cardId]);
-      toast.success('Comment deleted successfully');
-    },
-    onError: () => {
-      toast.error('Failed to delete comment');
-    }
-  });
-
   return {
     comments,
     isLoading,
-    addComment,
-    deleteComment
+    addComment
   };
 };

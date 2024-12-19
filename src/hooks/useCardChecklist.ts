@@ -1,21 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAxios } from './useAxios';
-import { ChecklistService } from '../services/cards/ChecklistService';
+import { useSupabase } from './useSupabase';
+import { CardService } from '../services/supabase/CardService';
 import { toast } from 'react-hot-toast';
 
 export const useCardChecklist = (cardId: string) => {
-  const axios = useAxios();
+  const { supabase, isReady } = useSupabase();
   const queryClient = useQueryClient();
-  const checklistService = new ChecklistService(axios);
+  const cardService = new CardService(supabase);
 
   const { data: checklist = [], isLoading } = useQuery({
     queryKey: ['card-checklist', cardId],
-    queryFn: () => checklistService.getChecklists(cardId),
-    enabled: !!cardId
+    queryFn: () => cardService.getChecklists(cardId),
+    enabled: isReady && !!cardId
   });
 
   const addItem = useMutation({
-    mutationFn: (text: string) => checklistService.addItem(cardId, text),
+    mutationFn: (text: string) => cardService.addChecklist(cardId, text),
     onSuccess: () => {
       queryClient.invalidateQueries(['card-checklist', cardId]);
       toast.success('Checklist item added');
@@ -26,7 +26,7 @@ export const useCardChecklist = (cardId: string) => {
   });
 
   const toggleItem = useMutation({
-    mutationFn: (itemId: string) => checklistService.toggleItem(cardId, itemId),
+    mutationFn: (itemId: string) => cardService.toggleChecklistItem(itemId),
     onSuccess: () => {
       queryClient.invalidateQueries(['card-checklist', cardId]);
     },
@@ -35,22 +35,10 @@ export const useCardChecklist = (cardId: string) => {
     }
   });
 
-  const removeItem = useMutation({
-    mutationFn: (itemId: string) => checklistService.deleteItem(itemId),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['card-checklist', cardId]);
-      toast.success('Checklist item removed');
-    },
-    onError: () => {
-      toast.error('Failed to remove checklist item');
-    }
-  });
-
   return {
     checklist,
     isLoading,
     addItem,
-    toggleItem,
-    removeItem
+    toggleItem
   };
 };
