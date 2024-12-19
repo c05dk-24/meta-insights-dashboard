@@ -37,11 +37,6 @@ export const initDatabase = async () => {
     try {
       await sequelize.authenticate();
       dbLogger.log('Database connection established successfully');
-      
-      // Sync models
-      await sequelize.sync();
-      dbLogger.log('Database models synchronized');
-      
       return true;
     } catch (error) {
       retries++;
